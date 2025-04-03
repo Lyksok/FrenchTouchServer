@@ -20,6 +20,8 @@ async fn main() -> std::io::Result<()> {
         .unwrap();
 
     println!("Building http server");
+
+    println!("Server running!");
     HttpServer::new(|| {
         App::new()
             .service(index)
@@ -27,5 +29,4 @@ async fn main() -> std::io::Result<()> {
     .bind_openssl("0.0.0.0:50000",builder)?
     .run()
     .await
-    println!("Server running!");
 }
