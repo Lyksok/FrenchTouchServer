@@ -1,32 +1,26 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpRequest, HttpServer, Responder};
-use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
+use std::io::Error;
+use text_io::read;
+use ft_server::api;
+use ft_server::db;
 
-#[get("/")]
-async fn index(_req: HttpRequest) -> impl Responder {
-    "Welcome! You are not using this connection as intended. \
-        Contact jans.stokmanis@gmail.com for more information."
-}
+fn main() -> Result<(), Error> {
+    println!("Welcome to FrenchTouchServer, what would you like to do ?");
+    loop {
+        println!("0. Exit");
+        println!("1. Run the server");
+        println!("2. Create the database");
+        print!("Your option (0..2): ");
+        let input = read!();
 
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
-    // Build CA
-    println!("Building ssl certificate authenticator");
-    let mut builder = SslAcceptor::mozilla_intermediate_v5(SslMethod::tls()).unwrap();
-    builder
-        .set_private_key_file("/etc/ssl/private/server-key.pem", SslFiletype::PEM)
-        .unwrap();
-    builder
-        .set_certificate_chain_file("/etc/ssl/private/server-cert.pem")
-        .unwrap();
-
-    println!("Building http server");
-
-    println!("Server running!");
-    HttpServer::new(|| {
-        App::new()
-            .service(index)
-    })
-    .bind_openssl("0.0.0.0:50000",builder)?
-    .run()
-    .await
+        let e = match input {
+            0 => return Ok(()),
+            1 => api::run_api::run_api(),
+            2 => db::db_main::db_main(),
+            _ => Ok(println!("Option does not exist.")),
+        };
+        match e {
+            Err(e) => return Err(e),
+            Ok(_) => continue,
+        }
+    }
 }
