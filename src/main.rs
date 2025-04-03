@@ -10,6 +10,7 @@ async fn index(_req: HttpRequest) -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // Build CA
+    println!("Building ssl certificate authenticator");
     let mut builder = SslAcceptor::mozilla_intermediate_v5(SslMethod::tls()).unwrap();
     builder
         .set_private_key_file("/etc/ssl/private/server-key.pem", SslFiletype::PEM)
@@ -18,12 +19,13 @@ async fn main() -> std::io::Result<()> {
         .set_certificate_chain_file("/etc/ssl/private/server-cert.pem")
         .unwrap();
 
+    println!("Building http server");
     HttpServer::new(|| {
         App::new()
             .service(index)
-
     })
     .bind_openssl("0.0.0.0:50000",builder)?
     .run()
     .await
+    println!("Server running!")
 }
