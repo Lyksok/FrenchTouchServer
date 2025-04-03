@@ -27,5 +27,5 @@ async fn main() -> std::io::Result<()> {
     .bind_openssl("0.0.0.0:50000",builder)?
     .run()
     .await
-    println!("Server running!")
+    println!("Server running!");
 }
