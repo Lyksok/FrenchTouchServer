@@ -2,7 +2,7 @@ use super::structs::User;
 use rusqlite::{Connection, params};
 use text_io::read;
 
-pub fn insert_user(conn: Connection, user: User) -> Result<(), std::io::Error> {
+pub fn insert_user(conn: &Connection, user: &User) -> Result<(), std::io::Error> {
     let query = 
         "INSERT INTO User \
         (username,email,password_hash,password_salt,last_connection,creation_date,profile_picture) \
@@ -40,5 +40,5 @@ pub fn dev_insert_user(conn: Connection) -> Result<(), std::io::Error> {
         profile_picture: Some(String::new()),
     };
 
-    insert_user(conn, user)
+    insert_user(&conn, &user)
 }

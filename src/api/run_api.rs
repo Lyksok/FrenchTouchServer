@@ -3,18 +3,31 @@ use actix_web::{get, post, web, App, HttpResponse, HttpRequest, HttpServer, Resp
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use crate::db;
 use std::sync::Mutex;
+use crate::db::structs::User;
 
 struct AppState {
     db: Mutex<rusqlite::Connection>,
 }
 
-#[get("/users/{email}")]
-async fn get_users(
+#[get("/users/select/{email}")]
+async fn get_user_by_email(
     data: web::Data<AppState>,
     email: web::Path<String>
-    ) -> Result<impl Responder, actix_web::Error> {
+) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
     match db::db_select::select_user_by_email(&*conn, &email) {
+        Ok(user) => Ok(HttpResponse::Ok().json(user)),
+        Err(e) => Ok(HttpResponse::InternalServerError().body(format!("Error: {}",e))),
+    }
+}
+
+#[post("/users/insert")]
+async fn insert_user(
+    data: web::Data<AppState>,
+    user_data: web::Json<User>
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_insert::insert_user(&*conn, &user_data) {
         Ok(user) => Ok(HttpResponse::Ok().json(user)),
         Err(e) => Ok(HttpResponse::InternalServerError().body(format!("Error: {}",e))),
     }
@@ -47,7 +60,8 @@ pub async fn run_api() -> std::io::Result<()> {
         App::new()
             .app_data(shared_state.clone())
             .service(index)
-            .service(get_users)
+            .service(get_user_by_email)
+            .service(insert_user)
     })
     .bind_openssl("0.0.0.0:50000",builder)?
     .run()
