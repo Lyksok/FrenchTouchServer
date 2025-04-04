@@ -28,7 +28,7 @@ pub fn select_usernames(conn: Connection) -> Result<Vec<(i32,String)>> {
     Ok(usernames)
 }
 
-pub fn select_user_by_email(conn: Connection, email: &str) -> Result<Option<User>> {
+pub fn select_user_by_email(conn: &Connection, email: &str) -> Result<Option<User>> {
     let mut format = conn.prepare("SELECT id,username,email,password_hash,password_salt,last_connection,creation_date,profile_picture FROM User WHERE email LIKE ?1")?;
     let user_iter = format.query_map(params![email], |row| {
         Ok( User {
@@ -65,5 +65,5 @@ pub fn select_user_by_email(conn: Connection, email: &str) -> Result<Option<User
 pub fn dev_select_user_by_email(conn: Connection) -> Result<Option<User>> {
     print!("Enter searched email: ");
     let input: String = read!();
-    select_user_by_email(conn, &input)
+    select_user_by_email(&conn, &input)
 }
