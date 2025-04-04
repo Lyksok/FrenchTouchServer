@@ -1,4 +1,3 @@
-#[allow(unused_imports)]
 use actix_web::{get, post, web, App, HttpResponse, HttpRequest, HttpServer, Responder};
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use crate::db;
@@ -45,10 +44,10 @@ pub async fn run_api() -> std::io::Result<()> {
     println!("Building ssl certificate authenticator");
     let mut builder = SslAcceptor::mozilla_intermediate_v5(SslMethod::tls()).unwrap();
     builder
-        .set_private_key_file("/etc/ssl/private/server-key.pem", SslFiletype::PEM)
+        .set_private_key_file("/etc/ssl/private/server.key", SslFiletype::PEM)
         .unwrap();
     builder
-        .set_certificate_chain_file("/etc/ssl/private/server-cert.pem")
+        .set_certificate_chain_file("/etc/ssl/private/server.crt")
         .unwrap();
 
     let conn = db::db_utils::open_db("sqlite.db").expect("Could not open database");
