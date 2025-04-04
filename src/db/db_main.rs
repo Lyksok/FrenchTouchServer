@@ -25,8 +25,9 @@ pub fn db_main() -> Result<(), Error> {
             return Ok(println!("{:?}",usernames));
         },
         3 => {
-            let user = db_select::dev_select_user_by_email(conn);
-            return Ok(println!("{:?}", user));
+            let user = db_select::dev_select_user_by_email(conn).expect("Error with rusqlite");
+            let user_json = serde_json::to_string(&user).expect("Could not parse to JSON");
+            return Ok(println!("{}", user_json));
         },
         4 => Ok(db_insert::dev_insert_user(conn)),
         _ => return Ok(()),
