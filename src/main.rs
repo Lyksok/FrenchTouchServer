@@ -6,9 +6,10 @@ use ft_server::db;
 fn main() -> Result<(), Error> {
     println!("Welcome to FrenchTouchServer, what would you like to do ?");
     loop {
+        println!();
         println!("0. Exit");
         println!("1. Run the server");
-        println!("2. Create the database");
+        println!("2. Interact with database");
         print!("Your option (0..2): ");
         let input = read!();
 

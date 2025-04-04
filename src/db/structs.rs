@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct User {
     pub id: i32,
     pub username: String,
@@ -6,7 +6,7 @@ pub struct User {
     pub password_hash: String,
     pub password_salt: String,
     pub last_connection: i32,
-    pub account_creation: i32,
+    pub creation_date: i32,
     pub profile_picture: Option<String>,
 }
 
