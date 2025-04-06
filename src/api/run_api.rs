@@ -25,6 +25,7 @@ async fn insert_user(
     data: web::Data<AppState>,
     user_data: web::Json<User>
 ) -> Result<impl Responder, actix_web::Error> {
+    println!("/users/insert: json={:?}", &user_data);
     let conn = data.db.lock().unwrap();
     match db::db_insert::insert_user(&*conn, &user_data) {
         Ok(user) => Ok(HttpResponse::Ok().json(user)),

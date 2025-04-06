@@ -5,8 +5,8 @@ use text_io::read;
 pub fn insert_user(conn: &Connection, user: &User) -> Result<(), std::io::Error> {
     let query = 
         "INSERT INTO User \
-        (username,email,password_hash,password_salt,last_connection,creation_date,profile_picture) \
-        VALUES (?1,?2,?3,?4,?5,?6,?7)";
+        (username,email,password_hash,password_salt,last_connection,creation_date) \
+        VALUES (?1,?2,?3,?4,?5,?6)";
     conn.execute(query,
         params![
             user.username,
@@ -14,8 +14,7 @@ pub fn insert_user(conn: &Connection, user: &User) -> Result<(), std::io::Error>
             user.password_hash,
             user.password_salt,
             user.last_connection,
-            user.creation_date,
-            user.profile_picture
+            user.creation_date
         ],).expect("insert_user query failed");
     Ok(println!("Successfully added User {:?} in db",user.username))
 }
