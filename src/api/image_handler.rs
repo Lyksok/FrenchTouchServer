@@ -18,7 +18,7 @@ struct UploadForm {
     json: MpJson<Metadata>,
 }
 
-#[post("/image/{path}")]
+#[post("/image")]
 pub async fn save_image_file(
     data: web::Data<AppState>,
     MultipartForm(form): MultipartForm<UploadForm>
