@@ -620,6 +620,7 @@ dependencies = [
  "futures",
  "mime",
  "openssl",
+ "regex",
  "rusqlite",
  "serde",
  "serde_json",
