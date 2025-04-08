@@ -1,11 +1,12 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpRequest, HttpServer, Responder};
+use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use crate::db;
 use std::sync::Mutex;
 use crate::db::structs::User;
+use crate::api::image_handler::save_image_file;
 
-struct AppState {
-    db: Mutex<rusqlite::Connection>,
+pub struct AppState {
+    pub db: Mutex<rusqlite::Connection>,
 }
 
 #[get("/users/select/{email}")]
@@ -33,11 +34,13 @@ async fn insert_user(
     }
 }
 
+/*
 #[get("/")]
 async fn index(_req: HttpRequest) -> impl Responder {
     "Welcome! You are not using this connection as intended. \
         Contact jans.stokmanis@gmail.com for more information."
 }
+*/
 
 #[actix_web::main]
 pub async fn run_api() -> std::io::Result<()> {
@@ -59,9 +62,9 @@ pub async fn run_api() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(shared_state.clone())
-            .service(index)
             .service(get_user_by_email)
             .service(insert_user)
+            .service(save_image_file)
     })
     .bind_openssl("0.0.0.0:50000",builder)?
     .run()
