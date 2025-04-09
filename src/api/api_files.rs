@@ -1,17 +1,13 @@
+use actix_files::NamedFile;
+use std::path::PathBuf;
 use uuid::Uuid;
 use serde::{Deserialize, Serialize};
 use regex::Regex;
 use actix_multipart::form::{ MultipartForm, tempfile::TempFile, json::Json as MpJson };
-use std::fs;
-use actix_web::{post, HttpResponse, Responder};
+use actix_web::{web, get, post, HttpResponse, HttpRequest, Responder};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 struct Metadata {
-    file_name: String,
-}
-
-#[derive(Debug, Serialize)]
-struct JsonResponse {
     file_name: String,
 }
 
@@ -27,26 +23,44 @@ fn sanitize_path(s: &str) -> String {
     re.replace_all(s, "").to_string()
 }
 
-#[post("/image")]
+#[post("/image/post")]
 async fn api_save_image_file(
     MultipartForm(form): MultipartForm<UploadForm>
 ) -> Result<impl Responder, actix_web::Error> {
-    println!("Received new connection for image transfert");
+    println!("POST: image");
     println!("New image: {}, size: {}", form.json.file_name, form.file.size);
 
-    let temp_path = form.file.file.path().to_path_buf();
-    let sanitized = sanitize_path(&form.json.file_name);
-    let new_path = format!("{}-{}", Uuid::new_v4(), sanitized);
-    let path = format!("./images/{}", &new_path);
+    let new_file_name = format!("{}-{}", Uuid::new_v4(), sanitize_path(&form.json.file_name));
+    let path = format!("./images/{}", &new_file_name);
 
-    match fs::copy(&temp_path, &path) {
+    match form.file.file.persist(&path) {
         Ok(_) => println!("File saved at {}", &path),
         Err(e) => println!("Error: {}", e),
     };
 
-    let resp = JsonResponse{
-        file_name: new_path,
+    let resp = Metadata{
+        file_name: new_file_name,
     };
 
     Ok(HttpResponse::Ok().json(resp))
+}
+
+#[get("/image/get/{file_name}")]
+async fn api_get_image_file(
+    req: HttpRequest,
+    file_name: web::Path<String>
+) -> Result<impl Responder, actix_web::Error> {
+    println!("GET: image");
+
+    let path = format!("./images/{}", sanitize_path(&file_name));
+    let file_path = PathBuf::from(&path);
+
+    if file_path.exists() {
+        match NamedFile::open(file_path){
+            Ok(f) => Ok(NamedFile::into_response(f, &req)),
+            Err(_) => Ok(HttpResponse::NotFound().body("Could not open file"))
+        }
+    } else {
+        Ok(HttpResponse::NotFound().body("File not found"))
+    }
 }
