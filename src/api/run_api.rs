@@ -6,7 +6,7 @@ use crate::db;
 use crate::api::api_select::{ api_select_user_by_email };
 use crate::api::api_insert::{ api_insert_user };
 use crate::api::api_update::{ api_update_user_profile_picture };
-use crate::api::api_files::{ api_save_image_file };
+use crate::api::api_files::{ api_save_image_file, api_get_image_file };
 
 pub struct AppState {
     pub db: Mutex<rusqlite::Connection>,
@@ -43,6 +43,7 @@ pub async fn run_api() -> std::io::Result<()> {
             .service(api_select_user_by_email)
             .service(api_insert_user)
             .service(api_save_image_file)
+            .service(api_get_image_file)
             .service(api_update_user_profile_picture)
     })
     .bind_openssl("0.0.0.0:50000",builder)?
