@@ -30,10 +30,11 @@ CREATE TABLE Artist (
 
 CREATE TABLE Song (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    file TEXT NOT NULL,
-    length INTEGER,
+    name TEXT NOT NULL,
+    song_file TEXT NOT NULL,
     nb_of_streams INTEGER DEFAULT 0,
-    cover TEXT,
+    cover_image TEXT,
+    duration INTEGER,
     creation_date INTEGER,
     artist_id INTEGER,
     FOREIGN KEY (artist_id) REFERENCES Artist(id)

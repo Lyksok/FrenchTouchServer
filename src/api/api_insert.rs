@@ -27,7 +27,7 @@ async fn api_insert_song(
 ) -> Result<impl Responder, actix_web::Error> {
     println!("/songs/insert: json={:?}", &song_data);
     let conn = data.db.lock().unwrap();
-    match db::db_insert::insert_user(&*conn, &song_data) {
+    match db::db_insert::insert_song(&*conn, &song_data) {
         Ok(song) => Ok(HttpResponse::Ok().json(song)),
         Err(e) => Ok(HttpResponse::InternalServerError().body(format!("Error: {}",e))),
     }

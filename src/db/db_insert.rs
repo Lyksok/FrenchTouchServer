@@ -1,4 +1,7 @@
-use super::structs::User;
+use super::structs::{
+    User,
+    Song
+};
 use rusqlite::{Connection, params};
 use text_io::read;
 
@@ -17,6 +20,24 @@ pub fn insert_user(conn: &Connection, user: &User) -> Result<(), std::io::Error>
             user.creation_date
         ],).expect("insert_user query failed");
     Ok(println!("Successfully added User {:?} in db",user.username))
+}
+
+pub fn insert_song(conn: &Connection, song: &Song) -> Result<(), std::io::Error> {
+    let query = 
+        "INSERT INTO Song \
+        (file,name,length,nb_of_streams,cover,creation_date,artist_id) \
+        VALUES (?1,?2,?3,?4,?5,?6,?7)";
+    conn.execute(query,
+        params![
+            song.file,
+            song.name,
+            song.length,
+            song.nb_of_streams,
+            song.cover,
+            song.creation_date,
+            song.artist_id
+        ],).expect("insert_user query failed");
+    Ok(println!("Successfully added Song {:?} in db",song.name))
 }
 
 pub fn dev_insert_user(conn: Connection) -> Result<(), std::io::Error> {
