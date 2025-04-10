@@ -26,10 +26,10 @@ async fn api_save_image_file(
 
     // Define the path where the file will be saved
     let mut name = Uuid::new_v4();
-    let mut path: String = format!("./images/{}.png", &name);
+    let mut path: String = format!("./data/images/{}.png", &name);
     while Path::new(&path).try_exists().unwrap() {
         name = Uuid::new_v4();
-        path = format!("./images/{}.png", &name);
+        path = format!("./data/images/{}.png", &name);
     }
 
     // Create and open the file in write mode
@@ -54,7 +54,7 @@ async fn api_get_image_file(
 ) -> Result<impl Responder, actix_web::Error> {
     println!("GET: image");
 
-    let path = format!("./images/{}", sanitize_path(&file_name));
+    let path = format!("./data/images/{}", sanitize_path(&file_name));
     let file_path = PathBuf::from(&path);
 
     if file_path.exists() {
