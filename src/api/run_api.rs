@@ -4,7 +4,10 @@ use std::sync::Mutex;
 
 use crate::db;
 use crate::api::api_select::{ api_select_user_by_email };
-use crate::api::api_insert::{ api_insert_user };
+use crate::api::api_insert::{ 
+    api_insert_user,
+    api_insert_song
+};
 use crate::api::api_update::{ api_update_user_profile_picture };
 use crate::api::api_files::{
     api_save_image_file,
