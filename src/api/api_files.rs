@@ -1,22 +1,16 @@
 use actix_files::NamedFile;
-use std::path::PathBuf;
-use std::fs;
+use futures::StreamExt;
+use std::path::{ Path, PathBuf };
+use std::fs::File;
+use std::io::Write;
 use uuid::Uuid;
 use serde::{Deserialize, Serialize};
 use regex::Regex;
-use actix_multipart::form::{ MultipartForm, tempfile::TempFile, json::Json as MpJson };
 use actix_web::{web, get, post, HttpResponse, HttpRequest, Responder};
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Metadata {
     file_name: String,
-}
-
-#[derive(Debug, MultipartForm)]
-struct UploadForm {
-    #[multipart(limit = "10MB")]
-    json: MpJson<Metadata>,
-    file: TempFile,
 }
 
 fn sanitize_path(s: &str) -> String {
@@ -26,25 +20,31 @@ fn sanitize_path(s: &str) -> String {
 
 #[post("/image/post")]
 async fn api_save_image_file(
-    MultipartForm(form): MultipartForm<UploadForm>
+    mut payload: web::Payload,
 ) -> Result<impl Responder, actix_web::Error> {
     println!("POST: image");
-    println!("New image: {}, size: {}", form.json.file_name, form.file.size);
 
-    let new_file_name = format!("{}-{}", Uuid::new_v4(), sanitize_path(&form.json.file_name));
-    let path = format!("./images/{}", &new_file_name);
+    // Define the path where the file will be saved
+    let mut name = Uuid::new_v4();
+    let mut path: String = format!("./images/{}.png", &name);
+    while Path::new(&path).try_exists().unwrap() {
+        name = Uuid::new_v4();
+        path = format!("./images/{}.png", &name);
+    }
 
-    // Manually copy the file to the destination directory
-    match fs::copy(form.file.file.path(), &path) {
-        Ok(_) => println!("File saved at {}", &path),
-        Err(e) => println!("Error: {}", e),
-    };
+    // Create and open the file in write mode
+    let mut file = web::block(|| File::create(path))
+        .await?
+        .map_err(actix_web::Error::from)?;
 
-    let resp = Metadata{
-        file_name: new_file_name,
-    };
+    // Write the incoming bytes to the file
+    while let Some(chunk) = payload.next().await {
+        let data = chunk?;
+        // Write the chunk to the file
+        let _ = file.write_all(&data);
+    }
 
-    Ok(HttpResponse::Ok().json(resp))
+    Ok(HttpResponse::Ok().body(format!("{}.png",name)))
 }
 
 #[get("/image/get/{file_name}")]
