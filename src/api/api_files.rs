@@ -1,5 +1,6 @@
 use actix_files::NamedFile;
 use std::path::PathBuf;
+use std::fs;
 use uuid::Uuid;
 use serde::{Deserialize, Serialize};
 use regex::Regex;
@@ -33,7 +34,8 @@ async fn api_save_image_file(
     let new_file_name = format!("{}-{}", Uuid::new_v4(), sanitize_path(&form.json.file_name));
     let path = format!("./images/{}", &new_file_name);
 
-    match form.file.file.persist(&path) {
+    // Manually copy the file to the destination directory
+    match fs::copy(form.file.file.path(), &path) {
         Ok(_) => println!("File saved at {}", &path),
         Err(e) => println!("Error: {}", e),
     };
