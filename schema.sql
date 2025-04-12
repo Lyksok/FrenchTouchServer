@@ -28,6 +28,13 @@ CREATE TABLE Artist (
     FOREIGN KEY (user_id) REFERENCES User(id)
 );
 
+CREATE TABLE Collaborator (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    verified INTEGER DEFAULT 0,
+    FOREIGN KEY (user_id) REFERENCES User(id)
+);
+
 CREATE TABLE Song (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
