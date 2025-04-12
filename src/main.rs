@@ -1,7 +1,7 @@
-use std::io::Error;
-use text_io::read;
 use ft_server::api;
 use ft_server::db;
+use std::io::Error;
+use text_io::read;
 
 fn main() -> Result<(), Error> {
     println!("Welcome to FrenchTouchServer, what would you like to do ?");
@@ -17,7 +17,10 @@ fn main() -> Result<(), Error> {
             0 => return Ok(()),
             1 => api::run_api::run_api(),
             2 => db::db_main::db_main(),
-            _ => Ok(println!("Option does not exist.")),
+            _ => {
+                println!("Option does not exist.");
+                Ok(())
+            }
         };
         match e {
             Err(e) => return Err(e),

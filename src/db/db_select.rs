@@ -1,11 +1,11 @@
-use rusqlite::{Connection, Result, params};
 use super::structs::User;
+use rusqlite::{params, Connection, Result};
 use text_io::read;
 
-pub fn select_usernames(conn: Connection) -> Result<Vec<(i32,String)>> {
+pub fn select_usernames(conn: Connection) -> Result<Vec<(i32, String)>> {
     let mut format = conn.prepare("SELECT id, username, email, password_hash, password_salt, last_connection, creation_date, profile_picture FROM User")?;
     let user_iter = format.query_map([], |row| {
-        Ok( User {
+        Ok(User {
             id: row.get(0)?,
             username: row.get(1)?,
             email: String::new(),
@@ -16,11 +16,11 @@ pub fn select_usernames(conn: Connection) -> Result<Vec<(i32,String)>> {
             profile_picture: None,
         })
     })?;
-    
+
     let mut usernames = Vec::new();
     for user in user_iter {
         match user {
-            Ok(user) => usernames.push((user.id,user.username)),
+            Ok(user) => usernames.push((user.id, user.username)),
             Err(e) => return Err(e),
         }
     }
@@ -31,7 +31,7 @@ pub fn select_usernames(conn: Connection) -> Result<Vec<(i32,String)>> {
 pub fn select_user_by_email(conn: &Connection, email: &str) -> Result<Option<User>> {
     let mut format = conn.prepare("SELECT id,username,email,password_hash,password_salt,last_connection,creation_date,profile_picture FROM User WHERE email LIKE ?1")?;
     let user_iter = format.query_map(params![email], |row| {
-        Ok( User {
+        Ok(User {
             id: row.get(0)?,
             username: row.get(1)?,
             email: row.get(2)?,

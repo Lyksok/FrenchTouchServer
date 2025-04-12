@@ -1,20 +1,14 @@
-use actix_web::{web, App, HttpServer };
+use actix_web::{web, App, HttpServer};
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use std::sync::Mutex;
 
-use crate::db;
-use crate::api::api_select::{ api_select_user_by_email };
-use crate::api::api_insert::{ 
-    api_insert_user,
-    api_insert_song
-};
-use crate::api::api_update::{ api_update_user_profile_picture };
 use crate::api::api_files::{
-    api_save_image_file,
-    api_get_image_file,
-    api_save_song_file,
-    api_get_song_file
+    api_get_image_file, api_get_song_file, api_save_image_file, api_save_song_file,
 };
+use crate::api::api_insert::api_insert_user;
+use crate::api::api_select::api_select_user_by_email;
+use crate::api::api_update::api_update_user_profile_picture;
+use crate::db;
 
 pub struct AppState {
     pub db: Mutex<rusqlite::Connection>,
@@ -42,7 +36,9 @@ pub async fn run_api() -> std::io::Result<()> {
 
     let conn = db::db_utils::open_db("sqlite.db").expect("Could not open database");
 
-    let shared_state = web::Data::new(AppState { db: Mutex::new(conn) });
+    let shared_state = web::Data::new(AppState {
+        db: Mutex::new(conn),
+    });
 
     println!("Server running!");
     HttpServer::new(move || {
@@ -56,7 +52,7 @@ pub async fn run_api() -> std::io::Result<()> {
             .service(api_get_song_file)
             .service(api_update_user_profile_picture)
     })
-    .bind_openssl("0.0.0.0:50000",builder)?
+    .bind_openssl("0.0.0.0:50000", builder)?
     .run()
     .await
 }
