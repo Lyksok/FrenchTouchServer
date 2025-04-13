@@ -1,8 +1,11 @@
-use super::structs::{Song, User};
+use super::{
+    db_exist::user_exist_by_id,
+    structs::{Collaborator, Song, User},
+};
 use rusqlite::{params, Connection};
 use text_io::read;
 
-pub fn insert_user(conn: &Connection, user: &User) -> Result<(), std::io::Error> {
+pub fn insert_user(conn: &Connection, user: &User) -> bool {
     let query = "INSERT INTO User \
         (username,email,password_hash,password_salt,last_connection,creation_date) \
         VALUES (?1,?2,?3,?4,?5,?6)";
@@ -17,12 +20,10 @@ pub fn insert_user(conn: &Connection, user: &User) -> Result<(), std::io::Error>
             user.creation_date
         ],
     )
-    .expect("insert_user query failed");
-    println!("Successfully added User {:?} in db", user.username);
-    Ok(())
+    .is_ok()
 }
 
-pub fn insert_song(conn: &Connection, song: &Song) -> Result<(), std::io::Error> {
+pub fn insert_song(conn: &Connection, song: &Song) -> bool {
     let query = "INSERT INTO Song \
         (file,name,length,nb_of_streams,cover,creation_date,artist_id) \
         VALUES (?1,?2,?3,?4,?5,?6,?7)";
@@ -38,12 +39,21 @@ pub fn insert_song(conn: &Connection, song: &Song) -> Result<(), std::io::Error>
             song.artist_id
         ],
     )
-    .expect("insert_user query failed");
-    println!("Successfully added Song {:?} in db", song.name);
-    Ok(())
+    .is_ok()
 }
 
-pub fn dev_insert_user(conn: Connection) -> Result<(), std::io::Error> {
+pub fn insert_collaborator(conn: &Connection, user: &User, collaborator: &Collaborator) -> bool {
+    if !user_exist_by_id(conn, user.id) {
+        return false;
+    }
+    let query = "INSERT INTO Collaborator \
+        (user_id,verified) \
+        VALUES (?1,?2)";
+    conn.execute(query, params![collaborator.user_id, 0,])
+        .is_ok()
+}
+
+pub fn dev_insert_user(conn: Connection) -> bool {
     print!("Username: ");
     let username = read!();
     print!("Email: ");
@@ -62,6 +72,11 @@ pub fn dev_insert_user(conn: Connection) -> Result<(), std::io::Error> {
         creation_date: 0,
         profile_picture: Some(String::new()),
     };
-
-    insert_user(&conn, &user)
+    let res = insert_user(&conn, &user);
+    if res {
+        println!("User inserted !");
+    } else {
+        println!("Could not insert user");
+    }
+    res
 }
