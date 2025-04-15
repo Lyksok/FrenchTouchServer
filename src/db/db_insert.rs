@@ -102,13 +102,13 @@ pub fn insert_album(conn: &Connection, album: &Album) -> Option<i64> {
         return None;
     }
     let query = "INSERT INTO Album \
-        (title,cover,creation_date,artist_id) \
+        (title,cover_image,creation_date,artist_id) \
         VALUES (?1,?2,?3,?4)";
     match conn.execute(
         query,
         params![
             album.title,
-            album.cover,
+            album.cover_image,
             album.creation_date,
             album.artist_id,
         ],
@@ -123,13 +123,13 @@ pub fn insert_playlist(conn: &Connection, playlist: &Playlist) -> Option<i64> {
         return None;
     }
     let query = "INSERT INTO Playlist \
-        (title,cover,creation_date,user_id) \
+        (title,cover_image,creation_date,user_id) \
         VALUES (?1,?2,?3,?4)";
     match conn.execute(
         query,
         params![
             playlist.title,
-            playlist.cover,
+            playlist.cover_image,
             playlist.creation_date,
             playlist.user_id,
         ],
