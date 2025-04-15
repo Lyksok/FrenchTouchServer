@@ -23,3 +23,11 @@ pub fn artist_exist_by_id(conn: &Connection, id: i64) -> bool {
     })
     .is_ok()
 }
+
+pub fn song_exist_by_id(conn: &Connection, id: i64) -> bool {
+    conn.query_row("SELECT id FROM Song WHERE id=?1", [id], |row| {
+        let res: i64 = row.get(0)?;
+        Ok(res)
+    })
+    .is_ok()
+}

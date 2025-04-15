@@ -1,4 +1,4 @@
-use super::structs::{Admin, Album, Artist, Collaborator, Playlist, Song, User};
+use super::structs::{Admin, Album, Artist, Collaborator, Playlist, Song, User, UserLikesSong};
 use crate::db;
 use rusqlite::{params, Connection};
 use text_io::read;
@@ -133,6 +133,24 @@ pub fn insert_playlist(conn: &Connection, playlist: &Playlist) -> Option<i64> {
             playlist.creation_date,
             playlist.user_id,
         ],
+    ) {
+        Ok(_) => Some(conn.last_insert_rowid()),
+        Err(_) => None,
+    }
+}
+
+pub fn insert_user_likes_song(conn: &Connection, user_likes_song: &UserLikesSong) -> Option<i64> {
+    if !db::db_exist::user_exist_by_id(conn, user_likes_song.user_id)
+        || !db::db_exist::song_exist_by_id(conn, user_likes_song.song_id)
+    {
+        return None;
+    }
+    let query = "INSERT INTO UserLikesSong \
+        (user_id,song_id) \
+        VALUES (?1,?2)";
+    match conn.execute(
+        query,
+        params![user_likes_song.user_id, user_likes_song.song_id,],
     ) {
         Ok(_) => Some(conn.last_insert_rowid()),
         Err(_) => None,
