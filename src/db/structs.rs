@@ -98,13 +98,6 @@ pub struct UserLikesPlaylist {
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct UserListensSong {
-    user_id: i64,
-    song_id: i64,
-}
-
-#[allow(dead_code)]
-#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SongAlbum {
     song_id: i64,
     album_id: i64,
