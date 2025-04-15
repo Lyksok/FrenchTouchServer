@@ -9,7 +9,7 @@ async fn api_select_user_by_email(
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
     match db::db_select::select_user_by_email(&conn, &email) {
-        Ok(user) => Ok(HttpResponse::Ok().json(user)),
-        Err(e) => Ok(HttpResponse::InternalServerError().body(format!("Error: {}", e))),
+        Some(user) => Ok(HttpResponse::Ok().json(user)),
+        None => Ok(HttpResponse::InternalServerError().body("Could not find the user")),
     }
 }

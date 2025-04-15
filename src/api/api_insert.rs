@@ -2,33 +2,122 @@ use actix_web::{post, web, HttpResponse, Responder};
 
 use crate::api::run_api::AppState;
 use crate::db;
-use crate::db::structs::{Song, User};
+use crate::db::structs::{Album, Artist, Collaborator, Playlist, Song, User};
 
-#[post("/users/insert")]
+#[post("/user/insert")]
 async fn api_insert_user(
     data: web::Data<AppState>,
-    user_data: web::Json<User>,
+    mut user_data: web::Json<User>,
 ) -> Result<impl Responder, actix_web::Error> {
     println!("/users/insert: json={:?}", &user_data);
     let conn = data.db.lock().unwrap();
     match db::db_insert::insert_user(&conn, &user_data) {
-        true => {
-            Ok(HttpResponse::Ok()
-                .json(db::db_select::select_user_by_email(&conn, &user_data.email)))
+        Some(id) => {
+            user_data.id = id;
+            println!("[INSERT] User {:?}", user_data);
+            Ok(HttpResponse::Ok().json(user_data))
         }
-        false => Ok(HttpResponse::InternalServerError().body(format!("Could not insert user."))),
+        None => {
+            println!("[ERROR] Could not insert user {:?}", user_data);
+            Ok(HttpResponse::InternalServerError().body("Could not insert user."))
+        }
     }
 }
 
-#[post("/songs/insert")]
+#[post("/artist/insert")]
+async fn api_insert_artist(
+    data: web::Data<AppState>,
+    mut artist_data: web::Json<Artist>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_insert::insert_artist(&conn, &artist_data) {
+        Some(id) => {
+            artist_data.id = id;
+            println!("[INSERT] Artist {:?}", artist_data);
+            Ok(HttpResponse::Ok().json(artist_data))
+        }
+        None => {
+            println!("[ERROR] Could not insert artist {:?}", artist_data);
+            Ok(HttpResponse::InternalServerError().body("Could not insert artist."))
+        }
+    }
+}
+
+#[post("/collaborator/insert")]
+async fn api_insert_collaborator(
+    data: web::Data<AppState>,
+    mut collaborator_data: web::Json<Collaborator>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_insert::insert_collaborator(&conn, &collaborator_data) {
+        Some(id) => {
+            collaborator_data.id = id;
+            println!("[INSERT] Collaborator {:?}", collaborator_data);
+            Ok(HttpResponse::Ok().json(collaborator_data))
+        }
+        None => {
+            println!(
+                "[ERROR] Could not insert collaborator {:?}",
+                collaborator_data
+            );
+            Ok(HttpResponse::InternalServerError().body("Could not insert collaborator."))
+        }
+    }
+}
+
+#[post("/song/insert")]
 async fn api_insert_song(
     data: web::Data<AppState>,
-    song_data: web::Json<Song>,
+    mut song_data: web::Json<Song>,
 ) -> Result<impl Responder, actix_web::Error> {
-    println!("/songs/insert: json={:?}", &song_data);
     let conn = data.db.lock().unwrap();
     match db::db_insert::insert_song(&conn, &song_data) {
-        Ok(song) => Ok(HttpResponse::Ok().json(song)),
-        Err(e) => Ok(HttpResponse::InternalServerError().body(format!("Error: {}", e))),
+        Some(id) => {
+            song_data.id = id;
+            println!("[INSERT] Song {:?}", song_data);
+            Ok(HttpResponse::Ok().json(song_data))
+        }
+        None => {
+            println!("[ERROR] Could not insert song {:?}", song_data);
+            Ok(HttpResponse::InternalServerError().body("Could not insert song"))
+        }
+    }
+}
+
+#[post("/album/insert")]
+async fn api_insert_album(
+    data: web::Data<AppState>,
+    mut album_data: web::Json<Album>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_insert::insert_album(&conn, &album_data) {
+        Some(id) => {
+            album_data.id = id;
+            println!("[INSERT] Album {:?}", album_data);
+            Ok(HttpResponse::Ok().json(album_data))
+        }
+        None => {
+            println!("[ERROR] Could not insert album {:?}", album_data);
+            Ok(HttpResponse::InternalServerError().body("Could not insert album"))
+        }
+    }
+}
+
+#[post("/playlist/insert")]
+async fn api_insert_playlist(
+    data: web::Data<AppState>,
+    mut playlist_data: web::Json<Playlist>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_insert::insert_playlist(&conn, &playlist_data) {
+        Some(id) => {
+            playlist_data.id = id;
+            println!("[INSERT] Playlist {:?}", playlist_data);
+            Ok(HttpResponse::Ok().json(playlist_data))
+        }
+        None => {
+            println!("[ERROR] Could not insert playlist {:?}", playlist_data);
+            Ok(HttpResponse::InternalServerError().body("Could not insert playlist"))
+        }
     }
 }

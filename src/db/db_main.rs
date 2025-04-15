@@ -18,22 +18,27 @@ pub fn db_main() -> Result<(), Error> {
     }
     print!("Your choice (0..{}): ", queries.len() - 1);
     let e = match read!() {
-        0 => return Ok(()),
-        1 => Ok(db_create::create_db(conn)),
+        0 => Ok(()),
+        1 => db_create::create_db(conn),
         2 => {
             let usernames = db_select::select_usernames(conn);
-            return Ok(println!("{:?}", usernames));
+            println!("{:?}", usernames);
+            Ok(())
         }
         3 => {
             let user = db_select::dev_select_user_by_email(conn).expect("Error with rusqlite");
             let user_json = serde_json::to_string(&user).expect("Could not parse to JSON");
-            return Ok(println!("{}", user_json));
+            println!("{}", user_json);
+            Ok(())
         }
-        4 => Ok(db_insert::dev_insert_user(conn)),
-        _ => return Ok(()),
+        4 => {
+            db_insert::dev_insert_user(conn);
+            Ok(())
+        }
+        _ => Ok(()),
     };
     match e {
-        Err(e) => return Err(e),
-        Ok(_) => return Ok(()),
+        Err(e) => Err(e),
+        Ok(_) => Ok(()),
     }
 }
