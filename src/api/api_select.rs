@@ -2,7 +2,7 @@ use crate::api::run_api::AppState;
 use crate::db;
 use actix_web::{get, web, HttpResponse, Responder};
 
-#[get("/users/select/{email}")]
+#[get("/user/select/email/{email}")]
 async fn api_select_user_by_email(
     data: web::Data<AppState>,
     email: web::Path<String>,

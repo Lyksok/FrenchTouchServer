@@ -37,7 +37,7 @@ CREATE TABLE Collaborator (
 
 CREATE TABLE Song (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
+    title TEXT NOT NULL,
     song_file TEXT NOT NULL,
     nb_of_streams INTEGER DEFAULT 0,
     cover_image TEXT,

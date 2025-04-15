@@ -46,7 +46,7 @@ pub struct Collaborator {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Song {
     pub id: i64,
-    pub name: String,
+    pub title: String,
     pub song_file: Option<String>,
     pub nb_of_streams: i32,
     pub cover_image: Option<String>,

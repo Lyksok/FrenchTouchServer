@@ -78,12 +78,12 @@ pub fn insert_collaborator(conn: &Connection, collaborator: &Collaborator) -> Op
 
 pub fn insert_song(conn: &Connection, song: &Song) -> Option<i64> {
     let query = "INSERT INTO Song \
-        (name,song_file,nb_of_streams,cover_image,duration,creation_date,artist_id) \
+        (title,song_file,nb_of_streams,cover_image,duration,creation_date,artist_id) \
         VALUES (?1,?2,?3,?4,?5,?6,?7)";
     match conn.execute(
         query,
         params![
-            song.name,
+            song.title,
             song.song_file,
             song.nb_of_streams,
             song.cover_image,

@@ -2,7 +2,7 @@ use actix_web::{post, web, HttpResponse, Responder};
 
 use crate::api::run_api::AppState;
 use crate::db;
-use crate::db::structs::{Album, Artist, Collaborator, Playlist, Song, User};
+use crate::db::structs::{Album, Artist, Collaborator, Playlist, Song, User, UserLikesSong};
 
 #[post("/user/insert")]
 async fn api_insert_user(
@@ -118,6 +118,24 @@ async fn api_insert_playlist(
         None => {
             println!("[ERROR] Could not insert playlist {:?}", playlist_data);
             Ok(HttpResponse::InternalServerError().body("Could not insert playlist"))
+        }
+    }
+}
+
+#[post("/user-likes-song/insert")]
+async fn api_insert_user_likes_song(
+    data: web::Data<AppState>,
+    uls_data: web::Json<UserLikesSong>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_insert::insert_user_likes_song(&conn, &uls_data) {
+        Some(_) => {
+            println!("[INSERT] User likes song {:?}", uls_data);
+            Ok(HttpResponse::Ok().body(""))
+        }
+        None => {
+            println!("[ERROR] Could not insert user likes song {:?}", uls_data);
+            Ok(HttpResponse::InternalServerError().body("Could not insert user likes song"))
         }
     }
 }
