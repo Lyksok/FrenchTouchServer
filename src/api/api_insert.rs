@@ -12,8 +12,11 @@ async fn api_insert_user(
     println!("/users/insert: json={:?}", &user_data);
     let conn = data.db.lock().unwrap();
     match db::db_insert::insert_user(&conn, &user_data) {
-        Ok(user) => Ok(HttpResponse::Ok().json(user)),
-        Err(e) => Ok(HttpResponse::InternalServerError().body(format!("Error: {}", e))),
+        true => {
+            Ok(HttpResponse::Ok()
+                .json(db::db_select::select_user_by_email(&conn, &user_data.email)))
+        }
+        false => Ok(HttpResponse::InternalServerError().body(format!("Could not insert user."))),
     }
 }
 

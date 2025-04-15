@@ -1,10 +1,13 @@
 use super::structs::User;
-use rusqlite::{params, Connection, Result};
+use rusqlite::{params, Connection};
 use text_io::read;
 
-pub fn select_usernames(conn: Connection) -> Result<Vec<(i32, String)>> {
-    let mut format = conn.prepare("SELECT id, username, email, password_hash, password_salt, last_connection, creation_date, profile_picture FROM User")?;
-    let user_iter = format.query_map([], |row| {
+pub fn select_usernames(conn: Connection) -> Option<Vec<(i32, String)>> {
+    let mut format = match conn.prepare("SELECT id, username, email, password_hash, password_salt, last_connection, creation_date, profile_picture FROM User") {
+        Ok(fmt) => fmt,
+        Err(_) => return None,
+    };
+    let user_iter = match format.query_map([], |row| {
         Ok(User {
             id: row.get(0)?,
             username: row.get(1)?,
@@ -15,22 +18,29 @@ pub fn select_usernames(conn: Connection) -> Result<Vec<(i32, String)>> {
             creation_date: 0,
             profile_picture: None,
         })
-    })?;
+    }) {
+        Ok(it) => it,
+        Err(_) => return None,
+    };
 
     let mut usernames = Vec::new();
     for user in user_iter {
         match user {
             Ok(user) => usernames.push((user.id, user.username)),
-            Err(e) => return Err(e),
+            Err(_) => return None,
         }
     }
 
-    Ok(usernames)
+    Some(usernames)
 }
 
-pub fn select_user_by_email(conn: &Connection, email: &str) -> Result<Option<User>> {
-    let mut format = conn.prepare("SELECT id,username,email,password_hash,password_salt,last_connection,creation_date,profile_picture FROM User WHERE email LIKE ?1")?;
-    let user_iter = format.query_map(params![email], |row| {
+pub fn select_user_by_email(conn: &Connection, email: &str) -> Option<User> {
+    let mut format = match conn.prepare("SELECT id,username,email,password_hash,password_salt,last_connection,creation_date,profile_picture FROM User WHERE email LIKE ?1") {
+        Ok(fmt) => fmt,
+        Err(_) => return None,
+    };
+
+    let user_iter = match format.query_map(params![email], |row| {
         Ok(User {
             id: row.get(0)?,
             username: row.get(1)?,
@@ -41,28 +51,31 @@ pub fn select_user_by_email(conn: &Connection, email: &str) -> Result<Option<Use
             creation_date: row.get(6)?,
             profile_picture: row.get(7)?,
         })
-    })?;
+    }) {
+        Ok(it) => it,
+        Err(_) => return None,
+    };
 
     let mut users = Vec::new();
     for user in user_iter {
         match user {
             Ok(user) => users.push(user),
-            Err(e) => return Err(e),
+            Err(_) => return None,
         }
     }
     match users.len() {
         0 => {
             println!("No user found");
-            Ok(None)
+            None
         }
         n => {
             println!("{} user(s) found", n);
-            Ok(Some(users[0].clone()))
+            Some(users[0].clone())
         }
     }
 }
 
-pub fn dev_select_user_by_email(conn: Connection) -> Result<Option<User>> {
+pub fn dev_select_user_by_email(conn: Connection) -> Option<User> {
     print!("Enter searched email: ");
     let input: String = read!();
     select_user_by_email(&conn, &input)
