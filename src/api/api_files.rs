@@ -18,7 +18,7 @@ fn sanitize_path(s: &str) -> String {
     re.replace_all(s, "").to_string()
 }
 
-#[post("/image/post")]
+#[post("/post/image")]
 async fn api_save_image_file(
     mut payload: web::Payload,
 ) -> Result<impl Responder, actix_web::Error> {
@@ -47,7 +47,7 @@ async fn api_save_image_file(
     Ok(HttpResponse::Ok().body(format!("{}.png", name)))
 }
 
-#[get("/image/get/{file_name}")]
+#[get("/get/image/{file_name}")]
 async fn api_get_image_file(
     req: HttpRequest,
     file_name: web::Path<String>,
@@ -67,7 +67,7 @@ async fn api_get_image_file(
     }
 }
 
-#[post("/song/post")]
+#[post("/post/song")]
 async fn api_save_song_file(mut payload: web::Payload) -> Result<impl Responder, actix_web::Error> {
     println!("POST: image");
 
@@ -94,7 +94,7 @@ async fn api_save_song_file(mut payload: web::Payload) -> Result<impl Responder,
     Ok(HttpResponse::Ok().body(format!("{}.mp3", name)))
 }
 
-#[get("/song/get/{file_name}")]
+#[get("/get/song/{file_name}")]
 async fn api_get_song_file(
     req: HttpRequest,
     file_name: web::Path<String>,

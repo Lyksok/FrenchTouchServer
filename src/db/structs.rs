@@ -29,7 +29,7 @@ pub struct Artist {
     pub id: i64,
     pub user_id: i64,
     pub nb_of_streams: i32,
-    pub biographie: Option<String>,
+    pub biography: Option<String>,
     pub url: Option<String>,
     pub verified: bool,
 }
@@ -50,8 +50,8 @@ pub struct Song {
     pub song_file: Option<String>,
     pub nb_of_streams: i32,
     pub cover_image: Option<String>,
-    pub duration: i32,
-    pub creation_date: i32,
+    pub duration: Option<i32>,
+    pub creation_date: Option<i32>,
     pub artist_id: i64,
 }
 
@@ -60,8 +60,8 @@ pub struct Song {
 pub struct Album {
     pub id: i64,
     pub title: String,
-    pub cover: Option<String>,
-    pub creation_date: i32,
+    pub cover_image: Option<String>,
+    pub creation_date: Option<i32>,
     pub artist_id: i64,
 }
 
@@ -70,8 +70,8 @@ pub struct Album {
 pub struct Playlist {
     pub id: i64,
     pub title: String,
-    pub cover: Option<String>,
-    pub creation_date: i32,
+    pub cover_image: Option<String>,
+    pub creation_date: Option<i32>,
     pub user_id: i64,
 }
 

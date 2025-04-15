@@ -4,7 +4,7 @@ use crate::api::run_api::AppState;
 use crate::db;
 use crate::db::structs::{Album, Artist, Collaborator, Playlist, Song, User, UserLikesSong};
 
-#[post("/user/insert")]
+#[post("/insert/user")]
 async fn api_insert_user(
     data: web::Data<AppState>,
     mut user_data: web::Json<User>,
@@ -24,7 +24,7 @@ async fn api_insert_user(
     }
 }
 
-#[post("/artist/insert")]
+#[post("/insert/artist")]
 async fn api_insert_artist(
     data: web::Data<AppState>,
     mut artist_data: web::Json<Artist>,
@@ -43,7 +43,7 @@ async fn api_insert_artist(
     }
 }
 
-#[post("/collaborator/insert")]
+#[post("/insert/collaborator")]
 async fn api_insert_collaborator(
     data: web::Data<AppState>,
     mut collaborator_data: web::Json<Collaborator>,
@@ -65,7 +65,7 @@ async fn api_insert_collaborator(
     }
 }
 
-#[post("/song/insert")]
+#[post("/insert/song")]
 async fn api_insert_song(
     data: web::Data<AppState>,
     mut song_data: web::Json<Song>,
@@ -84,7 +84,7 @@ async fn api_insert_song(
     }
 }
 
-#[post("/album/insert")]
+#[post("/insert/album")]
 async fn api_insert_album(
     data: web::Data<AppState>,
     mut album_data: web::Json<Album>,
@@ -103,7 +103,7 @@ async fn api_insert_album(
     }
 }
 
-#[post("/playlist/insert")]
+#[post("/insert/playlist")]
 async fn api_insert_playlist(
     data: web::Data<AppState>,
     mut playlist_data: web::Json<Playlist>,
@@ -122,7 +122,7 @@ async fn api_insert_playlist(
     }
 }
 
-#[post("/user-likes-song/insert")]
+#[post("/insert/user-likes-song")]
 async fn api_insert_user_likes_song(
     data: web::Data<AppState>,
     uls_data: web::Json<UserLikesSong>,

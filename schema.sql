@@ -22,7 +22,7 @@ CREATE TABLE Artist (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER,
     nb_of_streams INTEGER DEFAULT 0,
-    biographie TEXT,
+    biography TEXT,
     url TEXT,
     verified INTEGER DEFAULT 0,
     FOREIGN KEY (user_id) REFERENCES User(id)
@@ -50,7 +50,7 @@ CREATE TABLE Song (
 CREATE TABLE Album (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
-    cover TEXT,
+    cover_image TEXT,
     creation_date INTEGER,
     artist_id INTEGER,
     FOREIGN KEY (artist_id) REFERENCES Artist(id)
@@ -59,7 +59,7 @@ CREATE TABLE Album (
 CREATE TABLE Playlist (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
-    cover TEXT,
+    cover_image TEXT,
     creation_date INTEGER,
     user_id INTEGER,
     FOREIGN KEY (user_id) REFERENCES User(id)

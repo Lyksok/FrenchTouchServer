@@ -46,14 +46,14 @@ pub fn insert_artist(conn: &Connection, artist: &Artist) -> Option<i64> {
         return None;
     }
     let query = "INSERT INTO Artist \
-        (user_id,nb_of_streams,biographie,url,verified) \
+        (user_id,nb_of_streams,biography,url,verified) \
         VALUES (?1,?2,?3,?4,?5)";
     match conn.execute(
         query,
         params![
             artist.user_id,
             artist.nb_of_streams,
-            artist.biographie,
+            artist.biography,
             artist.url,
             artist.verified,
         ],

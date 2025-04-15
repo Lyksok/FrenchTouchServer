@@ -4,7 +4,7 @@ use crate::api::run_api::AppState;
 use crate::db;
 use crate::db::structs::User;
 
-#[post("/users/update/profile_picture/{email}")]
+#[post("/update/user/profile-picture/{email}")]
 async fn api_update_user_profile_picture(
     data: web::Data<AppState>,
     user_data: web::Json<User>,
