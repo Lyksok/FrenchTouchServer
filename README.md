@@ -6,18 +6,18 @@ French Touch Server is a server written in Rust. Its purpose is to give French T
 
 ## INSERT
 
-- [X] User               (/user/insert)
-- [X] Artist             (/artist/insert)
-- [X] Collaborator       (/collaborator/insert)
-- [X] Song               (/song/insert)
-- [X] Album              (/album/insert)
-- [X] Playlist           (/playlist/insert)
-- [X] UserLikesSong      (/user-likes-song/insert)
-- [ ] UserLikesAlbum     (/user-likes-album/insert)
-- [ ] UserLikesPlaylist  (/user-likes-playlist/insert)
-- [ ] SongAlbum          (/song-album/insert)
-- [ ] SongPlaylist       (/song-playlist/insert)
-- [ ] History            (/history/insert)
+- [X] User               <p align="right">(/user/insert)</p>
+- [X] Artist             <p align="right">(/artist/insert)</p>
+- [X] Collaborator       <p align="right">(/collaborator/insert)</p>
+- [X] Song               <p align="right">(/song/insert)</p>
+- [X] Album              <p align="right">(/album/insert)</p>
+- [X] Playlist           <p align="right">(/playlist/insert)</p>
+- [X] UserLikesSong      <p align="right">(/user-likes-song/insert)</p>
+- [ ] UserLikesAlbum     <p align="right">(/user-likes-album/insert)</p>
+- [ ] UserLikesPlaylist  <p align="right">(/user-likes-playlist/insert)</p>
+- [ ] SongAlbum          <p align="right">(/song-album/insert)</p>
+- [ ] SongPlaylist       <p align="right">(/song-playlist/insert)</p>
+- [ ] History            <p align="right">(/history/insert)</p>
 
 ## FILES
 
