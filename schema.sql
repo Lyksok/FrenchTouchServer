@@ -106,10 +106,10 @@ CREATE TABLE SongPlaylist (
 );
 
 CREATE TABLE History (
-    user_id INTEGER
+    user_id INTEGER,
     song_id INTEGER,
     time INTEGER,
     PRIMARY KEY (user_id, song_id, time),
     FOREIGN KEY (user_id) REFERENCES User(id),
-    FOREIGN KEY (song_id) REFERENCES Song(id),
+    FOREIGN KEY (song_id) REFERENCES Song(id)
 );
