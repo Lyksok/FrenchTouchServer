@@ -94,6 +94,22 @@ async fn api_select_artist_by_username(
     }
 }
 
+#[get("/select/artist/user_id/{user_id}")]
+async fn api_select_artist_by_user_id(
+    data: web::Data<AppState>,
+    id: web::Path<String>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    let id = match id.parse::<i64>() {
+        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
+        Ok(id) => id,
+    };
+    match db::db_select::select_artist_by_user_id(&conn, id) {
+        Some(artists) => Ok(HttpResponse::Ok().json(artists)),
+        None => Ok(HttpResponse::InternalServerError().body("Could not find the artist")),
+    }
+}
+
 #[get("/select/collaborator/email/{email}")]
 async fn api_select_collaborator_by_email(
     data: web::Data<AppState>,
