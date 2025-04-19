@@ -20,7 +20,7 @@ use crate::api::api_select::{
     api_select_user_likes_playlist_by_playlist_id, api_select_user_likes_playlist_by_user_id,
     api_select_user_likes_song_by_song_id, api_select_user_likes_song_by_user_id,
 };
-use crate::api::api_update::api_update_user_profile_picture;
+use crate::api::api_update::{api_update_user_last_connection, api_update_user_profile_picture};
 use crate::db;
 
 pub struct AppState {
@@ -93,6 +93,7 @@ pub async fn run_api() -> std::io::Result<()> {
             .service(api_save_song_file)
             .service(api_get_song_file)
             .service(api_update_user_profile_picture)
+            .service(api_update_user_last_connection)
     })
     .bind_openssl("0.0.0.0:50000", builder)?
     .run()
