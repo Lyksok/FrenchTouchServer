@@ -13,11 +13,11 @@ French Touch Server is a server written in Rust. Its purpose is to give French T
 - [X] /insert/album
 - [X] /insert/playlist
 - [X] /insert/user-likes-song
-- [ ] /insert/user-likes-album
-- [ ] /insert/user-likes-playlist
-- [ ] /insert/song-album
-- [ ] /insert/song-playlist
-- [ ] /insert/history
+- [X] /insert/user-likes-album
+- [X] /insert/user-likes-playlist
+- [X] /insert/song-album
+- [X] /insert/song-playlist
+- [X] /insert/history
 
 ## FILES
 
@@ -121,22 +121,6 @@ French Touch Server is a server written in Rust. Its purpose is to give French T
 
 ## DELETE
 
-### User
-### Artist
-### Collaborator
-### Song
-### Album
-### Playlist
-### UserLikesSong
-### UserLikesAlbum
-### UserLikesPlaylist
-### SongAlbum
-### SongPlaylist
-### History
-
-# DB access
-
-### Admin
 ### User
 ### Artist
 ### Collaborator

@@ -85,35 +85,35 @@ pub struct UserLikesSong {
 #[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserLikesAlbum {
-    user_id: i64,
-    album_id: i64,
+    pub user_id: i64,
+    pub album_id: i64,
 }
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserLikesPlaylist {
-    user_id: i64,
-    playlist_id: i64,
+    pub user_id: i64,
+    pub playlist_id: i64,
 }
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SongAlbum {
-    song_id: i64,
-    album_id: i64,
+    pub song_id: i64,
+    pub album_id: i64,
 }
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SongPlaylist {
-    song_id: i64,
-    playlist_id: i64,
+    pub song_id: i64,
+    pub playlist_id: i64,
 }
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct History {
-    user_id: i64,
-    song_id: i64,
-    time: i32,
+    pub user_id: i64,
+    pub song_id: i64,
+    pub time: i32,
 }

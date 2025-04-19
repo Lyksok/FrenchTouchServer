@@ -1,4 +1,7 @@
-use super::structs::{Admin, Album, Artist, Collaborator, Playlist, Song, User, UserLikesSong};
+use super::structs::{
+    Admin, Album, Artist, Collaborator, History, Playlist, Song, SongAlbum, SongPlaylist, User,
+    UserLikesAlbum, UserLikesPlaylist, UserLikesSong,
+};
 use crate::db;
 use rusqlite::{params, Connection};
 use text_io::read;
@@ -151,6 +154,99 @@ pub fn insert_user_likes_song(conn: &Connection, user_likes_song: &UserLikesSong
     match conn.execute(
         query,
         params![user_likes_song.user_id, user_likes_song.song_id,],
+    ) {
+        Ok(_) => Some(conn.last_insert_rowid()),
+        Err(_) => None,
+    }
+}
+
+pub fn insert_user_likes_album(
+    conn: &Connection,
+    user_likes_album: &UserLikesAlbum,
+) -> Option<i64> {
+    if !db::db_exist::user_exist_by_id(conn, user_likes_album.user_id)
+        || !db::db_exist::album_exist_by_id(conn, user_likes_album.album_id)
+    {
+        return None;
+    }
+    let query = "INSERT INTO UserLikesAlbum \
+        (user_id,album_id) \
+        VALUES (?1,?2)";
+    match conn.execute(
+        query,
+        params![user_likes_album.user_id, user_likes_album.album_id,],
+    ) {
+        Ok(_) => Some(conn.last_insert_rowid()),
+        Err(_) => None,
+    }
+}
+
+pub fn insert_user_likes_playlist(
+    conn: &Connection,
+    user_likes_playlist: &UserLikesPlaylist,
+) -> Option<i64> {
+    if !db::db_exist::user_exist_by_id(conn, user_likes_playlist.user_id)
+        || !db::db_exist::playlist_exist_by_id(conn, user_likes_playlist.playlist_id)
+    {
+        return None;
+    }
+    let query = "INSERT INTO UserLikesPlaylist \
+        (user_id,playlist_id) \
+        VALUES (?1,?2)";
+    match conn.execute(
+        query,
+        params![user_likes_playlist.user_id, user_likes_playlist.playlist_id,],
+    ) {
+        Ok(_) => Some(conn.last_insert_rowid()),
+        Err(_) => None,
+    }
+}
+
+pub fn insert_song_album(conn: &Connection, song_album: &SongAlbum) -> Option<i64> {
+    if !db::db_exist::song_exist_by_id(conn, song_album.song_id)
+        || !db::db_exist::album_exist_by_id(conn, song_album.album_id)
+    {
+        return None;
+    }
+    let query = "INSERT INTO SongAlbum \
+        (song_id,album_id) \
+        VALUES (?1,?2)";
+    match conn.execute(query, params![song_album.song_id, song_album.album_id,]) {
+        Ok(_) => Some(conn.last_insert_rowid()),
+        Err(_) => None,
+    }
+}
+
+pub fn insert_song_playlist(conn: &Connection, song_playlist: &SongPlaylist) -> Option<i64> {
+    if !db::db_exist::song_exist_by_id(conn, song_playlist.song_id)
+        || !db::db_exist::playlist_exist_by_id(conn, song_playlist.playlist_id)
+    {
+        return None;
+    }
+    let query = "INSERT INTO SongPlaylist \
+        (song_id,playlist_id) \
+        VALUES (?1,?2)";
+    match conn.execute(
+        query,
+        params![song_playlist.song_id, song_playlist.playlist_id,],
+    ) {
+        Ok(_) => Some(conn.last_insert_rowid()),
+        Err(_) => None,
+    }
+}
+
+pub fn insert_history(conn: &Connection, history: &History) -> Option<i64> {
+    if !db::db_exist::user_exist_by_id(conn, history.user_id)
+        || !db::db_exist::song_exist_by_id(conn, history.song_id)
+    {
+        return None;
+    }
+    let query = "INSERT INTO History \
+        (user_id,song_id,time) \
+        VALUES (?1,?2,?3)";
+    match conn.execute(
+        query,
+        params![history.user_id, history.song_id, history.time],
     ) {
         Ok(_) => Some(conn.last_insert_rowid()),
         Err(_) => None,
