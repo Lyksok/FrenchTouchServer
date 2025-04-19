@@ -29,7 +29,7 @@ French Touch Server is a server written in Rust. Its purpose is to give French T
 ## SELECT
 
 ### Admin
-- [ ] /select/admin/email/{email}
+- [X] /select/admin/email/{email}
 
 ### User
 - [X] /select/user/email/{email}
