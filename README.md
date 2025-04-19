@@ -33,55 +33,56 @@ French Touch Server is a server written in Rust. Its purpose is to give French T
 
 ### User
 - [X] /select/user/email/{email}
-- [ ] /select/user/id/{id}
-- [ ] /select/user/username/{username}
+- [X] /select/user/id/{id}
+- [X] /select/user/username/{username}
 
 ### Artist 
-- [ ] /select/artist/email/{email}
-- [ ] /select/artist/id/{id}
-- [ ] /select/artist/username/{username}
+- [X] /select/artist/email/{email}
+- [X] /select/artist/id/{id}
+- [X] /select/artist/username/{username}
 
 ### Collaborator
-- [ ] /select/collaborator/email/{email}
-- [ ] /select/collaborator/id/{id}
+- [X] /select/collaborator/email/{email}
+- [X] /select/collaborator/id/{id}
 
 ### Song
-- [ ] /select/song/id/{id}
-- [ ] /select/song/title/{title}
-- [ ] /select/song/artist-id/{artist-id}
+- [X] /select/song/id/{id}
+- [X] /select/song/title/{title}
+- [X] /select/song/artist-id/{artist-id}
 
 ### Album
-- [ ] /select/album/id/{id}
-- [ ] /select/album/title/{title}
-- [ ] /select/album/artist-id/{artist-id}
+- [X] /select/album/id/{id}
+- [X] /select/album/title/{title}
+- [X] /select/album/artist-id/{artist-id}
 
 ### Playlist
-- [ ] /select/playlist/id/{id}
-- [ ] /select/playlist/title/{title}
-- [ ] /select/playlist/user-id/{user-id}
+- [X] /select/playlist/id/{id}
+- [X] /select/playlist/title/{title}
+- [X] /select/playlist/user-id/{user-id}
 
 ### UserLikesSong
-- [ ] /select/user-likes-song/user-id/{user-id}
-- [ ] /select/user-likes-song/song-id/{song-id}
+- [X] /select/user-likes-song/user-id/{user-id}
+- [X] /select/user-likes-song/song-id/{song-id}
 
 ### UserLikesAlbum
-- [ ] /select/user-likes-album/user-id/{user-id}
-- [ ] /select/user-likes-album/album-id/{album-id}
+- [X] /select/user-likes-album/user-id/{user-id}
+- [X] /select/user-likes-album/album-id/{album-id}
 
 ### UserLikesPlaylist
-- [ ] /select/user-likes-playlist/user-id/{user-id}
-- [ ] /select/user-likes-playlist/playlist-id/{playlist-id}
+- [X] /select/user-likes-playlist/user-id/{user-id}
+- [X] /select/user-likes-playlist/playlist-id/{playlist-id}
 
 ### SongAlbum
-- [ ] /select/song-album/album-id/{album-id}
+- [X] /select/song-album/song-id/{song-id}
+- [X] /select/song-album/album-id/{album-id}
 
 ### SongPlaylist
-- [ ] /select/song-playlist/song-id/{song-id}
-- [ ] /select/song-playlist/playlist-id/{playlist-id}
+- [X] /select/song-playlist/song-id/{song-id}
+- [X] /select/song-playlist/playlist-id/{playlist-id}
 
 ### History
-- [ ] /select/history/user-id/{user-id}
-- [ ] /select/history/song-id/{song-id}
+- [X] /select/history/user-id/{user-id}
+- [X] /select/history/song-id/{song-id}
 
 ## UPDATE
 

@@ -6,7 +6,20 @@ use crate::api::api_files::{
     api_get_image_file, api_get_song_file, api_save_image_file, api_save_song_file,
 };
 use crate::api::api_insert::api_insert_user;
-use crate::api::api_select::api_select_user_by_email;
+use crate::api::api_select::{
+    api_select_album_by_artist_id, api_select_album_by_id, api_select_album_by_title,
+    api_select_artist_by_email, api_select_artist_by_id, api_select_artist_by_username,
+    api_select_collaborator_by_email, api_select_collaborator_by_id, api_select_history_by_song_id,
+    api_select_history_by_user_id, api_select_playlist_by_id, api_select_playlist_by_title,
+    api_select_playlist_by_user_id, api_select_song_album_by_album_id,
+    api_select_song_album_by_song_id, api_select_song_by_artist_id, api_select_song_by_id,
+    api_select_song_by_title, api_select_song_playlist_by_playlist_id,
+    api_select_song_playlist_by_song_id, api_select_user_by_email, api_select_user_by_id,
+    api_select_user_by_username, api_select_user_likes_album_by_album_id,
+    api_select_user_likes_album_by_user_id, api_select_user_likes_playlist_by_playlist_id,
+    api_select_user_likes_playlist_by_user_id, api_select_user_likes_song_by_song_id,
+    api_select_user_likes_song_by_user_id,
+};
 use crate::api::api_update::api_update_user_profile_picture;
 use crate::db;
 
@@ -45,6 +58,34 @@ pub async fn run_api() -> std::io::Result<()> {
         App::new()
             .app_data(shared_state.clone())
             .service(api_select_user_by_email)
+            .service(api_select_user_by_id)
+            .service(api_select_user_by_username)
+            .service(api_select_artist_by_email)
+            .service(api_select_artist_by_id)
+            .service(api_select_artist_by_username)
+            .service(api_select_collaborator_by_email)
+            .service(api_select_collaborator_by_id)
+            .service(api_select_song_by_id)
+            .service(api_select_song_by_title)
+            .service(api_select_song_by_artist_id)
+            .service(api_select_album_by_id)
+            .service(api_select_album_by_title)
+            .service(api_select_album_by_artist_id)
+            .service(api_select_playlist_by_id)
+            .service(api_select_playlist_by_title)
+            .service(api_select_playlist_by_user_id)
+            .service(api_select_user_likes_song_by_user_id)
+            .service(api_select_user_likes_song_by_song_id)
+            .service(api_select_user_likes_album_by_user_id)
+            .service(api_select_user_likes_album_by_album_id)
+            .service(api_select_user_likes_playlist_by_user_id)
+            .service(api_select_user_likes_playlist_by_playlist_id)
+            .service(api_select_song_album_by_song_id)
+            .service(api_select_song_album_by_album_id)
+            .service(api_select_song_playlist_by_song_id)
+            .service(api_select_song_playlist_by_playlist_id)
+            .service(api_select_history_by_user_id)
+            .service(api_select_history_by_song_id)
             .service(api_insert_user)
             .service(api_save_image_file)
             .service(api_get_image_file)
