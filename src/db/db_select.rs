@@ -109,6 +109,39 @@ pub fn select_artist_by_email(conn: &Connection, email: &str) -> Option<Artist> 
     .ok()
 }
 
+pub fn select_artists(conn: &Connection) -> Option<Vec<Artist>> {
+    let mut query = match conn.prepare(
+        "SELECT Artist.id,Artist.user_id,Artist.nb_of_streams,Artist.biography,Artist.url,Artist.verified \
+        FROM Artist") {
+        Ok(query) => query,
+        Err(_) => return None,
+    };
+
+    let artist_iter = match query.query_map([], |row| {
+        Ok(Artist {
+            id: row.get(0)?,
+            user_id: row.get(1)?,
+            nb_of_streams: row.get(2)?,
+            biography: row.get(3)?,
+            url: row.get(4)?,
+            verified: row.get(5)?,
+        })
+    }) {
+        Ok(it) => it,
+        Err(_) => return None,
+    };
+
+    let mut res = Vec::new();
+    for artist in artist_iter {
+        match artist {
+            Err(_) => return None,
+            Ok(artist) => res.push(artist),
+        }
+    }
+
+    Some(res)
+}
+
 pub fn select_artist_by_id(conn: &Connection, id: i64) -> Option<Artist> {
     conn.query_row(
         "SELECT id,user_id,nb_of_streams,biography,url,verified \

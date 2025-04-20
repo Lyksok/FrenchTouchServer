@@ -85,6 +85,21 @@ async fn api_select_user_by_username(
     }
 }
 
+#[get("/select/artist/all")]
+async fn api_select_artists(data: web::Data<AppState>) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_select::select_artists(&conn) {
+        Some(artist) => {
+            println!("[SELECT] Artist {:?}", artist);
+            Ok(HttpResponse::Ok().json(artist))
+        }
+        None => {
+            println!("[ERROR] Could not find any artist");
+            Ok(HttpResponse::InternalServerError().body("Could not find the artist"))
+        }
+    }
+}
+
 #[get("/select/artist/email/{email}")]
 async fn api_select_artist_by_email(
     data: web::Data<AppState>,
