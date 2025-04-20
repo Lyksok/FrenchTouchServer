@@ -4,11 +4,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Admin {
     pub id: i64,
-    pub username: String,
-    pub email: String,
-    pub password_hash: String,
-    pub password_salt: String,
-    pub last_connection: i32,
+    pub user_id: i64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -118,4 +114,29 @@ pub struct History {
     pub user_id: i64,
     pub song_id: i64,
     pub time: i32,
+}
+
+#[allow(dead_code)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ArtistRequest {
+    pub id: i64,
+    pub artist_id: i64,
+    pub song_title: String,
+    pub song_creation_date: i32,
+    pub song_file: String,
+    pub song_cover: Option<String>,
+}
+
+#[allow(dead_code)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CollaboratorRequest {
+    pub id: i64,
+    pub collaborator_id: i64,
+    pub song_title: String,
+    pub song_creation_date: i32,
+    pub song_file: String,
+    pub song_cover: Option<String>,
+    pub artist_name: String,
+    pub artist_biography: Option<String>,
+    pub artist_profile_picture: Option<String>,
 }

@@ -2,19 +2,23 @@ use crate::api::run_api::AppState;
 use crate::db;
 use actix_web::{get, web, HttpResponse, Responder};
 
-#[get("/select/admin/email/{email}")]
-async fn api_select_admin_by_email(
+#[get("/select/admin/user_id/{user_id}")]
+async fn api_select_admin_by_user_id(
     data: web::Data<AppState>,
-    email: web::Path<String>,
+    user_id: web::Path<String>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    match db::db_select::select_admin_by_email(&conn, &email) {
+    let id = match user_id.parse::<i64>() {
+        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
+        Ok(id) => id,
+    };
+    match db::db_select::select_admin_by_user_id(&conn, id) {
         Some(admin) => {
             println!("[SELECT] Admin {:?}", admin);
             Ok(HttpResponse::Ok().json(admin))
         }
         None => {
-            println!("[ERROR] Could not find the admin with email {:?}", email);
+            println!("[ERROR] Could not find the admin with user id {:?}", id);
             Ok(HttpResponse::InternalServerError().body("Could not find the admin"))
         }
     }

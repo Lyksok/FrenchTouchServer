@@ -1,10 +1,7 @@
 CREATE TABLE Admin (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL,
-    email TEXT NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
-    password_salt TEXT NOT NULL,
-    last_connection INTEGER
+    user_id INTEGER,
+    FOREIGN KEY (user_id) REFERENCES User(id)
 );
 
 CREATE TABLE User (
@@ -113,5 +110,23 @@ CREATE TABLE History (
     time INTEGER,
     PRIMARY KEY (user_id, song_id, time),
     FOREIGN KEY (user_id) REFERENCES User(id),
+    FOREIGN KEY (song_id) REFERENCES Song(id)
+);
+
+CREATE TABLE ArtistRequest (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    artist_id INTEGER,
+    song_id INTEGER,
+    FOREIGN KEY (artist_id) REFERENCES Artist(id),
+    FOREIGN KEY (song_id) REFERENCES Song(id)
+);
+
+CREATE TABLE CollaboratorRequest (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    collaborator_id INTEGER,
+    artist_id INTEGER,
+    song_id INTEGER,
+    FOREIGN KEY (collaborator_id) REFERENCES Collaborator(id),
+    FOREIGN KEY (artist_id) REFERENCES Artist(id),
     FOREIGN KEY (song_id) REFERENCES Song(id)
 );

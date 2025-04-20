@@ -8,17 +8,18 @@ use super::{
 use rusqlite::{params, Connection};
 use text_io::read;
 
-pub fn select_admin_by_email(conn: &Connection, email: &str) -> Option<Admin> {
-    conn.query_row("SELECT id,username,email,password_hash,password_salt,last_connection FROM Admin WHERE email LIKE ?1", params![email], |row| {
-        Ok(Admin {
-            id: row.get(0)?,
-            username: row.get(1)?,
-            email: row.get(2)?,
-            password_hash: row.get(3)?,
-            password_salt: row.get(4)?,
-            last_connection: row.get(5)?,
-        })
-    }).ok()
+pub fn select_admin_by_user_id(conn: &Connection, user_id: i64) -> Option<Admin> {
+    conn.query_row(
+        "SELECT id,user_id Admin WHERE user_id=?1",
+        params![user_id],
+        |row| {
+            Ok(Admin {
+                id: row.get(0)?,
+                user_id: row.get(1)?,
+            })
+        },
+    )
+    .ok()
 }
 
 pub fn select_user_by_email(conn: &Connection, email: &str) -> Option<User> {

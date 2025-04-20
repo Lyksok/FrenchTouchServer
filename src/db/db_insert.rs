@@ -7,18 +7,9 @@ use rusqlite::{params, Connection};
 use text_io::read;
 pub fn insert_admin(conn: &Connection, admin: &Admin) -> Option<i64> {
     let query = "INSERT INTO Admin \
-        (username,email,password_hash,password_salt,last_connection) \
-        VALUES (?1,?2,?3,?4,?5,?6)";
-    match conn.execute(
-        query,
-        params![
-            admin.username,
-            admin.email,
-            admin.password_hash,
-            admin.password_salt,
-            admin.last_connection,
-        ],
-    ) {
+        (user_id) \
+        VALUES (?1)";
+    match conn.execute(query, params![admin.user_id,]) {
         Ok(_) => Some(conn.last_insert_rowid()),
         Err(_) => None,
     }
