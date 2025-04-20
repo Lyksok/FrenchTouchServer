@@ -221,6 +221,23 @@ pub fn select_collaborator_by_id(conn: &Connection, id: i64) -> Option<Collabora
     .ok()
 }
 
+pub fn select_collaborator_by_user_id(conn: &Connection, user_id: i64) -> Option<Collaborator> {
+    conn.query_row(
+        "SELECT id,user_id,verified \
+        FROM Collaborator \
+        WHERE Collaborator.user_id=?1",
+        params![user_id],
+        |row| {
+            Ok(Collaborator {
+                id: row.get(0)?,
+                user_id: row.get(1)?,
+                verified: row.get(2)?,
+            })
+        },
+    )
+    .ok()
+}
+
 pub fn select_song_by_id(conn: &Connection, id: i64) -> Option<Song> {
     conn.query_row(
         "SELECT id,title,song_file,nb_of_streams,cover_image,duration,creation_date,artist_id \

@@ -207,6 +207,27 @@ async fn api_select_collaborator_by_id(
     }
 }
 
+#[get("/select/collaborator/user_id/{user_id}")]
+async fn api_select_collaborator_by_user_id(
+    data: web::Data<AppState>,
+    user_id: web::Path<String>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    let id = match id.parse::<i64>() {
+        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
+        Ok(id) => id,
+    };
+    match db::db_select::select_collaborator_by_user_id(&conn, id) {
+        Some(collaborator) => {
+            println!("[SELECT] Collaborator {:?}", collaborator);
+            Ok(HttpResponse::Ok().json(collaborator))
+        }
+        None => {
+            println!("[ERROR] Could not find the collaborator with id {:?}", id);
+            Ok(HttpResponse::InternalServerError().body("Could not find collaborator"))
+        }
+    }
+}
 #[get("/select/song/id/{id}")]
 async fn api_select_song_by_id(
     data: web::Data<AppState>,
