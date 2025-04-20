@@ -20,7 +20,7 @@ CREATE TABLE User (
 
 CREATE TABLE Artist (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER,
+    user_id INTEGER UNIQUE,
     nb_of_streams INTEGER DEFAULT 0,
     biography TEXT,
     url TEXT,
@@ -30,7 +30,7 @@ CREATE TABLE Artist (
 
 CREATE TABLE Collaborator (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER,
+    user_id INTEGER UNIQUE,
     verified INTEGER DEFAULT 0,
     FOREIGN KEY (user_id) REFERENCES User(id)
 );
