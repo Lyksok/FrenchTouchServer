@@ -213,7 +213,7 @@ async fn api_select_collaborator_by_user_id(
     user_id: web::Path<String>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
+    let id = match user_id.parse::<i64>() {
         Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
         Ok(id) => id,
     };
