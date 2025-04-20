@@ -240,7 +240,7 @@ pub fn select_collaborator_by_user_id(conn: &Connection, user_id: i64) -> Option
 
 pub fn select_song_by_id(conn: &Connection, id: i64) -> Option<Song> {
     conn.query_row(
-        "SELECT id,title,song_file,nb_of_streams,cover_image,duration,creation_date,artist_id \
+        "SELECT id,title,song_file,cover_image,nb_of_streams,duration,creation_date,artist_id \
         FROM Song \
         WHERE Song.id=?1",
         params![id],
@@ -249,8 +249,8 @@ pub fn select_song_by_id(conn: &Connection, id: i64) -> Option<Song> {
                 id: row.get(0)?,
                 title: row.get(1)?,
                 song_file: row.get(2)?,
-                nb_of_streams: row.get(3)?,
-                cover_image: row.get(4)?,
+                cover_image: row.get(3)?,
+                nb_of_streams: row.get(4)?,
                 duration: row.get(5)?,
                 creation_date: row.get(6)?,
                 artist_id: row.get(7)?,
@@ -262,7 +262,7 @@ pub fn select_song_by_id(conn: &Connection, id: i64) -> Option<Song> {
 
 pub fn select_song_by_title(conn: &Connection, title: &str) -> Option<Vec<Song>> {
     let mut query = match conn.prepare(
-        "SELECT id,title,song_file,nb_of_streams,cover_image,duration,creation_date,artist_id \
+        "SELECT id,title,song_file,cover_image,nb_of_streams,duration,creation_date,artist_id \
         FROM Song \
         WHERE Song.title LIKE ?1",
     ) {
@@ -275,8 +275,8 @@ pub fn select_song_by_title(conn: &Connection, title: &str) -> Option<Vec<Song>>
             id: row.get(0)?,
             title: row.get(1)?,
             song_file: row.get(2)?,
-            nb_of_streams: row.get(3)?,
-            cover_image: row.get(4)?,
+            cover_image: row.get(3)?,
+            nb_of_streams: row.get(4)?,
             duration: row.get(5)?,
             creation_date: row.get(6)?,
             artist_id: row.get(7)?,
@@ -299,7 +299,7 @@ pub fn select_song_by_title(conn: &Connection, title: &str) -> Option<Vec<Song>>
 
 pub fn select_song_by_artist_id(conn: &Connection, id: i64) -> Option<Vec<Song>> {
     let mut query = match conn.prepare(
-        "SELECT id,title,song_file,nb_of_streams,cover_image,duration,creation_date,artist_id \
+        "SELECT id,title,song_file,cover_image,nb_of_streams,duration,creation_date,artist_id \
         FROM Song \
         WHERE Song.artist_id=?1",
     ) {
@@ -312,8 +312,8 @@ pub fn select_song_by_artist_id(conn: &Connection, id: i64) -> Option<Vec<Song>>
             id: row.get(0)?,
             title: row.get(1)?,
             song_file: row.get(2)?,
-            nb_of_streams: row.get(3)?,
-            cover_image: row.get(4)?,
+            cover_image: row.get(3)?,
+            nb_of_streams: row.get(4)?,
             duration: row.get(5)?,
             creation_date: row.get(6)?,
             artist_id: row.get(7)?,
@@ -336,7 +336,7 @@ pub fn select_song_by_artist_id(conn: &Connection, id: i64) -> Option<Vec<Song>>
 
 pub fn select_album_by_id(conn: &Connection, id: i64) -> Option<Album> {
     conn.query_row(
-        "SELECT id,title,cover_image,creation_date,artist_id \
+        "SELECT id,title,cover_image,nb_of_streams,creation_date,artist_id \
         FROM Album \
         WHERE Album.id=?1",
         params![id],
@@ -345,8 +345,9 @@ pub fn select_album_by_id(conn: &Connection, id: i64) -> Option<Album> {
                 id: row.get(0)?,
                 title: row.get(1)?,
                 cover_image: row.get(2)?,
-                creation_date: row.get(3)?,
-                artist_id: row.get(4)?,
+                nb_of_streams: row.get(3)?,
+                creation_date: row.get(4)?,
+                artist_id: row.get(5)?,
             })
         },
     )
@@ -355,7 +356,7 @@ pub fn select_album_by_id(conn: &Connection, id: i64) -> Option<Album> {
 
 pub fn select_album_by_title(conn: &Connection, title: &str) -> Option<Vec<Album>> {
     let mut query = match conn.prepare(
-        "SELECT id,title,cover_image,creation_date,artist_id \
+        "SELECT id,title,cover_image,nb_of_streams,creation_date,artist_id \
         FROM Album \
         WHERE Album.title LIKE ?1",
     ) {
@@ -368,8 +369,9 @@ pub fn select_album_by_title(conn: &Connection, title: &str) -> Option<Vec<Album
             id: row.get(0)?,
             title: row.get(1)?,
             cover_image: row.get(2)?,
-            creation_date: row.get(3)?,
-            artist_id: row.get(4)?,
+            nb_of_streams: row.get(3)?,
+            creation_date: row.get(4)?,
+            artist_id: row.get(5)?,
         })
     }) {
         Ok(it) => it,
@@ -389,7 +391,7 @@ pub fn select_album_by_title(conn: &Connection, title: &str) -> Option<Vec<Album
 
 pub fn select_album_by_artist_id(conn: &Connection, id: i64) -> Option<Vec<Album>> {
     let mut query = match conn.prepare(
-        "SELECT id,title,cover_image,creation_date,artist_id \
+        "SELECT id,title,cover_image,nb_of_streams,creation_date,artist_id \
         FROM Album \
         WHERE Album.artist_id=?1",
     ) {
@@ -402,8 +404,9 @@ pub fn select_album_by_artist_id(conn: &Connection, id: i64) -> Option<Vec<Album
             id: row.get(0)?,
             title: row.get(1)?,
             cover_image: row.get(2)?,
-            creation_date: row.get(3)?,
-            artist_id: row.get(4)?,
+            nb_of_streams: row.get(3)?,
+            creation_date: row.get(4)?,
+            artist_id: row.get(5)?,
         })
     }) {
         Ok(it) => it,
@@ -423,7 +426,7 @@ pub fn select_album_by_artist_id(conn: &Connection, id: i64) -> Option<Vec<Album
 
 pub fn select_playlist_by_id(conn: &Connection, id: i64) -> Option<Playlist> {
     conn.query_row(
-        "SELECT id,title,cover_image,creation_date,user_id \
+        "SELECT id,title,cover_image,nb_of_streams,creation_date,user_id \
         FROM Playlist \
         WHERE Playlist.id=?1",
         params![id],
@@ -432,8 +435,9 @@ pub fn select_playlist_by_id(conn: &Connection, id: i64) -> Option<Playlist> {
                 id: row.get(0)?,
                 title: row.get(1)?,
                 cover_image: row.get(2)?,
-                creation_date: row.get(3)?,
-                user_id: row.get(4)?,
+                nb_of_streams: row.get(3)?,
+                creation_date: row.get(4)?,
+                user_id: row.get(5)?,
             })
         },
     )
@@ -442,7 +446,7 @@ pub fn select_playlist_by_id(conn: &Connection, id: i64) -> Option<Playlist> {
 
 pub fn select_playlist_by_title(conn: &Connection, title: &str) -> Option<Vec<Playlist>> {
     let mut query = match conn.prepare(
-        "SELECT id,title,cover_image,creation_date,user_id \
+        "SELECT id,title,cover_image,nb_of_streams,creation_date,user_id \
         FROM Playlist \
         WHERE Playlist.title LIKE ?1",
     ) {
@@ -455,8 +459,9 @@ pub fn select_playlist_by_title(conn: &Connection, title: &str) -> Option<Vec<Pl
             id: row.get(0)?,
             title: row.get(1)?,
             cover_image: row.get(2)?,
-            creation_date: row.get(3)?,
-            user_id: row.get(4)?,
+            nb_of_streams: row.get(3)?,
+            creation_date: row.get(4)?,
+            user_id: row.get(5)?,
         })
     }) {
         Ok(it) => it,
@@ -476,7 +481,7 @@ pub fn select_playlist_by_title(conn: &Connection, title: &str) -> Option<Vec<Pl
 
 pub fn select_playlist_by_user_id(conn: &Connection, id: i64) -> Option<Vec<Playlist>> {
     let mut query = match conn.prepare(
-        "SELECT id,title,cover_image,creation_date,user_id \
+        "SELECT id,title,cover_image,nb_of_streams,creation_date,user_id \
         FROM Playlist \
         WHERE Playlist.user_id=?1",
     ) {
@@ -489,8 +494,9 @@ pub fn select_playlist_by_user_id(conn: &Connection, id: i64) -> Option<Vec<Play
             id: row.get(0)?,
             title: row.get(1)?,
             cover_image: row.get(2)?,
-            creation_date: row.get(3)?,
-            user_id: row.get(4)?,
+            nb_of_streams: row.get(3)?,
+            creation_date: row.get(4)?,
+            user_id: row.get(5)?,
         })
     }) {
         Ok(it) => it,

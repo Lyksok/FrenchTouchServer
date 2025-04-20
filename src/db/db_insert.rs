@@ -81,15 +81,15 @@ pub fn insert_collaborator(conn: &Connection, collaborator: &Collaborator) -> Op
 
 pub fn insert_song(conn: &Connection, song: &Song) -> Option<i64> {
     let query = "INSERT INTO Song \
-        (title,song_file,nb_of_streams,cover_image,duration,creation_date,artist_id) \
+        (title,song_file,cover_image,nb_of_streams,duration,creation_date,artist_id) \
         VALUES (?1,?2,?3,?4,?5,?6,?7)";
     match conn.execute(
         query,
         params![
             song.title,
             song.song_file,
-            song.nb_of_streams,
             song.cover_image,
+            song.nb_of_streams,
             song.duration,
             song.creation_date,
             song.artist_id,
@@ -105,13 +105,14 @@ pub fn insert_album(conn: &Connection, album: &Album) -> Option<i64> {
         return None;
     }
     let query = "INSERT INTO Album \
-        (title,cover_image,creation_date,artist_id) \
+        (title,cover_image,nb_of_streams,creation_date,artist_id) \
         VALUES (?1,?2,?3,?4)";
     match conn.execute(
         query,
         params![
             album.title,
             album.cover_image,
+            album.nb_of_streams,
             album.creation_date,
             album.artist_id,
         ],
@@ -126,13 +127,14 @@ pub fn insert_playlist(conn: &Connection, playlist: &Playlist) -> Option<i64> {
         return None;
     }
     let query = "INSERT INTO Playlist \
-        (title,cover_image,creation_date,user_id) \
+        (title,cover_image,nb_of_streams,creation_date,user_id) \
         VALUES (?1,?2,?3,?4)";
     match conn.execute(
         query,
         params![
             playlist.title,
             playlist.cover_image,
+            playlist.nb_of_streams,
             playlist.creation_date,
             playlist.user_id,
         ],
