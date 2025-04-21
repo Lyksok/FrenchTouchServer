@@ -1,4 +1,4 @@
 #!/bin/bash
 
 cd ~/french-touch
-screen -t french-touch -d -m cargo run --release
+screen -S french-touch -d -m cargo run --release
