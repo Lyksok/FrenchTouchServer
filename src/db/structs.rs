@@ -46,8 +46,8 @@ pub struct Song {
     pub song_file: Option<String>,
     pub cover_image: Option<String>,
     pub nb_of_streams: i32,
-    pub duration: Option<i32>,
-    pub creation_date: Option<i32>,
+    pub duration: i32,
+    pub creation_date: i32,
     pub artist_id: i64,
 }
 
@@ -58,7 +58,7 @@ pub struct Album {
     pub title: String,
     pub cover_image: Option<String>,
     pub nb_of_streams: i32,
-    pub creation_date: Option<i32>,
+    pub creation_date: i32,
     pub artist_id: i64,
 }
 
@@ -69,7 +69,7 @@ pub struct Playlist {
     pub title: String,
     pub cover_image: Option<String>,
     pub nb_of_streams: i32,
-    pub creation_date: Option<i32>,
+    pub creation_date: i32,
     pub user_id: i64,
 }
 
