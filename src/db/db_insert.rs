@@ -97,7 +97,7 @@ pub fn insert_album(conn: &Connection, album: &Album) -> Option<i64> {
     }
     let query = "INSERT INTO Album \
         (title,cover_image,nb_of_streams,creation_date,artist_id) \
-        VALUES (?1,?2,?3,?4)";
+        VALUES (?1,?2,?3,?4,?5)";
     match conn.execute(
         query,
         params![
@@ -119,7 +119,7 @@ pub fn insert_playlist(conn: &Connection, playlist: &Playlist) -> Option<i64> {
     }
     let query = "INSERT INTO Playlist \
         (title,cover_image,nb_of_streams,creation_date,user_id) \
-        VALUES (?1,?2,?3,?4)";
+        VALUES (?1,?2,?3,?4,?5)";
     match conn.execute(
         query,
         params![
