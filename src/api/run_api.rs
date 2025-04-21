@@ -5,7 +5,10 @@ use std::sync::Mutex;
 use crate::api::api_files::{
     api_get_image_file, api_get_song_file, api_save_image_file, api_save_song_file,
 };
-use crate::api::api_insert::{api_insert_artist, api_insert_collaborator, api_insert_user};
+use crate::api::api_insert::{
+    api_insert_album, api_insert_artist, api_insert_collaborator, api_insert_playlist,
+    api_insert_user,
+};
 use crate::api::api_select::{
     api_select_album_by_artist_id, api_select_album_by_id, api_select_album_by_title,
     api_select_artist_by_email, api_select_artist_by_id, api_select_artist_by_user_id,
@@ -93,6 +96,8 @@ pub async fn run_api() -> std::io::Result<()> {
             .service(api_insert_user)
             .service(api_insert_artist)
             .service(api_insert_collaborator)
+            .service(api_insert_album)
+            .service(api_insert_playlist)
             .service(api_save_image_file)
             .service(api_get_image_file)
             .service(api_save_song_file)
