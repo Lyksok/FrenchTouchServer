@@ -1,6 +1,6 @@
 use super::structs::{
-    Admin, Album, Artist, Collaborator, History, Playlist, Song, SongAlbum, SongPlaylist, User,
-    UserLikesAlbum, UserLikesPlaylist, UserLikesSong,
+    Admin, Album, Artist, AuthMap, Collaborator, History, Playlist, Song, SongAlbum, SongPlaylist,
+    User, UserLikesAlbum, UserLikesPlaylist, UserLikesSong,
 };
 use crate::db;
 use rusqlite::{params, Connection};
@@ -240,6 +240,29 @@ pub fn insert_history(conn: &Connection, history: &History) -> Option<i64> {
     match conn.execute(
         query,
         params![history.user_id, history.song_id, history.time],
+    ) {
+        Ok(_) => Some(conn.last_insert_rowid()),
+        Err(_) => None,
+    }
+}
+
+pub fn insert_authmap(conn: &Connection, auth_map: &AuthMap) -> Option<i64> {
+    if !db::db_exist::user_exist_by_id(conn, auth_map.user_id)
+        || !db::db_exist::authmap_exist_by_hash(conn, &auth_map.auth_hash)
+    {
+        return None;
+    }
+    let query = "INSERT INTO AuthMap \
+        (user_id,auth_hash,permission_level,expire_date) \
+        VALUES (?1,?2,?3,?4)";
+    match conn.execute(
+        query,
+        params![
+            auth_map.user_id,
+            auth_map.auth_hash,
+            auth_map.permission_level,
+            auth_map.expiration_date
+        ],
     ) {
         Ok(_) => Some(conn.last_insert_rowid()),
         Err(_) => None,

@@ -20,7 +20,7 @@ async fn api_insert_user(
             println!("[INSERT] User {:?}", user_data);
             Ok(HttpResponse::Ok().json(user_data))
         }
-        None => {
+        _ => {
             println!("[ERROR] Could not insert user {:?}", user_data);
             Ok(HttpResponse::InternalServerError().body("Could not insert user."))
         }

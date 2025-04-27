@@ -140,3 +140,13 @@ pub struct CollaboratorRequest {
     pub artist_biography: Option<String>,
     pub artist_profile_picture: Option<String>,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AuthMap {
+    pub id: i64,
+    pub user_id: i64,
+    pub auth_hash: String,
+    // 0:User 1:Artist 2:Collaborator 3:Admin
+    pub permission_level: i32,
+    pub expiration_date: i32,
+}

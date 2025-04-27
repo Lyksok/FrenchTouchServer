@@ -130,3 +130,12 @@ CREATE TABLE CollaboratorRequest (
     FOREIGN KEY (artist_id) REFERENCES Artist(id),
     FOREIGN KEY (song_id) REFERENCES Song(id)
 );
+
+CREATE TABLE AuthMap (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER UNIQUE,
+  auth_hash TEXT NOT NULL,
+  permission_level INTEGER,
+  expiration_date INTEGER,
+  FOREIGN KEY (user_id) REFERENCES User(id)
+);
