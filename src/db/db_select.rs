@@ -950,6 +950,25 @@ pub fn select_authmap_by_id(conn: &Connection, id: i64) -> Option<AuthMap> {
     .ok()
 }
 
+pub fn select_authmap_by_auth_hash(conn: &Connection, auth_hash: &str) -> Option<AuthMap> {
+    conn.query_row(
+        "SELECT id,user_id,auth_hash,permission_level,expiration_date \
+        FROM AuthMap \
+        WHERE AuthMap.auth_hash LIKE ?1",
+        params![auth_hash],
+        |row| {
+            Ok(AuthMap {
+                id: row.get(0)?,
+                user_id: row.get(1)?,
+                auth_hash: row.get(2)?,
+                permission_level: row.get(3)?,
+                expiration_date: row.get(4)?,
+            })
+        },
+    )
+    .ok()
+}
+
 pub fn select_authmap_by_user_id(conn: &Connection, user_id: i64) -> Option<AuthMap> {
     conn.query_row(
         "SELECT id,user_id,auth_hash,permission_level,expiration_date \
