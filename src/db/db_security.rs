@@ -1,3 +1,5 @@
+use openssl::base64::{decode_block, encode_block};
+use openssl::rand::rand_bytes;
 use pbkdf2::pbkdf2_hmac;
 use rusqlite::Connection;
 use sha2::Sha256;
@@ -41,8 +43,6 @@ pub fn has_permissions(conn: &Connection, user: &User, auth_hash: &str, p_level:
     }
 }
 
-use openssl::base64::{decode_block, encode_block};
-
 pub fn hash_password(p: &str, s: &str) -> Vec<String> {
     let iterations = 600_000;
     let mut buf = vec![0u8; 32];
@@ -56,4 +56,10 @@ pub fn hash_password(p: &str, s: &str) -> Vec<String> {
     res.push(hash);
     res.push(salt);
     res
+}
+
+pub fn generate_salt() -> Vec<u8> {
+    let mut salt = vec![0u8; 32];
+    rand_bytes(&mut salt).expect("Failed to generate random bytes");
+    salt
 }
