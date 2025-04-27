@@ -3,6 +3,7 @@ use crate::db::db_exist::{
     admin_exist_by_user_id, artist_exist_by_user_id, authmap_exist_by_hash,
     authmap_exist_by_user_id, collaborator_exist_by_user_id,
 };
+use crate::db::db_security::is_valid_expiration_date;
 use crate::{
     api::run_api::AppState,
     db::structs::{AuthMap, User},
@@ -19,13 +20,12 @@ async fn api_security_login(
     let conn = data.db.lock().unwrap();
     // Check if user already have authenticate certificate and return it
     if authmap_exist_by_user_id(&conn, user_cred.id) {
-        return Ok(HttpResponse::Ok().json(format!(
-            "{{auth_hash:{}}}",
-            db::db_select::select_authmap_by_user_id(&conn, user_cred.id)
-                .unwrap()
-                .auth_hash
-        )));
+        let authmap = db::db_select::select_authmap_by_user_id(&conn, user_cred.id).unwrap();
+        if is_valid_expiration_date(&conn, &authmap.auth_hash) {
+            return Ok(HttpResponse::Ok().json(format!("{{auth_hash:{}}}", authmap.auth_hash)));
+        }
     }
+
     // Create a unique uuid hash
     let mut auth_hash = None;
     while auth_hash.is_none() {
@@ -108,11 +108,14 @@ async fn api_security_login(
 
             let auth_hash = db::db_select::select_authmap_by_id(&conn, auth_id).unwrap();
 
-            println!("[CRED] User {:?}", user_cred);
+            println!("[AUTHMAP] User {:?}", user_cred);
             Ok(HttpResponse::Ok().json(format!("{{auth_hash:{}}}", auth_hash.auth_hash)))
         }
         false => {
-            println!("[CRED ERROR] Could not authenticate user {:?}", user_cred);
+            println!(
+                "[AUTHMAP ERROR] Could not authenticate user {:?}",
+                user_cred
+            );
             Ok(HttpResponse::InternalServerError().body("Could not authenticate user."))
         }
     }
