@@ -1,10 +1,10 @@
 use super::structs::{
-    Admin, Album, Artist, AuthMap, Collaborator, History, Playlist, Song, SongAlbum, SongPlaylist,
-    User, UserLikesAlbum, UserLikesPlaylist, UserLikesSong,
+    Admin, Album, Artist, AuthMap, Collaborator, Credentials, History, Playlist, Song, SongAlbum,
+    SongPlaylist, User, UserLikesAlbum, UserLikesPlaylist, UserLikesSong,
 };
 use crate::db;
 use rusqlite::{params, Connection};
-use text_io::read;
+
 pub fn insert_admin(conn: &Connection, admin: &Admin) -> Option<i64> {
     let query = "INSERT INTO Admin \
         (user_id) \
@@ -17,17 +17,32 @@ pub fn insert_admin(conn: &Connection, admin: &Admin) -> Option<i64> {
 
 pub fn insert_user(conn: &Connection, user: &User) -> Option<i64> {
     let query = "INSERT INTO User \
-        (username,email,password_hash,password_salt,last_connection,creation_date) \
-        VALUES (?1,?2,?3,?4,?5,?6)";
+        (username,email,last_connection,creation_date) \
+        VALUES (?1,?2,?3,?4)";
     match conn.execute(
         query,
         params![
             user.username,
             user.email,
-            user.password_hash,
-            user.password_salt,
             user.last_connection,
             user.creation_date
+        ],
+    ) {
+        Ok(_) => Some(conn.last_insert_rowid()),
+        Err(_) => None,
+    }
+}
+
+pub fn insert_credentials(conn: &Connection, credentials: &Credentials) -> Option<i64> {
+    let query = "INSERT INTO Credentials \
+        (user_id,password_hash,password_salt) \
+        VALUES (?1,?2,?3)";
+    match conn.execute(
+        query,
+        params![
+            credentials.user_id,
+            credentials.password_hash,
+            credentials.password_salt,
         ],
     ) {
         Ok(_) => Some(conn.last_insert_rowid()),
@@ -253,48 +268,17 @@ pub fn insert_authmap(conn: &Connection, auth_map: &AuthMap) -> Option<i64> {
         return None;
     }
     let query = "INSERT INTO AuthMap \
-        (user_id,auth_hash,permission_level,expire_date) \
-        VALUES (?1,?2,?3,?4)";
+        (user_id,auth_hash,permission_level) \
+        VALUES (?1,?2,?3)";
     match conn.execute(
         query,
         params![
             auth_map.user_id,
             auth_map.auth_hash,
             auth_map.permission_level,
-            auth_map.expiration_date
         ],
     ) {
         Ok(_) => Some(conn.last_insert_rowid()),
         Err(_) => None,
     }
-}
-
-// =================================================================== DEV ZONE
-
-pub fn dev_insert_user(conn: Connection) -> bool {
-    print!("Username: ");
-    let username = read!();
-    print!("Email: ");
-    let email = read!();
-    print!("Password Hash: ");
-    let password_hash = read!();
-    print!("Password Salt: ");
-    let password_salt = read!();
-    let user = User {
-        id: -1,
-        username,
-        email,
-        password_hash,
-        password_salt,
-        last_connection: 0,
-        creation_date: 0,
-        profile_picture: Some(String::new()),
-    };
-    let res = insert_user(&conn, &user);
-    if res.is_some() {
-        println!("User inserted !");
-    } else {
-        println!("Could not insert user");
-    }
-    res.is_some()
 }

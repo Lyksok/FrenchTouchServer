@@ -1,4 +1,4 @@
-use crate::api::run_api::AppState;
+use crate::api::{api_utils::print_log, run_api::AppState};
 use crate::db;
 use actix_web::{get, web, HttpResponse, Responder};
 
@@ -14,11 +14,11 @@ async fn api_select_admin_by_user_id(
     };
     match db::db_select::select_admin_by_user_id(&conn, id) {
         Some(admin) => {
-            println!("[SELECT] Admin {:?}", admin);
+            print_log("SELECT", "Admin", &admin);
             Ok(HttpResponse::Ok().json(admin))
         }
-        None => {
-            println!("[ERROR] Could not find the admin with user id {:?}", id);
+        _ => {
+            print_log("ERROR SELECT", "Admin", &user_id);
             Ok(HttpResponse::InternalServerError().body("Could not find the admin"))
         }
     }
@@ -32,10 +32,11 @@ async fn api_select_user_by_email(
     let conn = data.db.lock().unwrap();
     match db::db_select::select_user_by_email(&conn, &email) {
         Some(user) => {
-            println!("[SELECT] User {:?}", user);
+            print_log("SELECT", "User", &user);
             Ok(HttpResponse::Ok().json(user))
         }
-        None => {
+        _ => {
+            print_log("ERROR SELECT", "User", &email);
             println!("[ERROR] Could not find the user with email {:?}", email);
             Ok(HttpResponse::InternalServerError().body("Could not find the user"))
         }
@@ -54,11 +55,11 @@ async fn api_select_user_by_id(
     };
     match db::db_select::select_user_by_id(&conn, id) {
         Some(user) => {
-            println!("[SELECT] User {:?}", user);
+            print_log("SELECT", "User", &user);
             Ok(HttpResponse::Ok().json(user))
         }
-        None => {
-            println!("[ERROR] Could not find the user with id {:?}", id);
+        _ => {
+            print_log("ERROR SELECT", "User", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find the user"))
         }
     }
@@ -72,14 +73,11 @@ async fn api_select_user_by_username(
     let conn = data.db.lock().unwrap();
     match db::db_select::select_user_by_username(&conn, &username) {
         Some(users) => {
-            println!("[SELECT] Users {:?}", users);
+            print_log("SELECT", "User", &users);
             Ok(HttpResponse::Ok().json(users))
         }
-        None => {
-            println!(
-                "[ERROR] Could not find the user with username {:?}",
-                username
-            );
+        _ => {
+            print_log("ERROR SELECT", "User", &username);
             Ok(HttpResponse::InternalServerError().body("Could not find the user"))
         }
     }
@@ -90,11 +88,11 @@ async fn api_select_artists(data: web::Data<AppState>) -> Result<impl Responder,
     let conn = data.db.lock().unwrap();
     match db::db_select::select_artists(&conn) {
         Some(artist) => {
-            println!("[SELECT] Artist {:?}", artist);
+            print_log("SELECT", "Artist", &artist);
             Ok(HttpResponse::Ok().json(artist))
         }
-        None => {
-            println!("[ERROR] Could not find any artist");
+        _ => {
+            print_log("ERROR SELECT", "Artist", &"all");
             Ok(HttpResponse::InternalServerError().body("Could not find the artist"))
         }
     }
@@ -108,11 +106,11 @@ async fn api_select_artist_by_email(
     let conn = data.db.lock().unwrap();
     match db::db_select::select_artist_by_email(&conn, &email) {
         Some(artist) => {
-            println!("[SELECT] Artist {:?}", artist);
+            print_log("SELECT", "Artist", &artist);
             Ok(HttpResponse::Ok().json(artist))
         }
-        None => {
-            println!("[ERROR] Could not find the artist with email {:?}", email);
+        _ => {
+            print_log("ERROR SELECT", "Artist", &email);
             Ok(HttpResponse::InternalServerError().body("Could not find the artist"))
         }
     }
@@ -130,11 +128,11 @@ async fn api_select_artist_by_id(
     };
     match db::db_select::select_artist_by_id(&conn, id) {
         Some(artist) => {
-            println!("[SELECT] Artist {:?}", artist);
+            print_log("SELECT", "Artist", &artist);
             Ok(HttpResponse::Ok().json(artist))
         }
-        None => {
-            println!("[ERROR] Could not find the artist with id {:?}", id);
+        _ => {
+            print_log("ERROR SELECT", "Artist", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find the artist"))
         }
     }
@@ -148,14 +146,11 @@ async fn api_select_artist_by_username(
     let conn = data.db.lock().unwrap();
     match db::db_select::select_artist_by_username(&conn, &username) {
         Some(artists) => {
-            println!("[SELECT] Artists {:?}", artists);
+            print_log("SELECT", "Artist", &artists);
             Ok(HttpResponse::Ok().json(artists))
         }
-        None => {
-            println!(
-                "[ERROR] Could not find the artist with username {:?}",
-                username
-            );
+        _ => {
+            print_log("ERROR SELECT", "Artist", &username);
             Ok(HttpResponse::InternalServerError().body("Could not find the artist"))
         }
     }
@@ -173,11 +168,11 @@ async fn api_select_artist_by_user_id(
     };
     match db::db_select::select_artist_by_user_id(&conn, id) {
         Some(artists) => {
-            println!("[SELECT] Artists {:?}", artists);
+            print_log("SELECT", "Artist", &artists);
             Ok(HttpResponse::Ok().json(artists))
         }
-        None => {
-            println!("[ERROR] Could not find the artist with user_id {:?}", id);
+        _ => {
+            print_log("ERROR SELECT", "Artist", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find the artist"))
         }
     }
@@ -191,14 +186,11 @@ async fn api_select_collaborator_by_email(
     let conn = data.db.lock().unwrap();
     match db::db_select::select_collaborator_by_email(&conn, &email) {
         Some(collaborator) => {
-            println!("[SELECT] Collaborator {:?}", collaborator);
+            print_log("SELECT", "Collaborator", &collaborator);
             Ok(HttpResponse::Ok().json(collaborator))
         }
-        None => {
-            println!(
-                "[ERROR] Could not find the collaborator with email {:?}",
-                email
-            );
+        _ => {
+            print_log("ERROR SELECT", "Collaborator", &email);
             Ok(HttpResponse::InternalServerError().body("Could not find collaborator"))
         }
     }
@@ -216,11 +208,11 @@ async fn api_select_collaborator_by_id(
     };
     match db::db_select::select_collaborator_by_id(&conn, id) {
         Some(collaborator) => {
-            println!("[SELECT] Collaborator {:?}", collaborator);
+            print_log("SELECT", "Collaborator", &collaborator);
             Ok(HttpResponse::Ok().json(collaborator))
         }
-        None => {
-            println!("[ERROR] Could not find the collaborator with id {:?}", id);
+        _ => {
+            print_log("ERROR SELECT", "Collaborator", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find collaborator"))
         }
     }
@@ -238,11 +230,11 @@ async fn api_select_collaborator_by_user_id(
     };
     match db::db_select::select_collaborator_by_user_id(&conn, id) {
         Some(collaborator) => {
-            println!("[SELECT] Collaborator {:?}", collaborator);
+            print_log("SELECT", "Collaborator", &collaborator);
             Ok(HttpResponse::Ok().json(collaborator))
         }
-        None => {
-            println!("[ERROR] Could not find the collaborator with id {:?}", id);
+        _ => {
+            print_log("ERROR SELECT", "Collaborator", &user_id);
             Ok(HttpResponse::InternalServerError().body("Could not find collaborator"))
         }
     }
@@ -259,11 +251,11 @@ async fn api_select_song_by_id(
     };
     match db::db_select::select_song_by_id(&conn, id) {
         Some(song) => {
-            println!("[SELECT] Song {:?}", song);
+            print_log("SELECT", "Song", &song);
             Ok(HttpResponse::Ok().json(song))
         }
-        None => {
-            println!("[ERROR] Could not find the song with id {:?}", id);
+        _ => {
+            print_log("ERROR SELECT", "Song", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find song"))
         }
     }
@@ -277,11 +269,11 @@ async fn api_select_song_by_title(
     let conn = data.db.lock().unwrap();
     match db::db_select::select_song_by_title(&conn, &title) {
         Some(song) => {
-            println!("[SELECT] Song {:?}", song);
+            print_log("SELECT", "Song", &song);
             Ok(HttpResponse::Ok().json(song))
         }
-        None => {
-            println!("[ERROR] Could not find the song with title {:?}", title);
+        _ => {
+            print_log("ERROR SELECT", "Song", &title);
             Ok(HttpResponse::InternalServerError().body("Could not find song"))
         }
     }
@@ -299,11 +291,11 @@ async fn api_select_song_by_artist_id(
     };
     match db::db_select::select_song_by_artist_id(&conn, id) {
         Some(song) => {
-            println!("[SELECT] Song {:?}", song);
+            print_log("SELECT", "Song", &song);
             Ok(HttpResponse::Ok().json(song))
         }
-        None => {
-            println!("[ERROR] Could not find the song with artist_id {:?}", id);
+        _ => {
+            print_log("ERROR SELECT", "Song", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find song"))
         }
     }
@@ -321,11 +313,11 @@ async fn api_select_album_by_id(
     };
     match db::db_select::select_album_by_id(&conn, id) {
         Some(album) => {
-            println!("[SELECT] Album {:?}", album);
+            print_log("SELECT", "Album", &album);
             Ok(HttpResponse::Ok().json(album))
         }
-        None => {
-            println!("[ERROR] Could not find the album with id {:?}", id);
+        _ => {
+            print_log("ERROR SELECT", "Album", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find album"))
         }
     }
@@ -339,11 +331,11 @@ async fn api_select_album_by_title(
     let conn = data.db.lock().unwrap();
     match db::db_select::select_album_by_title(&conn, &title) {
         Some(album) => {
-            println!("[SELECT] Album {:?}", album);
+            print_log("SELECT", "Album", &album);
             Ok(HttpResponse::Ok().json(album))
         }
-        None => {
-            println!("[ERROR] Could not find the album with title {:?}", title);
+        _ => {
+            print_log("ERROR SELECT", "Album", &title);
             Ok(HttpResponse::InternalServerError().body("Could not find album"))
         }
     }
@@ -361,11 +353,11 @@ async fn api_select_album_by_artist_id(
     };
     match db::db_select::select_album_by_artist_id(&conn, id) {
         Some(album) => {
-            println!("[SELECT] Album {:?}", album);
+            print_log("SELECT", "Album", &album);
             Ok(HttpResponse::Ok().json(album))
         }
-        None => {
-            println!("[ERROR] Could not find the album with artist_id {:?}", id);
+        _ => {
+            print_log("ERROR SELECT", "Album", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find album"))
         }
     }
@@ -383,11 +375,11 @@ async fn api_select_playlist_by_id(
     };
     match db::db_select::select_playlist_by_id(&conn, id) {
         Some(playlist) => {
-            println!("[SELECT] Playlist {:?}", playlist);
+            print_log("SELECT", "Playlist", &playlist);
             Ok(HttpResponse::Ok().json(playlist))
         }
-        None => {
-            println!("[ERROR] Could not find the playlist with id {:?}", id);
+        _ => {
+            print_log("ERROR SELECT", "Playlist", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find playlist"))
         }
     }
@@ -401,11 +393,11 @@ async fn api_select_playlist_by_title(
     let conn = data.db.lock().unwrap();
     match db::db_select::select_playlist_by_title(&conn, &title) {
         Some(playlist) => {
-            println!("[SELECT] Playlist {:?}", playlist);
+            print_log("SELECT", "Playlist", &playlist);
             Ok(HttpResponse::Ok().json(playlist))
         }
-        None => {
-            println!("[ERROR] Could not find the playlist with title {:?}", title);
+        _ => {
+            print_log("ERROR SELECT", "Playlist", &title);
             Ok(HttpResponse::InternalServerError().body("Could not find playlist"))
         }
     }
@@ -414,20 +406,20 @@ async fn api_select_playlist_by_title(
 #[get("/select/playlist/user_id/{user_id}")]
 async fn api_select_playlist_by_user_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    user_id: web::Path<String>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
+    let id = match user_id.parse::<i64>() {
         Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
         Ok(id) => id,
     };
     match db::db_select::select_playlist_by_user_id(&conn, id) {
         Some(playlist) => {
-            println!("[SELECT] Playlist {:?}", playlist);
+            print_log("SELECT", "Playlist", &playlist);
             Ok(HttpResponse::Ok().json(playlist))
         }
-        None => {
-            println!("[ERROR] Could not find the playlist with user_id {:?}", id);
+        _ => {
+            print_log("ERROR SELECT", "Playlist", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find playlist"))
         }
     }
@@ -436,23 +428,20 @@ async fn api_select_playlist_by_user_id(
 #[get("/select/user_likes_song/user_id/{user_id}")]
 async fn api_select_user_likes_song_by_user_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    user_id: web::Path<String>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
+    let id = match user_id.parse::<i64>() {
         Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
         Ok(id) => id,
     };
     match db::db_select::select_user_likes_song_by_user_id(&conn, id) {
         Some(user_likes_song) => {
-            println!("[SELECT] UserLikesSong {:?}", user_likes_song);
+            print_log("SELECT", "UserLikesSong", &user_likes_song);
             Ok(HttpResponse::Ok().json(user_likes_song))
         }
-        None => {
-            println!(
-                "[ERROR] Could not find user likes song with user_id {:?}",
-                id
-            );
+        _ => {
+            print_log("ERROR SELECT", "UserLikesSong", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find user likes song"))
         }
     }
@@ -461,23 +450,20 @@ async fn api_select_user_likes_song_by_user_id(
 #[get("/select/user_likes_song/song_id/{song_id}")]
 async fn api_select_user_likes_song_by_song_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    song_id: web::Path<String>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
+    let id = match song_id.parse::<i64>() {
         Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
         Ok(id) => id,
     };
     match db::db_select::select_user_likes_song_by_song_id(&conn, id) {
         Some(user_likes_song) => {
-            println!("[SELECT] UserLikesSong {:?}", user_likes_song);
+            print_log("SELECT", "UserLikesSong", &user_likes_song);
             Ok(HttpResponse::Ok().json(user_likes_song))
         }
-        None => {
-            println!(
-                "[ERROR] Could not find user likes song with song_id {:?}",
-                id
-            );
+        _ => {
+            print_log("ERROR SELECT", "UserLikesSong", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find user likes song"))
         }
     }
@@ -495,14 +481,11 @@ async fn api_select_user_likes_album_by_user_id(
     };
     match db::db_select::select_user_likes_album_by_user_id(&conn, id) {
         Some(user_likes_album) => {
-            println!("[SELECT] UserLikesAlbum {:?}", user_likes_album);
+            print_log("SELECT", "UserLikesAlbum", &user_likes_album);
             Ok(HttpResponse::Ok().json(user_likes_album))
         }
-        None => {
-            println!(
-                "[ERROR] Could not find user likes album with user_id {:?}",
-                id
-            );
+        _ => {
+            print_log("ERROR SELECT", "UserLikesAlbum", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find user likes album"))
         }
     }
@@ -520,14 +503,11 @@ async fn api_select_user_likes_album_by_album_id(
     };
     match db::db_select::select_user_likes_album_by_album_id(&conn, id) {
         Some(user_likes_album) => {
-            println!("[SELECT] UserLikesAlbum {:?}", user_likes_album);
+            print_log("SELECT", "UserLikesAlbum", &user_likes_album);
             Ok(HttpResponse::Ok().json(user_likes_album))
         }
-        None => {
-            println!(
-                "[ERROR] Could not find user likes album with album_id {:?}",
-                id
-            );
+        _ => {
+            print_log("ERROR SELECT", "UserLikesAlbum", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find user likes album"))
         }
     }
@@ -545,14 +525,11 @@ async fn api_select_user_likes_playlist_by_user_id(
     };
     match db::db_select::select_user_likes_playlist_by_user_id(&conn, id) {
         Some(user_likes_playlist) => {
-            println!("[SELECT] UserLikesPlaylist {:?}", user_likes_playlist);
+            print_log("SELECT", "UserLikesPlaylist", &user_likes_playlist);
             Ok(HttpResponse::Ok().json(user_likes_playlist))
         }
-        None => {
-            println!(
-                "[ERROR] Could not find user likes playlist with user_id {:?}",
-                id
-            );
+        _ => {
+            print_log("ERROR SELECT", "UserLikesAlbum", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find user likes playlist"))
         }
     }
@@ -570,14 +547,11 @@ async fn api_select_user_likes_playlist_by_playlist_id(
     };
     match db::db_select::select_user_likes_playlist_by_playlist_id(&conn, id) {
         Some(user_likes_playlist) => {
-            println!("[SELECT] UserLikesPlaylist {:?}", user_likes_playlist);
+            print_log("SELECT", "UserLikesPlaylist", &user_likes_playlist);
             Ok(HttpResponse::Ok().json(user_likes_playlist))
         }
-        None => {
-            println!(
-                "[ERROR] Could not find user likes playlist with playlist_id {:?}",
-                id
-            );
+        _ => {
+            print_log("ERROR SELECT", "UserLikesAlbum", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find user likes playlist"))
         }
     }
@@ -595,11 +569,11 @@ async fn api_select_song_album_by_song_id(
     };
     match db::db_select::select_song_album_by_song_id(&conn, id) {
         Some(song_album) => {
-            println!("[SELECT] SongAlbum {:?}", song_album);
+            print_log("SELECT", "SongAlbum", &song_album);
             Ok(HttpResponse::Ok().json(song_album))
         }
-        None => {
-            println!("[ERROR] Could not find song album with song_id {:?}", id);
+        _ => {
+            print_log("ERROR SELECT", "SongAlbum", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find song album"))
         }
     }
@@ -617,11 +591,11 @@ async fn api_select_song_album_by_album_id(
     };
     match db::db_select::select_song_album_by_album_id(&conn, id) {
         Some(song_album) => {
-            println!("[SELECT] SongAlbum {:?}", song_album);
+            print_log("SELECT", "SongAlbum", &song_album);
             Ok(HttpResponse::Ok().json(song_album))
         }
-        None => {
-            println!("[ERROR] Could not find song album with album_id {:?}", id);
+        _ => {
+            print_log("ERROR SELECT", "SongAlbum", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find song album"))
         }
     }
@@ -639,11 +613,11 @@ async fn api_select_song_playlist_by_song_id(
     };
     match db::db_select::select_song_playlist_by_song_id(&conn, id) {
         Some(song_playlist) => {
-            println!("[SELECT] SongPlaylist {:?}", song_playlist);
+            print_log("SELECT", "SongPlaylist", &song_playlist);
             Ok(HttpResponse::Ok().json(song_playlist))
         }
-        None => {
-            println!("[ERROR] Could not find song playlist with song_id {:?}", id);
+        _ => {
+            print_log("ERROR SELECT", "SongPlaylist", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find song playlist"))
         }
     }
@@ -661,14 +635,11 @@ async fn api_select_song_playlist_by_playlist_id(
     };
     match db::db_select::select_song_playlist_by_playlist_id(&conn, id) {
         Some(song_playlist) => {
-            println!("[SELECT] SongPlaylist {:?}", song_playlist);
+            print_log("SELECT", "SongPlaylist", &song_playlist);
             Ok(HttpResponse::Ok().json(song_playlist))
         }
-        None => {
-            println!(
-                "[ERROR] Could not find song playlist with playlist_id {:?}",
-                id
-            );
+        _ => {
+            print_log("ERROR SELECT", "SongPlaylist", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find song playlist"))
         }
     }
@@ -686,11 +657,11 @@ async fn api_select_history_by_user_id(
     };
     match db::db_select::select_history_by_user_id(&conn, id) {
         Some(history) => {
-            println!("[SELECT] History {:?}", history);
+            print_log("SELECT", "History", &history);
             Ok(HttpResponse::Ok().json(history))
         }
-        None => {
-            println!("[ERROR] Could not find history with user_id {:?}", id);
+        _ => {
+            print_log("ERROR SELECT", "History", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find history"))
         }
     }
@@ -708,11 +679,11 @@ async fn api_select_history_by_song_id(
     };
     match db::db_select::select_history_by_song_id(&conn, id) {
         Some(history) => {
-            println!("[SELECT] History {:?}", history);
+            print_log("SELECT", "History", &history);
             Ok(HttpResponse::Ok().json(history))
         }
-        None => {
-            println!("[ERROR] Could not find history with song_id {:?}", id);
+        _ => {
+            print_log("ERROR SELECT", "History", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find history"))
         }
     }

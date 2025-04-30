@@ -8,11 +8,15 @@ CREATE TABLE User (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
-    password_salt TEXT NOT NULL,
     last_connection INTEGER,
     creation_date INTEGER,
     profile_picture TEXT
+);
+
+CREATE TABLE Credentials (
+    user_id INTEGER PRIMARY KEY,
+    password_hash TEXT NOT NULL,
+    password_salt TEXT NOT NULL
 );
 
 CREATE TABLE Artist (
@@ -132,10 +136,8 @@ CREATE TABLE CollaboratorRequest (
 );
 
 CREATE TABLE AuthMap (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id INTEGER UNIQUE,
+  user_id INTEGER PRIMARY KEY,
   auth_hash TEXT NOT NULL,
   permission_level INTEGER,
-  expiration_date INTEGER,
   FOREIGN KEY (user_id) REFERENCES User(id)
 );

@@ -1,29 +1,31 @@
+use crate::api::api_utils::print_log;
 use crate::db;
 use crate::db::db_exist::{
     admin_exist_by_user_id, artist_exist_by_user_id, authmap_exist_by_hash,
     authmap_exist_by_user_id, collaborator_exist_by_user_id,
 };
-use crate::db::db_security::is_valid_expiration_date;
-use crate::{
-    api::run_api::AppState,
-    db::structs::{AuthMap, User},
-};
+use crate::{api::run_api::AppState, db::structs::AuthMap};
 use actix_web::{get, web, HttpResponse, Responder};
-use std::time::{SystemTime, UNIX_EPOCH};
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[get("/fts-login")]
+#[derive(Debug, Serialize, Deserialize)]
+struct AuthInfo {
+    user_id: i64,
+    password: String,
+}
+
+#[get("/fts_login")]
 async fn api_security_login(
     data: web::Data<AppState>,
-    user_cred: web::Json<User>,
+    auth_info: web::Json<AuthInfo>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
+
     // Check if user already have authenticate certificate and return it
-    if authmap_exist_by_user_id(&conn, user_cred.id) {
-        let authmap = db::db_select::select_authmap_by_user_id(&conn, user_cred.id).unwrap();
-        if is_valid_expiration_date(&conn, &authmap.auth_hash) {
-            return Ok(HttpResponse::Ok().json(format!("{{auth_hash:{}}}", authmap.auth_hash)));
-        }
+    if authmap_exist_by_user_id(&conn, auth_info.user_id) {
+        let authmap = db::db_select::select_authmap_by_user_id(&conn, auth_info.user_id).unwrap();
+        return Ok(HttpResponse::Ok().json(format!("{{auth_hash:{}}}", authmap.auth_hash)));
     }
 
     // Create a unique uuid hash
@@ -36,87 +38,48 @@ async fn api_security_login(
     }
 
     // Else create one and return it
-    match db::db_exist::user_exist_by_email(&conn, &user_cred.email) {
+    match db::db_exist::user_exist_by_id(&conn, auth_info.user_id) {
         true => {
-            let auth_id;
-            // Check if admin/artist/collab/user
-            if admin_exist_by_user_id(&conn, user_cred.id) {
-                auth_id = db::db_insert::insert_authmap(
-                    &conn,
-                    &AuthMap {
-                        id: -1,
-                        user_id: user_cred.id,
-                        auth_hash: format!("{}", auth_hash.unwrap()),
-                        permission_level: 3,
-                        expiration_date: SystemTime::now()
-                            .duration_since(UNIX_EPOCH)
-                            .unwrap()
-                            .as_secs() as i32
-                            + 3600,
+            let _ = match db::db_insert::insert_authmap(
+                &conn,
+                &AuthMap {
+                    user_id: auth_info.user_id,
+                    auth_hash: format!(
+                        "{}",
+                        match auth_hash {
+                            Some(h) => h,
+                            None =>
+                                return Ok(
+                                    HttpResponse::InternalServerError().body("Could not get hash")
+                                ),
+                        }
+                    ),
+                    permission_level: match auth_info.user_id {
+                        id if admin_exist_by_user_id(&conn, id) => 3,
+                        id if collaborator_exist_by_user_id(&conn, id) => 2,
+                        id if artist_exist_by_user_id(&conn, id) => 1,
+                        _ => 0,
                     },
-                )
-                .unwrap();
-            } else if artist_exist_by_user_id(&conn, user_cred.id) {
-                auth_id = db::db_insert::insert_authmap(
-                    &conn,
-                    &AuthMap {
-                        id: -1,
-                        user_id: user_cred.id,
-                        auth_hash: format!("{}", auth_hash.unwrap()),
-                        permission_level: 1,
-                        expiration_date: SystemTime::now()
-                            .duration_since(UNIX_EPOCH)
-                            .unwrap()
-                            .as_secs() as i32
-                            + 3600,
-                    },
-                )
-                .unwrap();
-            } else if collaborator_exist_by_user_id(&conn, user_cred.id) {
-                auth_id = db::db_insert::insert_authmap(
-                    &conn,
-                    &AuthMap {
-                        id: -1,
-                        user_id: user_cred.id,
-                        auth_hash: format!("{}", auth_hash.unwrap()),
-                        permission_level: 2,
-                        expiration_date: SystemTime::now()
-                            .duration_since(UNIX_EPOCH)
-                            .unwrap()
-                            .as_secs() as i32
-                            + 3600,
-                    },
-                )
-                .unwrap();
-            } else {
-                auth_id = db::db_insert::insert_authmap(
-                    &conn,
-                    &AuthMap {
-                        id: -1,
-                        user_id: user_cred.id,
-                        auth_hash: format!("{}", auth_hash.unwrap()),
-                        permission_level: 0,
-                        expiration_date: SystemTime::now()
-                            .duration_since(UNIX_EPOCH)
-                            .unwrap()
-                            .as_secs() as i32
-                            + 3600,
-                    },
-                )
-                .unwrap();
-            }
+                },
+            ) {
+                Some(id) => id,
+                None => return Ok(HttpResponse::InternalServerError().body("Could not save hash")),
+            };
 
-            let auth_hash = db::db_select::select_authmap_by_id(&conn, auth_id).unwrap();
+            let auth_map = match db::db_select::select_authmap_by_user_id(&conn, auth_info.user_id)
+            {
+                Some(authmap) => authmap,
+                None => {
+                    return Ok(HttpResponse::InternalServerError().body("Could not select hash"));
+                }
+            };
 
-            println!("[AUTHMAP] User {:?}", user_cred);
-            Ok(HttpResponse::Ok().json(format!("{{auth_hash:{}}}", auth_hash.auth_hash)))
+            print_log("AUTHMAP", "AuthMap", &auth_map);
+            Ok(HttpResponse::Ok().json(format!("{{auth_hash:{}}}", auth_map.auth_hash)))
         }
         false => {
-            println!(
-                "[AUTHMAP ERROR] Could not authenticate user {:?}",
-                user_cred
-            );
-            Ok(HttpResponse::InternalServerError().body("Could not authenticate user."))
+            print_log("ERROR AUTHMAP", "User id", &auth_info.user_id);
+            Ok(HttpResponse::InternalServerError().body("User does not exist"))
         }
     }
 }

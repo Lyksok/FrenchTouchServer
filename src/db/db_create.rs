@@ -12,7 +12,7 @@ fn get_schema(schema_path: &str) -> std::io::Result<String> {
     }
 }
 
-pub fn create_db(conn: Connection) -> std::io::Result<()> {
+pub fn create_db(conn: Connection) -> Connection {
     let schema_file: String = get_schema("schema.sql").expect("Could not retrieve schema");
     let schemas: Vec<String> = schema_file
         .split("\n\n")
@@ -22,5 +22,5 @@ pub fn create_db(conn: Connection) -> std::io::Result<()> {
     for query in schemas.iter() {
         conn.execute(query, []).expect("Create query failed");
     }
-    Ok(())
+    conn
 }

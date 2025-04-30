@@ -1,4 +1,4 @@
-use super::{db_create, db_insert, db_select, db_utils};
+use super::{db_create, db_select, db_utils};
 use std::io::Error;
 use text_io::read;
 
@@ -11,7 +11,6 @@ pub fn db_main() -> Result<(), Error> {
         "1. Create database",
         "2. Select user usernames",
         "3. Select user by email",
-        "4. Insert user in database",
     ];
     for s in &queries {
         println!("{}", s);
@@ -19,20 +18,18 @@ pub fn db_main() -> Result<(), Error> {
     print!("Your choice (0..{}): ", queries.len() - 1);
     let e = match read!() {
         0 => Ok(()),
-        1 => db_create::create_db(conn),
+        1 => {
+            let _ = db_create::create_db(conn);
+            Ok(())
+        }
         2 => {
             let usernames = db_select::select_usernames(conn);
             println!("{:?}", usernames);
             Ok(())
         }
         3 => {
-            let user = db_select::dev_select_user_by_email(conn).expect("Error with rusqlite");
-            let user_json = serde_json::to_string(&user).expect("Could not parse to JSON");
-            println!("{}", user_json);
-            Ok(())
-        }
-        4 => {
-            db_insert::dev_insert_user(conn);
+            let user = db_select::dev_select_user_by_email(conn);
+            println!("{:?}", user);
             Ok(())
         }
         _ => Ok(()),

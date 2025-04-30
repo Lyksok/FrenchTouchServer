@@ -12,11 +12,16 @@ pub struct User {
     pub id: i64,
     pub username: String,
     pub email: String,
-    pub password_hash: String,
-    pub password_salt: String,
     pub last_connection: i32,
     pub creation_date: i32,
     pub profile_picture: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Credentials {
+    pub user_id: i64,
+    pub password_hash: String,
+    pub password_salt: String,
 }
 
 #[allow(dead_code)]
@@ -143,10 +148,8 @@ pub struct CollaboratorRequest {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AuthMap {
-    pub id: i64,
     pub user_id: i64,
     pub auth_hash: String,
     // 0:User 1:Artist 2:Collaborator 3:Admin
     pub permission_level: i32,
-    pub expiration_date: i32,
 }

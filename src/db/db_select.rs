@@ -23,37 +23,33 @@ pub fn select_admin_by_user_id(conn: &Connection, user_id: i64) -> Option<Admin>
 }
 
 pub fn select_user_by_email(conn: &Connection, email: &str) -> Option<User> {
-    conn.query_row("SELECT id,username,email,password_hash,password_salt,last_connection,creation_date,profile_picture FROM User WHERE email LIKE ?1", params![email], |row| {
+    conn.query_row("SELECT id,username,email,last_connection,creation_date,profile_picture FROM User WHERE email LIKE ?1", params![email], |row| {
         Ok(User {
             id: row.get(0)?,
             username: row.get(1)?,
             email: row.get(2)?,
-            password_hash: row.get(3)?,
-            password_salt: row.get(4)?,
-            last_connection: row.get(5)?,
-            creation_date: row.get(6)?,
-            profile_picture: row.get(7)?,
+            last_connection: row.get(3)?,
+            creation_date: row.get(4)?,
+            profile_picture: row.get(5)?,
         })
     }).ok()
 }
 
 pub fn select_user_by_id(conn: &Connection, id: i64) -> Option<User> {
-    conn.query_row("SELECT id,username,email,password_hash,password_salt,last_connection,creation_date,profile_picture FROM User WHERE id=?1", params![id], |row| {
+    conn.query_row("SELECT id,username,email,last_connection,creation_date,profile_picture FROM User WHERE id=?1", params![id], |row| {
         Ok(User {
             id: row.get(0)?,
             username: row.get(1)?,
             email: row.get(2)?,
-            password_hash: row.get(3)?,
-            password_salt: row.get(4)?,
-            last_connection: row.get(5)?,
-            creation_date: row.get(6)?,
-            profile_picture: row.get(7)?,
+            last_connection: row.get(3)?,
+            creation_date: row.get(4)?,
+            profile_picture: row.get(5)?,
         })
     }).ok()
 }
 
 pub fn select_user_by_username(conn: &Connection, username: &str) -> Option<Vec<User>> {
-    let mut query = match conn.prepare("SELECT id,username,email,password_hash,password_salt,last_connection,creation_date,profile_picture FROM User WHERE username LIKE ?1") {
+    let mut query = match conn.prepare("SELECT id,username,email,last_connection,creation_date,profile_picture FROM User WHERE username LIKE ?1") {
         Ok(query) => query,
         Err(_) => return None,
     };
@@ -63,11 +59,9 @@ pub fn select_user_by_username(conn: &Connection, username: &str) -> Option<Vec<
             id: row.get(0)?,
             username: row.get(1)?,
             email: row.get(2)?,
-            password_hash: row.get(3)?,
-            password_salt: row.get(4)?,
-            last_connection: row.get(5)?,
-            creation_date: row.get(6)?,
-            profile_picture: row.get(7)?,
+            last_connection: row.get(3)?,
+            creation_date: row.get(4)?,
+            profile_picture: row.get(5)?,
         })
     }) {
         Ok(it) => it,
@@ -931,38 +925,17 @@ pub fn select_history_by_song_id(conn: &Connection, id: i64) -> Option<Vec<Histo
     Some(res)
 }
 
-pub fn select_authmap_by_id(conn: &Connection, id: i64) -> Option<AuthMap> {
-    conn.query_row(
-        "SELECT id,user_id,auth_hash,permission_level,expiration_date \
-        FROM AuthMap \
-        WHERE AuthMap.id=?1",
-        params![id],
-        |row| {
-            Ok(AuthMap {
-                id: row.get(0)?,
-                user_id: row.get(1)?,
-                auth_hash: row.get(2)?,
-                permission_level: row.get(3)?,
-                expiration_date: row.get(4)?,
-            })
-        },
-    )
-    .ok()
-}
-
 pub fn select_authmap_by_auth_hash(conn: &Connection, auth_hash: &str) -> Option<AuthMap> {
     conn.query_row(
-        "SELECT id,user_id,auth_hash,permission_level,expiration_date \
+        "SELECT user_id,auth_hash,permission_level \
         FROM AuthMap \
         WHERE AuthMap.auth_hash LIKE ?1",
         params![auth_hash],
         |row| {
             Ok(AuthMap {
-                id: row.get(0)?,
-                user_id: row.get(1)?,
-                auth_hash: row.get(2)?,
-                permission_level: row.get(3)?,
-                expiration_date: row.get(4)?,
+                user_id: row.get(0)?,
+                auth_hash: row.get(1)?,
+                permission_level: row.get(2)?,
             })
         },
     )
@@ -971,17 +944,15 @@ pub fn select_authmap_by_auth_hash(conn: &Connection, auth_hash: &str) -> Option
 
 pub fn select_authmap_by_user_id(conn: &Connection, user_id: i64) -> Option<AuthMap> {
     conn.query_row(
-        "SELECT id,user_id,auth_hash,permission_level,expiration_date \
+        "SELECT user_id,auth_hash,permission_level \
         FROM AuthMap \
         WHERE AuthMap.user_id=?1",
         params![user_id],
         |row| {
             Ok(AuthMap {
-                id: row.get(0)?,
-                user_id: row.get(1)?,
-                auth_hash: row.get(2)?,
-                permission_level: row.get(3)?,
-                expiration_date: row.get(4)?,
+                user_id: row.get(0)?,
+                auth_hash: row.get(1)?,
+                permission_level: row.get(2)?,
             })
         },
     )
@@ -991,7 +962,9 @@ pub fn select_authmap_by_user_id(conn: &Connection, user_id: i64) -> Option<Auth
 // =================================================================== DEV ZONE
 
 pub fn select_usernames(conn: Connection) -> Option<Vec<(i64, String)>> {
-    let mut format = match conn.prepare("SELECT id, username, email, password_hash, password_salt, last_connection, creation_date, profile_picture FROM User") {
+    let mut format = match conn.prepare(
+        "SELECT id, username, email, last_connection, creation_date, profile_picture FROM User",
+    ) {
         Ok(fmt) => fmt,
         Err(_) => return None,
     };
@@ -1000,8 +973,6 @@ pub fn select_usernames(conn: Connection) -> Option<Vec<(i64, String)>> {
             id: row.get(0)?,
             username: row.get(1)?,
             email: String::new(),
-            password_hash: String::new(),
-            password_salt: String::new(),
             last_connection: 0,
             creation_date: 0,
             profile_picture: None,

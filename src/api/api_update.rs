@@ -24,7 +24,7 @@ async fn api_update_user_profile_picture(
     println!("/users/update: json={:?}", &user_data);
     match db::db_update::update_user_profile_picture(&conn, &user_data) {
         Ok(()) => Ok(HttpResponse::Ok().json("")),
-        Err(e) => Ok(HttpResponse::InternalServerError().body(format!("Error: {}", e))),
+        Err(e) => Ok(HttpResponse::InternalServerError().body(e)),
     }
 }
 
@@ -42,6 +42,6 @@ async fn api_update_user_last_connection(
     println!("/users/update: json={:?}", &user_data);
     match db::db_update::update_user_last_connection(&conn, &user_data) {
         Ok(()) => Ok(HttpResponse::Ok().json("")),
-        Err(e) => Ok(HttpResponse::InternalServerError().body(format!("Error: {}", e))),
+        Err(e) => Ok(HttpResponse::InternalServerError().body(e)),
     }
 }
