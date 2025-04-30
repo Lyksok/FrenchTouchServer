@@ -1,5 +1,6 @@
 use actix_web::{post, web, HttpResponse, Responder};
 
+use crate::api::api_utils::print_log;
 use crate::api::run_api::AppState;
 use crate::db;
 use crate::db::structs::{
@@ -17,11 +18,11 @@ async fn api_insert_user(
     match db::db_insert::insert_user(&conn, &user_data) {
         Some(id) => {
             user_data.id = id;
-            println!("[INSERT] User {:?}", user_data);
+            print_log("INSERT", "User", &user_data);
             Ok(HttpResponse::Ok().json(user_data))
         }
         _ => {
-            println!("[ERROR] Could not insert user {:?}", user_data);
+            print_log("ERROR INSERT", "User", &user_data);
             Ok(HttpResponse::InternalServerError().body("Could not insert user."))
         }
     }
@@ -36,11 +37,11 @@ async fn api_insert_artist(
     match db::db_insert::insert_artist(&conn, &artist_data) {
         Some(id) => {
             artist_data.id = id;
-            println!("[INSERT] Artist {:?}", artist_data);
+            print_log("INSERT", "Artist", &artist_data);
             Ok(HttpResponse::Ok().json(artist_data))
         }
         None => {
-            println!("[ERROR] Could not insert artist {:?}", artist_data);
+            print_log("ERROR INSERT", "Artist", &artist_data);
             Ok(HttpResponse::InternalServerError().body("Could not insert artist."))
         }
     }
