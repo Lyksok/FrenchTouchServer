@@ -5,14 +5,10 @@ use actix_web::{get, web, HttpResponse, Responder};
 #[get("/select/admin/user_id/{user_id}")]
 async fn api_select_admin_by_user_id(
     data: web::Data<AppState>,
-    user_id: web::Path<String>,
+    user_id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match user_id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_admin_by_user_id(&conn, id) {
+    match db::db_select::select_admin_by_user_id(&conn, *user_id) {
         Some(admin) => {
             print_log("SELECT", "Admin", &admin);
             Ok(HttpResponse::Ok().json(admin))
@@ -46,14 +42,10 @@ async fn api_select_user_by_email(
 #[get("/select/user/id/{id}")]
 async fn api_select_user_by_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_user_by_id(&conn, id) {
+    match db::db_select::select_user_by_id(&conn, *id) {
         Some(user) => {
             print_log("SELECT", "User", &user);
             Ok(HttpResponse::Ok().json(user))
@@ -119,14 +111,10 @@ async fn api_select_artist_by_email(
 #[get("/select/artist/id/{id}")]
 async fn api_select_artist_by_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_artist_by_id(&conn, id) {
+    match db::db_select::select_artist_by_id(&conn, *id) {
         Some(artist) => {
             print_log("SELECT", "Artist", &artist);
             Ok(HttpResponse::Ok().json(artist))
@@ -159,14 +147,10 @@ async fn api_select_artist_by_username(
 #[get("/select/artist/user_id/{user_id}")]
 async fn api_select_artist_by_user_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_artist_by_user_id(&conn, id) {
+    match db::db_select::select_artist_by_user_id(&conn, *id) {
         Some(artists) => {
             print_log("SELECT", "Artist", &artists);
             Ok(HttpResponse::Ok().json(artists))
@@ -199,14 +183,10 @@ async fn api_select_collaborator_by_email(
 #[get("/select/collaborator/id/{id}")]
 async fn api_select_collaborator_by_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_collaborator_by_id(&conn, id) {
+    match db::db_select::select_collaborator_by_id(&conn, *id) {
         Some(collaborator) => {
             print_log("SELECT", "Collaborator", &collaborator);
             Ok(HttpResponse::Ok().json(collaborator))
@@ -221,14 +201,10 @@ async fn api_select_collaborator_by_id(
 #[get("/select/collaborator/user_id/{user_id}")]
 async fn api_select_collaborator_by_user_id(
     data: web::Data<AppState>,
-    user_id: web::Path<String>,
+    user_id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match user_id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_collaborator_by_user_id(&conn, id) {
+    match db::db_select::select_collaborator_by_user_id(&conn, *user_id) {
         Some(collaborator) => {
             print_log("SELECT", "Collaborator", &collaborator);
             Ok(HttpResponse::Ok().json(collaborator))
@@ -242,14 +218,10 @@ async fn api_select_collaborator_by_user_id(
 #[get("/select/song/id/{id}")]
 async fn api_select_song_by_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_song_by_id(&conn, id) {
+    match db::db_select::select_song_by_id(&conn, *id) {
         Some(song) => {
             print_log("SELECT", "Song", &song);
             Ok(HttpResponse::Ok().json(song))
@@ -282,14 +254,10 @@ async fn api_select_song_by_title(
 #[get("/select/song/artist_id/{artist_id}")]
 async fn api_select_song_by_artist_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_song_by_artist_id(&conn, id) {
+    match db::db_select::select_song_by_artist_id(&conn, *id) {
         Some(song) => {
             print_log("SELECT", "Song", &song);
             Ok(HttpResponse::Ok().json(song))
@@ -304,14 +272,10 @@ async fn api_select_song_by_artist_id(
 #[get("/select/album/id/{id}")]
 async fn api_select_album_by_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_album_by_id(&conn, id) {
+    match db::db_select::select_album_by_id(&conn, *id) {
         Some(album) => {
             print_log("SELECT", "Album", &album);
             Ok(HttpResponse::Ok().json(album))
@@ -344,14 +308,10 @@ async fn api_select_album_by_title(
 #[get("/select/album/artist_id/{artist_id}")]
 async fn api_select_album_by_artist_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_album_by_artist_id(&conn, id) {
+    match db::db_select::select_album_by_artist_id(&conn, *id) {
         Some(album) => {
             print_log("SELECT", "Album", &album);
             Ok(HttpResponse::Ok().json(album))
@@ -366,14 +326,10 @@ async fn api_select_album_by_artist_id(
 #[get("/select/playlist/id/{id}")]
 async fn api_select_playlist_by_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_playlist_by_id(&conn, id) {
+    match db::db_select::select_playlist_by_id(&conn, *id) {
         Some(playlist) => {
             print_log("SELECT", "Playlist", &playlist);
             Ok(HttpResponse::Ok().json(playlist))
@@ -406,20 +362,16 @@ async fn api_select_playlist_by_title(
 #[get("/select/playlist/user_id/{user_id}")]
 async fn api_select_playlist_by_user_id(
     data: web::Data<AppState>,
-    user_id: web::Path<String>,
+    user_id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match user_id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_playlist_by_user_id(&conn, id) {
+    match db::db_select::select_playlist_by_user_id(&conn, *user_id) {
         Some(playlist) => {
             print_log("SELECT", "Playlist", &playlist);
             Ok(HttpResponse::Ok().json(playlist))
         }
         _ => {
-            print_log("ERROR SELECT", "Playlist", &id);
+            print_log("ERROR SELECT", "Playlist", &user_id);
             Ok(HttpResponse::InternalServerError().body("Could not find playlist"))
         }
     }
@@ -428,20 +380,16 @@ async fn api_select_playlist_by_user_id(
 #[get("/select/user_likes_song/user_id/{user_id}")]
 async fn api_select_user_likes_song_by_user_id(
     data: web::Data<AppState>,
-    user_id: web::Path<String>,
+    user_id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match user_id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_user_likes_song_by_user_id(&conn, id) {
+    match db::db_select::select_user_likes_song_by_user_id(&conn, *user_id) {
         Some(user_likes_song) => {
             print_log("SELECT", "UserLikesSong", &user_likes_song);
             Ok(HttpResponse::Ok().json(user_likes_song))
         }
         _ => {
-            print_log("ERROR SELECT", "UserLikesSong", &id);
+            print_log("ERROR SELECT", "UserLikesSong", &user_id);
             Ok(HttpResponse::InternalServerError().body("Could not find user likes song"))
         }
     }
@@ -450,20 +398,16 @@ async fn api_select_user_likes_song_by_user_id(
 #[get("/select/user_likes_song/song_id/{song_id}")]
 async fn api_select_user_likes_song_by_song_id(
     data: web::Data<AppState>,
-    song_id: web::Path<String>,
+    song_id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match song_id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_user_likes_song_by_song_id(&conn, id) {
+    match db::db_select::select_user_likes_song_by_song_id(&conn, *song_id) {
         Some(user_likes_song) => {
             print_log("SELECT", "UserLikesSong", &user_likes_song);
             Ok(HttpResponse::Ok().json(user_likes_song))
         }
         _ => {
-            print_log("ERROR SELECT", "UserLikesSong", &id);
+            print_log("ERROR SELECT", "UserLikesSong", &song_id);
             Ok(HttpResponse::InternalServerError().body("Could not find user likes song"))
         }
     }
@@ -472,14 +416,10 @@ async fn api_select_user_likes_song_by_song_id(
 #[get("/select/user_likes_album/user_id/{user_id}")]
 async fn api_select_user_likes_album_by_user_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_user_likes_album_by_user_id(&conn, id) {
+    match db::db_select::select_user_likes_album_by_user_id(&conn, *id) {
         Some(user_likes_album) => {
             print_log("SELECT", "UserLikesAlbum", &user_likes_album);
             Ok(HttpResponse::Ok().json(user_likes_album))
@@ -494,14 +434,10 @@ async fn api_select_user_likes_album_by_user_id(
 #[get("/select/user_likes_album/album_id/{album_id}")]
 async fn api_select_user_likes_album_by_album_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_user_likes_album_by_album_id(&conn, id) {
+    match db::db_select::select_user_likes_album_by_album_id(&conn, *id) {
         Some(user_likes_album) => {
             print_log("SELECT", "UserLikesAlbum", &user_likes_album);
             Ok(HttpResponse::Ok().json(user_likes_album))
@@ -516,14 +452,10 @@ async fn api_select_user_likes_album_by_album_id(
 #[get("/select/user_likes_playlist/user_id/{user_id}")]
 async fn api_select_user_likes_playlist_by_user_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_user_likes_playlist_by_user_id(&conn, id) {
+    match db::db_select::select_user_likes_playlist_by_user_id(&conn, *id) {
         Some(user_likes_playlist) => {
             print_log("SELECT", "UserLikesPlaylist", &user_likes_playlist);
             Ok(HttpResponse::Ok().json(user_likes_playlist))
@@ -538,14 +470,10 @@ async fn api_select_user_likes_playlist_by_user_id(
 #[get("/select/user_likes_playlist/playlist_id/{playlist_id}")]
 async fn api_select_user_likes_playlist_by_playlist_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_user_likes_playlist_by_playlist_id(&conn, id) {
+    match db::db_select::select_user_likes_playlist_by_playlist_id(&conn, *id) {
         Some(user_likes_playlist) => {
             print_log("SELECT", "UserLikesPlaylist", &user_likes_playlist);
             Ok(HttpResponse::Ok().json(user_likes_playlist))
@@ -560,14 +488,10 @@ async fn api_select_user_likes_playlist_by_playlist_id(
 #[get("/select/song_album/song_id/{song_id}")]
 async fn api_select_song_album_by_song_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_song_album_by_song_id(&conn, id) {
+    match db::db_select::select_song_album_by_song_id(&conn, *id) {
         Some(song_album) => {
             print_log("SELECT", "SongAlbum", &song_album);
             Ok(HttpResponse::Ok().json(song_album))
@@ -582,14 +506,10 @@ async fn api_select_song_album_by_song_id(
 #[get("/select/song_album/album_id/{album_id}")]
 async fn api_select_song_album_by_album_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_song_album_by_album_id(&conn, id) {
+    match db::db_select::select_song_album_by_album_id(&conn, *id) {
         Some(song_album) => {
             print_log("SELECT", "SongAlbum", &song_album);
             Ok(HttpResponse::Ok().json(song_album))
@@ -604,14 +524,10 @@ async fn api_select_song_album_by_album_id(
 #[get("/select/song_playlist/song_id/{song_id}")]
 async fn api_select_song_playlist_by_song_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_song_playlist_by_song_id(&conn, id) {
+    match db::db_select::select_song_playlist_by_song_id(&conn, *id) {
         Some(song_playlist) => {
             print_log("SELECT", "SongPlaylist", &song_playlist);
             Ok(HttpResponse::Ok().json(song_playlist))
@@ -626,14 +542,10 @@ async fn api_select_song_playlist_by_song_id(
 #[get("/select/song_playlist/playlist_id/{playlist_id}")]
 async fn api_select_song_playlist_by_playlist_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_song_playlist_by_playlist_id(&conn, id) {
+    match db::db_select::select_song_playlist_by_playlist_id(&conn, *id) {
         Some(song_playlist) => {
             print_log("SELECT", "SongPlaylist", &song_playlist);
             Ok(HttpResponse::Ok().json(song_playlist))
@@ -648,14 +560,10 @@ async fn api_select_song_playlist_by_playlist_id(
 #[get("/select/history/user_id/{user_id}")]
 async fn api_select_history_by_user_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_history_by_user_id(&conn, id) {
+    match db::db_select::select_history_by_user_id(&conn, *id) {
         Some(history) => {
             print_log("SELECT", "History", &history);
             Ok(HttpResponse::Ok().json(history))
@@ -670,14 +578,10 @@ async fn api_select_history_by_user_id(
 #[get("/select/history/song_id/{song_id}")]
 async fn api_select_history_by_song_id(
     data: web::Data<AppState>,
-    id: web::Path<String>,
+    id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    let id = match id.parse::<i64>() {
-        Err(_) => return Ok(HttpResponse::BadRequest().body("You did not provide a correct id")),
-        Ok(id) => id,
-    };
-    match db::db_select::select_history_by_song_id(&conn, id) {
+    match db::db_select::select_history_by_song_id(&conn, *id) {
         Some(history) => {
             print_log("SELECT", "History", &history);
             Ok(HttpResponse::Ok().json(history))
