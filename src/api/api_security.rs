@@ -25,6 +25,7 @@ async fn api_security_login(
     // Check if user already have authenticate certificate and return it
     if authmap_exist_by_user_id(&conn, auth_info.user_id) {
         let authmap = db::db_select::select_authmap_by_user_id(&conn, auth_info.user_id).unwrap();
+        print_log("FTS LOGIN", "AuthMap", &authmap);
         return Ok(HttpResponse::Ok().json(format!("{{auth_hash:{}}}", authmap.auth_hash)));
     }
 
@@ -48,10 +49,16 @@ async fn api_security_login(
                         "{}",
                         match auth_hash {
                             Some(h) => h,
-                            None =>
+                            None => {
+                                print_log(
+                                    "ERROR FTS LOGIN",
+                                    "Hash error user id",
+                                    &auth_info.user_id,
+                                );
                                 return Ok(
                                     HttpResponse::InternalServerError().body("Could not get hash")
-                                ),
+                                );
+                            }
                         }
                     ),
                     permission_level: match auth_info.user_id {
@@ -63,22 +70,30 @@ async fn api_security_login(
                 },
             ) {
                 Some(id) => id,
-                None => return Ok(HttpResponse::InternalServerError().body("Could not save hash")),
+                None => {
+                    print_log("ERROR FTS LOGIN", "Insert hash user id", &auth_info.user_id);
+                    return Ok(HttpResponse::InternalServerError().body("Could not save hash"));
+                }
             };
 
             let auth_map = match db::db_select::select_authmap_by_user_id(&conn, auth_info.user_id)
             {
                 Some(authmap) => authmap,
                 None => {
+                    print_log(
+                        "ERROR FTS LOGIN",
+                        "HashMap not found user id",
+                        &auth_info.user_id,
+                    );
                     return Ok(HttpResponse::InternalServerError().body("Could not select hash"));
                 }
             };
 
-            print_log("AUTHMAP", "AuthMap", &auth_map);
+            print_log("FTS LOGIN", "AuthMap", &auth_map);
             Ok(HttpResponse::Ok().json(format!("{{auth_hash:{}}}", auth_map.auth_hash)))
         }
         false => {
-            print_log("ERROR AUTHMAP", "User id", &auth_info.user_id);
+            print_log("ERROR FTS LOGIN", "User id", &auth_info.user_id);
             Ok(HttpResponse::InternalServerError().body("User does not exist"))
         }
     }
