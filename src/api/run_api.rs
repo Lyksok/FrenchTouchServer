@@ -4,6 +4,7 @@ use std::sync::Mutex;
 
 use crate::api::api_files;
 use crate::api::api_insert;
+use crate::api::api_security;
 use crate::api::api_select;
 use crate::api::api_update;
 use crate::db;
@@ -42,6 +43,7 @@ pub async fn run_api() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(shared_state.clone())
+            .service(api_security::api_security_login)
             .service(api_select::api_select_user_by_email)
             .service(api_select::api_select_user_by_id)
             .service(api_select::api_select_user_by_username)
