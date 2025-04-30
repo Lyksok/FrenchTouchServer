@@ -1,9 +1,8 @@
 use crate::api::api_utils::print_log;
-use crate::db;
-use crate::db::db_exist::{
-    admin_exist_by_user_id, artist_exist_by_user_id, authmap_exist_by_hash,
-    authmap_exist_by_user_id, collaborator_exist_by_user_id,
-};
+use crate::db::db_exist::{authmap_exist_by_hash, user_exist_by_id};
+use crate::db::db_security::{check_password, new_hash_password};
+use crate::db::structs::{Credentials, User};
+use crate::db::{self, db_insert, db_select};
 use crate::{api::run_api::AppState, db::structs::AuthMap};
 use actix_web::{get, web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
@@ -11,7 +10,7 @@ use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct AuthInfo {
-    user_id: i64,
+    user: User,
     password: String,
 }
 
@@ -22,80 +21,40 @@ async fn api_security_login(
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
 
-    // Check if user already have authenticate certificate and return it
-    if authmap_exist_by_user_id(&conn, auth_info.user_id) {
-        let authmap = db::db_select::select_authmap_by_user_id(&conn, auth_info.user_id).unwrap();
+    // Check if user is correct (id != -1,id maps to existing user)
+    // If user incorrect -> error
+    let user = auth_info.user.clone();
+    if user.id == -1 || !user_exist_by_id(&conn, user.id) {
+        print_log("ERROR FTS LOGIN", "User", &user);
+        Ok(HttpResponse::InternalServerError().body("User is not valid"))
+    }
+    // If user correct -> check credentials
+    else {
+        let cred = match db::db_select::select_credentials_by_user_id(&conn, user.id) {
+            Some(elt) => elt,
+            None => {
+                print_log("ERROR FTS LOGIN", "User Credentials", &user);
+                return Ok(HttpResponse::InternalServerError().body("Credentials do not exist"));
+            }
+        };
+        if !check_password(
+            &auth_info.password,
+            &cred.password_salt,
+            &cred.password_hash,
+        ) {
+            print_log("ERROR FTS LOGIN", "User password", &user);
+            return Ok(HttpResponse::BadRequest().body("Wrong password"));
+        }
+
+        let authmap = match db::db_select::select_authmap_by_user_id(&conn, user.id) {
+            Some(elt) => elt,
+            None => {
+                print_log("ERROR FTS LOGIN", "User", &user);
+                return Ok(HttpResponse::InternalServerError().body("Hash does not exist"));
+            }
+        };
         print_log("FTS LOGIN", "AuthMap", &authmap);
-        return Ok(HttpResponse::Ok().json(format!("{{auth_hash:{}}}", authmap.auth_hash)));
-    }
-
-    // Create a unique uuid hash
-    let mut auth_hash = None;
-    while auth_hash.is_none() {
-        auth_hash = match Uuid::new_v4() {
-            uuid if authmap_exist_by_hash(&conn, &format!("{}", uuid)) => None,
-            uuid => Some(uuid.hyphenated()),
-        }
-    }
-
-    // Else create one and return it
-    match db::db_exist::user_exist_by_id(&conn, auth_info.user_id) {
-        true => {
-            let _ = match db::db_insert::insert_authmap(
-                &conn,
-                &AuthMap {
-                    user_id: auth_info.user_id,
-                    auth_hash: format!(
-                        "{}",
-                        match auth_hash {
-                            Some(h) => h,
-                            None => {
-                                print_log(
-                                    "ERROR FTS LOGIN",
-                                    "Hash error user id",
-                                    &auth_info.user_id,
-                                );
-                                return Ok(
-                                    HttpResponse::InternalServerError().body("Could not get hash")
-                                );
-                            }
-                        }
-                    ),
-                    permission_level: match auth_info.user_id {
-                        id if admin_exist_by_user_id(&conn, id) => 3,
-                        id if collaborator_exist_by_user_id(&conn, id) => 2,
-                        id if artist_exist_by_user_id(&conn, id) => 1,
-                        _ => 0,
-                    },
-                },
-            ) {
-                Some(id) => id,
-                None => {
-                    print_log("ERROR FTS LOGIN", "Insert hash user id", &auth_info.user_id);
-                    return Ok(HttpResponse::InternalServerError().body("Could not save hash"));
-                }
-            };
-
-            let auth_map = match db::db_select::select_authmap_by_user_id(&conn, auth_info.user_id)
-            {
-                Some(authmap) => authmap,
-                None => {
-                    print_log(
-                        "ERROR FTS LOGIN",
-                        "HashMap not found user id",
-                        &auth_info.user_id,
-                    );
-                    return Ok(HttpResponse::InternalServerError().body("Could not select hash"));
-                }
-            };
-
-            print_log("FTS LOGIN", "AuthMap", &auth_map);
-            Ok(HttpResponse::Ok().json(format!("{{auth_hash:{}}}", auth_map.auth_hash)))
-        }
-        false => {
-            print_log("ERROR FTS LOGIN", "User id", &auth_info.user_id);
-            Ok(HttpResponse::InternalServerError().body("User does not exist"))
-        }
+        Ok(HttpResponse::Ok().json(format!("{{auth_hash:{}}}", authmap.auth_hash)))
     }
 }
 
@@ -105,15 +64,40 @@ async fn api_security_register(
     auth_info: web::Json<AuthInfo>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
+    let mut user = auth_info.user.clone();
 
-    // Check if user already exists
-    if authmap_exist_by_user_id(&conn, auth_info.user_id) {
-        let authmap = db::db_select::select_authmap_by_user_id(&conn, auth_info.user_id).unwrap();
-        print_log("ERROR FTS REGISTER", "AuthMap", &authmap);
+    // Check if user is correct (id == -1)
+    if user.id != -1 {
+        print_log("ERROR FTS REGISTER", "User", &user);
         return Ok(HttpResponse::Ok().body("User already registered"));
     }
+    // Create user
+    let new_id = match db_insert::insert_user(&conn, &user) {
+        Some(id) => id,
+        None => {
+            print_log("ERROR FTS REGISTER", "Insert User", &user);
+            return Ok(HttpResponse::Ok().body("User could not be registered"));
+        }
+    };
+    user.id = new_id;
 
-    // Create a unique uuid hash
+    // Create credentials
+    {
+        let (hash, salt) = new_hash_password(&auth_info.password);
+        let cred = Credentials {
+            user_id: user.id,
+            password_hash: hash,
+            password_salt: salt,
+        };
+        match db_insert::insert_credentials(&conn, &cred) {
+            Some(_) => (),
+            None => {
+                print_log("ERROR FTS REGISTER", "Insert Credentials", &user);
+                return Ok(HttpResponse::Ok().body("User credentials could not be registered"));
+            }
+        }
+    }
+    // Create auth_hash
     let mut auth_hash = None;
     while auth_hash.is_none() {
         auth_hash = match Uuid::new_v4() {
@@ -121,64 +105,33 @@ async fn api_security_register(
             uuid => Some(uuid.hyphenated()),
         }
     }
-
-    // Else create one and return it
-    match db::db_exist::user_exist_by_id(&conn, auth_info.user_id) {
-        true => {
-            let _ = match db::db_insert::insert_authmap(
-                &conn,
-                &AuthMap {
-                    user_id: auth_info.user_id,
-                    auth_hash: format!(
-                        "{}",
-                        match auth_hash {
-                            Some(h) => h,
-                            None => {
-                                print_log(
-                                    "ERROR FTS LOGIN",
-                                    "Hash error user id",
-                                    &auth_info.user_id,
-                                );
-                                return Ok(
-                                    HttpResponse::InternalServerError().body("Could not get hash")
-                                );
-                            }
-                        }
-                    ),
-                    permission_level: match auth_info.user_id {
-                        id if admin_exist_by_user_id(&conn, id) => 3,
-                        id if collaborator_exist_by_user_id(&conn, id) => 2,
-                        id if artist_exist_by_user_id(&conn, id) => 1,
-                        _ => 0,
-                    },
-                },
-            ) {
-                Some(id) => id,
-                None => {
-                    print_log("ERROR FTS LOGIN", "Insert hash user id", &auth_info.user_id);
-                    return Ok(HttpResponse::InternalServerError().body("Could not save hash"));
-                }
-            };
-
-            let auth_map = match db::db_select::select_authmap_by_user_id(&conn, auth_info.user_id)
-            {
-                Some(authmap) => authmap,
-                None => {
-                    print_log(
-                        "ERROR FTS LOGIN",
-                        "HashMap not found user id",
-                        &auth_info.user_id,
-                    );
-                    return Ok(HttpResponse::InternalServerError().body("Could not select hash"));
-                }
-            };
-
-            print_log("FTS LOGIN", "AuthMap", &auth_map);
-            Ok(HttpResponse::Ok().json(format!("{{auth_hash:{}}}", auth_map.auth_hash)))
+    let auth_hash = match auth_hash {
+        Some(h) => h,
+        None => {
+            print_log("ERROR FTS REGISTER", "User hash", &user.id);
+            return Ok(HttpResponse::Ok().body("User hash could not be created"));
         }
-        false => {
-            print_log("ERROR FTS REGISTER", "User id", &auth_info.user_id);
-            Ok(HttpResponse::InternalServerError().body("User does not exist"))
+    };
+    let authmap = AuthMap {
+        user_id: user.id,
+        auth_hash: format!("{}", auth_hash),
+        permission_level: 0,
+    };
+    match db_insert::insert_authmap(&conn, &authmap) {
+        Some(_) => (),
+        None => {
+            print_log("ERROR FTS REGISTER", "Insert AuthMap", &user);
+            return Ok(HttpResponse::Ok().body("User AuthMap could not be registered"));
+        }
+    }
+    match db_select::select_authmap_by_user_id(&conn, user.id) {
+        Some(authmap) => {
+            print_log("FTS REGISTER", "User AutentityentityhMap", &authmap);
+            Ok(HttpResponse::Ok().json(format!("{{auth_hash:{}}}", authmap.auth_hash)))
+        }
+        None => {
+            print_log("ERROR FTS REGISTER", "User AuthMap", &user);
+            Ok(HttpResponse::Ok().body("User hash could not be retrieved"))
         }
     }
 }

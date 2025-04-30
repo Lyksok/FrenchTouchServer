@@ -1,8 +1,8 @@
 use super::{
     db_exist::user_exist_by_email,
     structs::{
-        Admin, Album, Artist, AuthMap, Collaborator, History, Playlist, Song, SongAlbum,
-        SongPlaylist, User, UserLikesAlbum, UserLikesPlaylist, UserLikesSong,
+        Admin, Album, Artist, AuthMap, Collaborator, Credentials, History, Playlist, Song,
+        SongAlbum, SongPlaylist, User, UserLikesAlbum, UserLikesPlaylist, UserLikesSong,
     },
 };
 use rusqlite::{params, Connection};
@@ -33,6 +33,21 @@ pub fn select_user_by_email(conn: &Connection, email: &str) -> Option<User> {
             profile_picture: row.get(5)?,
         })
     }).ok()
+}
+
+pub fn select_credentials_by_user_id(conn: &Connection, user_id: i64) -> Option<Credentials> {
+    conn.query_row(
+        "SELECT user_id,password_hash,password_salt FROM Credentials WHERE user_id=?1",
+        params![user_id],
+        |row| {
+            Ok(Credentials {
+                user_id: row.get(0)?,
+                password_hash: row.get(1)?,
+                password_salt: row.get(2)?,
+            })
+        },
+    )
+    .ok()
 }
 
 pub fn select_user_by_id(conn: &Connection, id: i64) -> Option<User> {

@@ -44,6 +44,7 @@ pub async fn run_api() -> std::io::Result<()> {
         App::new()
             .app_data(shared_state.clone())
             .service(api_security::api_security_login)
+            .service(api_security::api_security_register)
             .service(api_select::api_select_user_by_email)
             .service(api_select::api_select_user_by_id)
             .service(api_select::api_select_user_by_username)
