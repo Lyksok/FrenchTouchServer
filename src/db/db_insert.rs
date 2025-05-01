@@ -263,7 +263,7 @@ pub fn insert_history(conn: &Connection, history: &History) -> Option<i64> {
 
 pub fn insert_authmap(conn: &Connection, auth_map: &AuthMap) -> Option<i64> {
     if !db::db_exist::user_exist_by_id(conn, auth_map.user_id)
-        || !db::db_exist::authmap_exist_by_hash(conn, &auth_map.auth_hash)
+        || db::db_exist::authmap_exist_by_hash(conn, &auth_map.auth_hash)
     {
         return None;
     }
