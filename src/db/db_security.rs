@@ -19,7 +19,7 @@ pub fn has_permissions(conn: &Connection, user: &User, auth_hash: &str, p_level:
 }
 
 pub fn hash_password_with_salt(p: &str, s: Vec<u8>) -> (String, String) {
-    let iterations = 600_000;
+    let iterations = 200_000;
     let mut buf = vec![0u8; 32];
     pbkdf2_hmac::<Sha256>(p.as_bytes(), &s, iterations, &mut buf);
 
