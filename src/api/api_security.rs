@@ -4,7 +4,7 @@ use crate::db::db_security::{check_password, new_hash_password};
 use crate::db::structs::{Credentials, User};
 use crate::db::{self, db_insert, db_select};
 use crate::{api::run_api::AppState, db::structs::AuthMap};
-use actix_web::{get, web, HttpResponse, Responder};
+use actix_web::{post, web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -14,7 +14,7 @@ struct AuthInfo {
     password: String,
 }
 
-#[get("/fts_login")]
+#[post("/fts_login")]
 async fn api_security_login(
     data: web::Data<AppState>,
     auth_info: web::Json<AuthInfo>,
@@ -58,7 +58,7 @@ async fn api_security_login(
     }
 }
 
-#[get("/fts_register")]
+#[post("/fts_register")]
 async fn api_security_register(
     data: web::Data<AppState>,
     auth_info: web::Json<AuthInfo>,
