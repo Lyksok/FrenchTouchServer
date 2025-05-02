@@ -42,3 +42,11 @@ pub fn update_collaborator_request_all(conn: &Connection, collab_req: &Collabora
         Err(e) => Err(format!("{}",e)),
     }
 }
+
+pub fn update_authmap(conn: &Connection, user_id: i64, permission_level: i32) -> Result<(), String> {
+    let query = "UPDATE AuthMap SET permission_level=?2 WHERE user_id=?1";
+    match conn.execute(query, params![user_id, permission_level]) {
+        Ok(_) => Ok(()),
+        Err(e) => Err(format!("{}",e)),
+    }
+}

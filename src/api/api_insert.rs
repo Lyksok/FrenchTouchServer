@@ -47,6 +47,12 @@ async fn api_insert_artist(
     match db::db_insert::insert_artist(&conn, &artist_data) {
         Some(id) => {
             artist_data.id = id;
+            match db::db_update::update_authmap(&conn, id, 1){
+                Ok(_) => (),
+                Err(_) => {print_log("ERROR INSERT", "Update permission user", &id);
+                    return Ok(HttpResponse
+                ::Ok().body("Could not update user permissions"))},
+            }
             print_log("INSERT", "Artist", &artist_data);
             Ok(HttpResponse::Ok().json(artist_data))
         }
@@ -73,6 +79,12 @@ async fn api_insert_collaborator(
     match db::db_insert::insert_collaborator(&conn, &collaborator_data) {
         Some(id) => {
             collaborator_data.id = id;
+            match db::db_update::update_authmap(&conn, id, 2){
+                Ok(_) => (),
+                Err(_) => {print_log("ERROR INSERT", "Update permission user", &id);
+                    return Ok(HttpResponse
+                ::Ok().body("Could not update user permissions"))},
+            }
             println!("[INSERT] Collaborator {:?}", collaborator_data);
             Ok(HttpResponse::Ok().json(collaborator_data))
         }

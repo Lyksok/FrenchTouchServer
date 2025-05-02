@@ -1,4 +1,4 @@
-use crate::db::db_insert;
+use crate::db::{db_insert, db_update};
 
 use super::{db_select, db_utils};
 use std::io::Error;
@@ -23,6 +23,7 @@ pub fn db_main() -> Result<(), Error> {
         0 => Ok(()),
         1 => {
             let admin = db_insert::dev_insert_admin(&conn);
+            let _ = db_update::update_authmap(&conn, admin.clone().unwrap().user_id, 3);
             println!("{:?}",admin);
             Ok(())
         }
