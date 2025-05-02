@@ -132,7 +132,6 @@ pub struct ArtistRequest {
     pub song_cover: Option<String>,
 }
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CollaboratorRequest {
     pub id: i64,
