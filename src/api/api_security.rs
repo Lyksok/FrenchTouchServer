@@ -9,9 +9,9 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize)]
-struct AuthInfo {
-    user: User,
-    password: String,
+pub struct AuthInfo {
+    pub user: User,
+    pub password: String,
 }
 
 #[post("/fts_login")]

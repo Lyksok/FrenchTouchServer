@@ -7,6 +7,7 @@ use crate::api::api_insert;
 use crate::api::api_security;
 use crate::api::api_select;
 use crate::api::api_update;
+use crate::api::api_update::api_update_user_password;
 use crate::api::api_utils::print_log;
 use crate::db;
 
@@ -95,6 +96,7 @@ pub async fn run_api() -> std::io::Result<()> {
             .service(api_files::api_get_song_file)
             .service(api_update::api_update_user_profile_picture)
             .service(api_update::api_update_user_last_connection)
+            .service(api_update_user_password)
     })
     .bind_openssl("0.0.0.0:50000", builder)?
     .run()

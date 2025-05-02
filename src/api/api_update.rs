@@ -1,9 +1,12 @@
 use super::api_utils::{CollaboratorRequestRequest, UserRequest};
+use crate::api::api_security::AuthInfo;
 use crate::api::api_utils::print_log;
 use crate::api::run_api::AppState;
 use crate::db;
-use crate::db::db_security::{has_permissions, has_permissions_user};
+use crate::db::db_security::{check_password, has_permissions, has_permissions_user};
+use crate::db::structs::Credentials;
 use actix_web::{HttpResponse, Responder, post, web};
+use serde::{Deserialize, Serialize};
 
 #[post("/update/user/profile_picture/{email}")]
 async fn api_update_user_profile_picture(
@@ -60,6 +63,60 @@ async fn api_update_user_last_connection(
         }
     }
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AuthInfoNewPassword {
+    pub auth_hash: String,
+    pub auth_info: AuthInfo,
+    pub new_password: String,
+}
+
+#[post("/update/user/password/{id}")]
+async fn api_update_user_password(
+    data: web::Data<AppState>,
+    json: web::Json<AuthInfoNewPassword>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    let auth_info_new_password = json.into_inner();
+    let auth_hash = auth_info_new_password.auth_hash.clone();
+    let user_data = auth_info_new_password.auth_info.user.clone();
+    if !has_permissions(&conn, &auth_hash, 0)
+        && has_permissions_user(&conn, &UserRequest { auth_hash, obj: user_data.clone() })
+    {
+        print_log("ERROR UPDATE", "User permission", &user_data);
+        return Ok(HttpResponse::Forbidden().body("You do not have access"));
+    }
+    
+    let cred = match db::db_select::select_credentials_by_user_id(&conn, user_data.id){
+        Some(elt)=>elt,
+        None=>{
+            print_log("ERROR UPDATE", "User credentials", &user_data);
+            return Ok(HttpResponse::Forbidden().body("You do not have access"));
+        }
+    };
+
+    if !check_password(&auth_info_new_password.auth_info.password, &cred.password_salt, &cred.password_hash) {
+        print_log("ERROR UPDATE", "User wrong password", &user_data);
+        return Ok(HttpResponse::Forbidden().body("You do not have access (password)"));
+    }
+
+    let (hash, salt) = db::db_security::new_hash_password(&auth_info_new_password.new_password);
+        let cred = Credentials {
+            user_id: user_data.id,
+            password_hash: hash,
+            password_salt: salt,
+        };
+        let _ = match db::db_update::update_credentials(&conn, &cred) {
+            Ok(_) => (),
+            Err(_) => {
+                print_log("ERROR FTS REGISTER", "Insert Credentials", &user_data);
+                return Ok(HttpResponse::Ok().body("User credentials could not be registered"));
+            }
+        };
+
+    Ok(HttpResponse::Ok().body(""))
+}
+
 
 #[post("/update/collaborator_request/all")]
 async fn api_update_collaborator_all(
