@@ -22,6 +22,34 @@ pub fn select_admin_by_user_id(conn: &Connection, user_id: i64) -> Option<Admin>
     .ok()
 }
 
+pub fn select_admin_all(conn: &Connection) -> Option<Vec<Admin>> {
+    let mut query = match conn.prepare("SELECT id,user_id FROM Admin") {
+        Ok(query) => query,
+        Err(_) => return None,
+    };
+
+    let admin_iter = match query.query_map([], |row| {
+        Ok(Admin {
+            id: row.get(0)?,
+            user_id: row.get(1)?,
+        })
+    }) {
+        Ok(it) => it,
+        Err(_) => return None,
+    };
+
+    let mut res = Vec::new();
+    for admin in admin_iter {
+        match admin {
+            Err(_) => return None,
+            Ok(admin) => res.push(admin),
+        }
+    }
+
+    Some(res)
+
+}
+
 pub fn select_user_by_email(conn: &Connection, email: &str) -> Option<User> {
     conn.query_row("SELECT id,username,email,last_connection,creation_date,profile_picture FROM User WHERE email LIKE ?1", params![email], |row| {
         Ok(User {

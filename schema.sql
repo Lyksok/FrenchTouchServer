@@ -1,6 +1,6 @@
 CREATE TABLE Admin (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER,
+    user_id INTEGER UNIQUE,
     FOREIGN KEY (user_id) REFERENCES User(id)
 );
 
