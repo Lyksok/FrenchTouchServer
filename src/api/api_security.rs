@@ -1,4 +1,4 @@
-use crate::api::api_utils::print_log;
+use crate::api::api_utils::{print_log, AuthHash};
 use crate::db::db_exist::{authmap_exist_by_hash, user_exist_by_id};
 use crate::db::db_security::{check_password, new_hash_password};
 use crate::db::structs::{Credentials, User};
@@ -54,7 +54,8 @@ async fn api_security_login(
             }
         };
         print_log("FTS LOGIN", "AuthMap", &authmap);
-        Ok(HttpResponse::Ok().json(format!("{{auth_hash:{}}}", authmap.auth_hash)))
+        let auth_hash = AuthHash{auth_hash: authmap.auth_hash };
+        Ok(HttpResponse::Ok().json(auth_hash))
     }
 }
 
@@ -127,7 +128,7 @@ async fn api_security_register(
     match db_select::select_authmap_by_user_id(&conn, user.id) {
         Some(authmap) => {
             print_log("FTS REGISTER", "User AutentityentityhMap", &authmap);
-            Ok(HttpResponse::Ok().json(format!("{{auth_hash:{}}}", authmap.auth_hash)))
+            Ok(HttpResponse::Ok().json(AuthHash{ auth_hash: authmap.auth_hash}))
         }
         None => {
             print_log("ERROR FTS REGISTER", "User AuthMap", &user);
