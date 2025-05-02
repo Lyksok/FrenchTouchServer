@@ -1,7 +1,15 @@
+use super::api_utils::UserRequest;
 use crate::db;
 use crate::{api::run_api::AppState, db::db_security::has_permissions};
-use actix_web::{post, web, HttpResponse, Responder};
-use super::api_utils::UserRequest; 
+use actix_web::{HttpResponse, Responder, post, web};
+use rusqlite::Connection;
+
+fn user_changes_himself(conn: &Connection, user_req: UserRequest) -> bool {
+    match db::db_select::select_authmap_by_user_id(conn, user_req.obj.id) {
+        Some(authmap) => authmap.auth_hash == user_req.auth_hash,
+        None => false,
+    }
+}
 
 #[post("/update/user/profile_picture/{email}")]
 async fn api_update_user_profile_picture(
@@ -11,7 +19,9 @@ async fn api_update_user_profile_picture(
     let conn = data.db.lock().unwrap();
     let auth_hash = json.auth_hash.clone();
     let user_data = json.obj.clone();
-    if !has_permissions(&conn, &user_data, &auth_hash, 0) {
+    if !has_permissions(&conn, &user_data, &auth_hash, 0)
+        && user_changes_himself(&conn, json.into_inner())
+    {
         return Ok(HttpResponse::Forbidden().body("You do not have access"));
     }
     println!("/users/update: json={:?}", &user_data);
@@ -29,7 +39,9 @@ async fn api_update_user_last_connection(
     let conn = data.db.lock().unwrap();
     let auth_hash = json.auth_hash.clone();
     let user_data = json.obj.clone();
-    if !has_permissions(&conn, &user_data, &auth_hash, 0) {
+    if !has_permissions(&conn, &user_data, &auth_hash, 0)
+        && user_changes_himself(&conn, json.into_inner())
+    {
         return Ok(HttpResponse::Forbidden().body("You do not have access"));
     }
     println!("/users/update: json={:?}", &user_data);
