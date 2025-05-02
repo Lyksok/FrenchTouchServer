@@ -1,4 +1,5 @@
 use super::api_utils::UserRequest;
+use crate::api::api_utils::print_log;
 use crate::db;
 use crate::{api::run_api::AppState, db::db_security::has_permissions};
 use actix_web::{HttpResponse, Responder, post, web};
@@ -22,12 +23,19 @@ async fn api_update_user_profile_picture(
     if !has_permissions(&conn, &user_data, &auth_hash, 0)
         && user_changes_himself(&conn, json.into_inner())
     {
+        print_log("ERROR UPDATE", "User permission", &user_data);
         return Ok(HttpResponse::Forbidden().body("You do not have access"));
     }
     println!("/users/update: json={:?}", &user_data);
     match db::db_update::update_user_profile_picture(&conn, &user_data) {
-        Ok(()) => Ok(HttpResponse::Ok().json("")),
-        Err(e) => Ok(HttpResponse::InternalServerError().body(e)),
+        Ok(()) => {
+            print_log("UPDATE", "User profile picture", &user_data);
+            Ok(HttpResponse::Ok().json(""))
+        }
+        Err(e) => {
+            print_log("ERROR UPDATE", "User profile picture", &user_data);
+            Ok(HttpResponse::InternalServerError().body(e))
+        }
     }
 }
 
@@ -42,11 +50,17 @@ async fn api_update_user_last_connection(
     if !has_permissions(&conn, &user_data, &auth_hash, 0)
         && user_changes_himself(&conn, json.into_inner())
     {
+        print_log("ERROR UPDATE", "User permission", &user_data);
         return Ok(HttpResponse::Forbidden().body("You do not have access"));
     }
-    println!("/users/update: json={:?}", &user_data);
     match db::db_update::update_user_last_connection(&conn, &user_data) {
-        Ok(()) => Ok(HttpResponse::Ok().json("")),
-        Err(e) => Ok(HttpResponse::InternalServerError().body(e)),
+        Ok(()) => {
+            print_log("UPDATE", "User last connection", &user_data);
+            Ok(HttpResponse::Ok().json(""))
+        }
+        Err(e) => {
+            print_log("ERROR UPDATE", "User last connection", &user_data);
+            Ok(HttpResponse::InternalServerError().body(e))
+        }
     }
 }
