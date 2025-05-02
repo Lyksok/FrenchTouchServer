@@ -4,8 +4,7 @@ use std::fmt::Debug;
 use serde::{Deserialize, Serialize};
 
 use crate::db::structs::{
-    Admin, Album, Artist, Collaborator, CollaboratorRequest, History, Playlist, Song, SongAlbum,
-    SongPlaylist, User, UserLikesAlbum, UserLikesPlaylist, UserLikesSong,
+    Admin, Album, Artist, ArtistRequest, Collaborator, CollaboratorRequest, History, Playlist, Song, SongAlbum, SongPlaylist, User, UserLikesAlbum, UserLikesPlaylist, UserLikesSong
 };
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -26,7 +25,7 @@ pub struct UserRequest {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct ArtistRequest {
+pub struct ArtistObjRequest {
     pub auth_hash: String,
     pub obj: Artist,
 }

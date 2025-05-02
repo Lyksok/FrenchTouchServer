@@ -1,9 +1,15 @@
+use text_io::read;
+
 use super::structs::{
-    Admin, Album, Artist, AuthMap, Collaborator, Credentials, History, Playlist, Song, SongAlbum,
-    SongPlaylist, User, UserLikesAlbum, UserLikesPlaylist, UserLikesSong,
+    Admin, Album, Artist, AuthMap, Collaborator, CollaboratorRequest, Credentials, History,
+    Playlist, Song, SongAlbum, SongPlaylist, User, UserLikesAlbum, UserLikesPlaylist,
+    UserLikesSong,
 };
-use crate::db;
-use rusqlite::{params, Connection};
+use crate::db::{
+    self,
+    db_select::{select_admin_by_user_id, select_user_by_email},
+};
+use rusqlite::{Connection, params};
 
 pub fn insert_admin(conn: &Connection, admin: &Admin) -> Option<i64> {
     let query = "INSERT INTO Admin \
@@ -281,4 +287,49 @@ pub fn insert_authmap(conn: &Connection, auth_map: &AuthMap) -> Option<i64> {
         Ok(_) => Some(conn.last_insert_rowid()),
         Err(_) => None,
     }
+}
+
+pub fn insert_collaboration_request(
+    conn: &Connection,
+    collab_req: &CollaboratorRequest,
+) -> Option<i64> {
+    if !db::db_exist::collaborator_exist_by_id(conn, collab_req.collaborator_id) {
+        return None;
+    }
+    let query = "INSERT INTO CollaboratorRequest \
+        (collaborator_id,song_title,song_creation_date,song_file,song_cover,artist_name,artist_biography,artist_profile_picture) \
+        VALUES (?1,?2,?3,?4,?5,?6,?7,?8)";
+    match conn.execute(
+        query,
+        params![
+            collab_req.collaborator_id,
+            collab_req.song_title,
+            collab_req.song_creation_date,
+            collab_req.song_file,
+            collab_req.song_cover,
+            collab_req.artist_name,
+            collab_req.artist_biography,
+            collab_req.artist_profile_picture,
+        ],
+    ) {
+        Ok(_) => Some(conn.last_insert_rowid()),
+        Err(_) => None,
+    }
+}
+
+// ------------------------------------------ DEV ZONE
+
+pub fn dev_insert_admin(conn: &Connection) -> Option<Admin> {
+    print!("Enter user email: ");
+    let input: String = read!();
+    let user = match select_user_by_email(&conn, &input) {
+        Some(user) => user,
+        None => return None,
+    };
+    let admin = Admin {
+        id: -1,
+        user_id: user.id,
+    };
+    let _ = insert_admin(&conn, &admin);
+    select_admin_by_user_id(&conn, user.id)
 }

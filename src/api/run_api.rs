@@ -1,4 +1,4 @@
-use actix_web::{web, App, HttpServer};
+use actix_web::{App, HttpServer, web};
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use std::sync::Mutex;
 
@@ -7,6 +7,7 @@ use crate::api::api_insert;
 use crate::api::api_security;
 use crate::api::api_select;
 use crate::api::api_update;
+use crate::api::api_utils::print_log;
 use crate::db;
 
 pub struct AppState {
@@ -33,7 +34,13 @@ pub async fn run_api() -> std::io::Result<()> {
         .set_certificate_chain_file("/etc/ssl/private/server.crt")
         .unwrap();
 
-    let conn = db::db_utils::open_db("sqlite.db").expect("Could not open database");
+    let conn = match db::db_utils::open_db("sqlite.db") {
+        Ok(conn) => conn,
+        Err(e) => {
+            print_log("ERROR CONN", "Connection", &e.to_string());
+            return Ok(());
+        }
+    };
 
     let shared_state = web::Data::new(AppState {
         db: Mutex::new(conn),

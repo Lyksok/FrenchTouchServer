@@ -1,4 +1,6 @@
-use super::{db_create, db_select, db_utils};
+use crate::db::db_insert;
+
+use super::{db_select, db_utils};
 use std::io::Error;
 use text_io::read;
 
@@ -8,7 +10,7 @@ pub fn db_main() -> Result<(), Error> {
     println!("\nChoose your query:\n");
     let queries = vec![
         "0. Exit",
-        "1. Create database",
+        "1. Insert Admin",
         "2. Select user usernames",
         "3. Select user by email",
     ];
@@ -19,7 +21,8 @@ pub fn db_main() -> Result<(), Error> {
     let e = match read!() {
         0 => Ok(()),
         1 => {
-            let _ = db_create::create_db(conn);
+            let admin = db_insert::dev_insert_admin(&conn);
+            println!("{:?}",admin);
             Ok(())
         }
         2 => {

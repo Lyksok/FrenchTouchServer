@@ -3,18 +3,68 @@ use openssl::rand::rand_bytes;
 use pbkdf2::pbkdf2_hmac;
 use rusqlite::Connection;
 use sha2::Sha256;
+use crate::db;
 
-use super::{db_select::select_authmap_by_auth_hash, structs::User};
+use crate::api::api_utils::{HistoryRequest, UserLikesAlbumRequest, UserLikesPlaylistRequest, UserLikesSongRequest, UserRequest};
 
-pub fn has_permissions(conn: &Connection, user: &User, auth_hash: &str, p_level: i32) -> bool {
+use super::db_select::select_authmap_by_auth_hash;
+
+pub fn has_permissions(conn: &Connection, auth_hash: &str, p_level: i32) -> bool {
     match select_authmap_by_auth_hash(conn, auth_hash) {
         Some(authmap) => {
-            if authmap.permission_level >= p_level && authmap.user_id == user.id {
+            if authmap.permission_level >= p_level {
                 return true;
             }
             false
         }
         _ => false,
+    }
+}
+
+pub fn has_exact_permissions(conn: &Connection, auth_hash: &str, p_level: i32) -> bool {
+    match select_authmap_by_auth_hash(conn, auth_hash) {
+        Some(authmap) => {
+            if authmap.permission_level == p_level {
+                return true;
+            }
+            false
+        }
+        _ => false,
+    }
+}
+
+pub fn has_permissions_user(conn: &Connection, user_req: &UserRequest) -> bool {
+    match db::db_select::select_authmap_by_user_id(conn, user_req.obj.id) {
+        Some(authmap) => authmap.auth_hash == user_req.auth_hash,
+        None => false,
+    }
+}
+
+pub fn has_permissions_user_likes_song(conn: &Connection, user_req: &UserLikesSongRequest) -> bool {
+    match db::db_select::select_authmap_by_user_id(conn, user_req.obj.user_id) {
+        Some(authmap) => authmap.auth_hash == user_req.auth_hash,
+        None => false,
+    }
+}
+
+pub fn has_permissions_user_likes_album(conn: &Connection, user_req: &UserLikesAlbumRequest) -> bool {
+    match db::db_select::select_authmap_by_user_id(conn, user_req.obj.user_id) {
+        Some(authmap) => authmap.auth_hash == user_req.auth_hash,
+        None => false,
+    }
+}
+
+pub fn has_permissions_user_likes_playlist(conn: &Connection, user_req: &UserLikesPlaylistRequest) -> bool {
+    match db::db_select::select_authmap_by_user_id(conn, user_req.obj.user_id) {
+        Some(authmap) => authmap.auth_hash == user_req.auth_hash,
+        None => false,
+    }
+}
+
+pub fn has_permissions_user_history(conn: &Connection, user_req: &HistoryRequest) -> bool {
+    match db::db_select::select_authmap_by_user_id(conn, user_req.obj.user_id) {
+        Some(authmap) => authmap.auth_hash == user_req.auth_hash,
+        None => false,
     }
 }
 

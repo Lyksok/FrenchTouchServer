@@ -40,6 +40,15 @@ pub fn artist_exist_by_user_id(conn: &Connection, user_id: i64) -> bool {
     .is_ok()
 }
 
+pub fn collaborator_exist_by_id(conn: &Connection, collaborator_id: i64) -> bool {
+    conn.query_row("SELECT id FROM Collaborator WHERE id=?1", [collaborator_id], |row|{
+        let res:i64=row.get(0)?;
+        Ok(res)
+    })
+    .is_ok()
+}
+
+
 pub fn collaborator_exist_by_user_id(conn: &Connection, user_id: i64) -> bool {
     conn.query_row(
         "SELECT id FROM Collaborator WHERE user_id=?1",
@@ -107,3 +116,4 @@ pub fn authmap_exist_by_hash(conn: &Connection, auth_hash: &str) -> bool {
     )
     .is_ok()
 }
+
