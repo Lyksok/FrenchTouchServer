@@ -7,7 +7,7 @@ use super::structs::{
 };
 use crate::db::{
     self,
-    db_select::{select_admin_by_user_id, select_user_by_email},
+    db_select::select_user_by_email,
 };
 use rusqlite::{Connection, params};
 
@@ -319,17 +319,17 @@ pub fn insert_collaboration_request(
 
 // ------------------------------------------ DEV ZONE
 
-pub fn dev_insert_admin(conn: &Connection) -> Option<Admin> {
+pub fn dev_insert_admin(conn: &Connection) -> () {
     print!("Enter user email: ");
     let input: String = read!();
     let user = match select_user_by_email(&conn, &input) {
         Some(user) => user,
-        None => return None,
+        None => return (),
     };
     let admin = Admin {
         id: -1,
         user_id: user.id,
     };
     let _ = insert_admin(&conn, &admin);
-    select_admin_by_user_id(&conn, user.id)
+    let _ = db::db_update::update_authmap(&conn, user.id, 3);
 }
