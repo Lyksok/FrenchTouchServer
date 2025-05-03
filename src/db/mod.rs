@@ -3,6 +3,7 @@ pub mod db_delete;
 pub mod db_exist;
 pub mod db_insert;
 pub mod db_main;
+pub mod db_search;
 pub mod db_security;
 pub mod db_select;
 pub mod db_update;

@@ -146,7 +146,7 @@ pub fn select_artist_by_email(conn: &Connection, email: &str) -> Option<Artist> 
     .ok()
 }
 
-pub fn select_artists(conn: &Connection) -> Option<Vec<Artist>> {
+pub fn select_artist_all(conn: &Connection) -> Option<Vec<Artist>> {
     let mut query = match conn.prepare(
         "SELECT Artist.id,Artist.user_id,Artist.nb_of_streams,Artist.biography,Artist.url,Artist.verified \
         FROM Artist") {

@@ -4,6 +4,7 @@ use std::sync::Mutex;
 
 use crate::api::api_files;
 use crate::api::api_insert;
+use crate::api::api_search;
 use crate::api::api_security;
 use crate::api::api_select;
 use crate::api::api_update;
@@ -85,6 +86,8 @@ pub async fn run_api() -> std::io::Result<()> {
             .service(api_select::api_select_song_playlist_by_playlist_id)
             .service(api_select::api_select_history_by_user_id)
             .service(api_select::api_select_history_by_song_id)
+            .service(api_search::api_select_search_song)
+            .service(api_search::api_select_search_artist)
             .service(api_insert::api_insert_user)
             .service(api_insert::api_insert_artist)
             .service(api_insert::api_insert_collaborator)

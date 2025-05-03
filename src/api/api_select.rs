@@ -78,7 +78,7 @@ async fn api_select_user_by_username(
 #[get("/select/artist/all")]
 async fn api_select_artists(data: web::Data<AppState>) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-    match db::db_select::select_artists(&conn) {
+    match db::db_select::select_artist_all(&conn) {
         Some(artist) => {
             print_log("SELECT", "Artist", &artist);
             Ok(HttpResponse::Ok().json(artist))
