@@ -10,7 +10,7 @@ use crate::db::db_security::{
     has_permissions_user_likes_album, has_permissions_user_likes_playlist,
     has_permissions_user_likes_song,
 };
-use crate::db::structs::User;
+use crate::db::structs::{RequestToAdmin, RequestToArtist, RequestToCollaborator, User};
 
 #[post("/insert/user")]
 async fn api_insert_user(
@@ -373,6 +373,63 @@ async fn api_insert_collaborator_request(
         None => {
             println!("[ERROR] Could not insert history {:?}", collab_req);
             Ok(HttpResponse::InternalServerError().body("Could not insert history"))
+        }
+    }
+}
+
+#[post("/insert/request_to_artist")]
+async fn api_insert_request_to_artist(
+    data: web::Data<AppState>,
+    req: web::Json<RequestToArtist>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+
+    match db::db_insert::insert_request_to_artist(&conn, &req) {
+        Some(_) => {
+            println!("[INSERT] RequestToArtist {:?}", req);
+            Ok(HttpResponse::Ok().body(""))
+        }
+        None => {
+            println!("[ERROR] Could not insert RequestToArtist {:?}", req);
+            Ok(HttpResponse::InternalServerError().body("Could not insert RequestToArtist"))
+        }
+    }
+}
+
+#[post("/insert/request_to_collaborator")]
+async fn api_insert_request_to_collaborator(
+    data: web::Data<AppState>,
+    req: web::Json<RequestToCollaborator>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+
+    match db::db_insert::insert_request_to_collaborator(&conn, &req) {
+        Some(_) => {
+            println!("[INSERT] RequestToCollaborator {:?}", req);
+            Ok(HttpResponse::Ok().body(""))
+        }
+        None => {
+            println!("[ERROR] Could not insert RequestToCollaborator {:?}", req);
+            Ok(HttpResponse::InternalServerError().body("Could not insert RequestToCollaborator"))
+        }
+    }
+}
+
+#[post("/insert/request_to_admin")]
+async fn api_insert_request_to_admin(
+    data: web::Data<AppState>,
+    req: web::Json<RequestToAdmin>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+
+    match db::db_insert::insert_request_to_admin(&conn, &req) {
+        Some(_) => {
+            println!("[INSERT] RequestToAdmin {:?}", req);
+            Ok(HttpResponse::Ok().body(""))
+        }
+        None => {
+            println!("[ERROR] Could not insert RequestToAdmin {:?}", req);
+            Ok(HttpResponse::InternalServerError().body("Could not insert RequestToAdmin"))
         }
     }
 }

@@ -592,3 +592,54 @@ async fn api_select_history_by_song_id(
         }
     }
 }
+
+#[get("/select/request_to_artist/all")]
+async fn api_select_request_to_artist_all(
+    data: web::Data<AppState>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_select::select_request_to_artist_all(&conn) {
+        Some(elt) => {
+            print_log("SELECT", "RequestToArtist", &elt);
+            Ok(HttpResponse::Ok().json(elt))
+        }
+        _ => {
+            print_log("ERROR SELECT", "RequestToArtist", &"all");
+            Ok(HttpResponse::InternalServerError().body("Could not find RequestToArtist"))
+        }
+    }
+}
+
+#[get("/select/request_to_collaborator/all")]
+async fn api_select_request_to_collaborator_all(
+    data: web::Data<AppState>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_select::select_request_to_collaborator_all(&conn) {
+        Some(elt) => {
+            print_log("SELECT", "RequestToArtist", &elt);
+            Ok(HttpResponse::Ok().json(elt))
+        }
+        _ => {
+            print_log("ERROR SELECT", "RequestToArtist", &"all");
+            Ok(HttpResponse::InternalServerError().body("Could not find RequestToArtist"))
+        }
+    }
+}
+
+#[get("/select/request_to_admin/all")]
+async fn api_select_request_to_admin_all(
+    data: web::Data<AppState>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_select::select_request_to_admin_all(&conn) {
+        Some(elt) => {
+            print_log("SELECT", "RequestToArtist", &elt);
+            Ok(HttpResponse::Ok().json(elt))
+        }
+        _ => {
+            print_log("ERROR SELECT", "RequestToArtist", &"all");
+            Ok(HttpResponse::InternalServerError().body("Could not find RequestToArtist"))
+        }
+    }
+}

@@ -1,9 +1,7 @@
 use text_io::read;
 
 use super::structs::{
-    Admin, Album, Artist, AuthMap, Collaborator, CollaboratorRequest, Credentials, History,
-    Playlist, Song, SongAlbum, SongPlaylist, User, UserLikesAlbum, UserLikesPlaylist,
-    UserLikesSong,
+    Admin, Album, Artist, AuthMap, Collaborator, CollaboratorRequest, Credentials, History, Playlist, RequestToAdmin, RequestToArtist, RequestToCollaborator, Song, SongAlbum, SongPlaylist, User, UserLikesAlbum, UserLikesPlaylist, UserLikesSong
 };
 use crate::db::{
     self,
@@ -310,6 +308,69 @@ pub fn insert_collaboration_request(
             collab_req.artist_name,
             collab_req.artist_biography,
             collab_req.artist_profile_picture,
+        ],
+    ) {
+        Ok(_) => Some(conn.last_insert_rowid()),
+        Err(_) => None,
+    }
+}
+
+pub fn insert_request_to_artist(
+    conn: &Connection,
+    req: &RequestToArtist,
+) -> Option<i64> {
+    if !db::db_exist::user_exist_by_id(conn, req.user_id) {
+        return None;
+    }
+    let query = "INSERT INTO RequestToArtist \
+        (user_id) \
+        VALUES (?)";
+    match conn.execute(
+        query,
+        params![
+            req.user_id,
+        ],
+    ) {
+        Ok(_) => Some(conn.last_insert_rowid()),
+        Err(_) => None,
+    }
+}
+
+pub fn insert_request_to_collaborator(
+    conn: &Connection,
+    req: &RequestToCollaborator,
+) -> Option<i64> {
+    if !db::db_exist::user_exist_by_id(conn, req.user_id) {
+        return None;
+    }
+    let query = "INSERT INTO RequestToCollaborator \
+        (user_id) \
+        VALUES (?)";
+    match conn.execute(
+        query,
+        params![
+            req.user_id,
+        ],
+    ) {
+        Ok(_) => Some(conn.last_insert_rowid()),
+        Err(_) => None,
+    }
+}
+
+pub fn insert_request_to_admin(
+    conn: &Connection,
+    req: &RequestToAdmin,
+) -> Option<i64> {
+    if !db::db_exist::user_exist_by_id(conn, req.user_id) {
+        return None;
+    }
+    let query = "INSERT INTO RequestToAdmin \
+        (user_id) \
+        VALUES (?)";
+    match conn.execute(
+        query,
+        params![
+            req.user_id,
         ],
     ) {
         Ok(_) => Some(conn.last_insert_rowid()),

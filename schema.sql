@@ -141,3 +141,18 @@ CREATE TABLE AuthMap (
   permission_level INTEGER,
   FOREIGN KEY (user_id) REFERENCES User(id)
 );
+
+CREATE TABLE RequestToArtist (
+    user_id INTEGER PRIMARY KEY,
+    FOREIGN KEY (user_id) REFERENCES User(id)
+);
+
+CREATE TABLE RequestToCollaborator (
+    user_id INTEGER PRIMARY KEY,
+    FOREIGN KEY (user_id) REFERENCES User(id)
+);
+
+CREATE TABLE RequestToAdmin (
+    user_id INTEGER PRIMARY KEY,
+    FOREIGN KEY (user_id) REFERENCES User(id)
+);

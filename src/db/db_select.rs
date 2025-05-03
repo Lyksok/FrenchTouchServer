@@ -1,8 +1,7 @@
 use super::{
     db_exist::user_exist_by_email,
     structs::{
-        Admin, Album, Artist, AuthMap, Collaborator, Credentials, History, Playlist, Song,
-        SongAlbum, SongPlaylist, User, UserLikesAlbum, UserLikesPlaylist, UserLikesSong,
+        Admin, Album, Artist, AuthMap, Collaborator, Credentials, History, Playlist, RequestToAdmin, RequestToArtist, RequestToCollaborator, Song, SongAlbum, SongPlaylist, User, UserLikesAlbum, UserLikesPlaylist, UserLikesSong
     },
 };
 use rusqlite::{params, Connection};
@@ -1000,6 +999,93 @@ pub fn select_authmap_by_user_id(conn: &Connection, user_id: i64) -> Option<Auth
         },
     )
     .ok()
+}
+
+pub fn select_request_to_artist_all(conn: &Connection) -> Option<Vec<RequestToArtist>> {
+    let mut query = match conn.prepare(
+        "SELECT user_id \
+        FROM RequestToArtist",
+    ) {
+        Ok(query) => query,
+        Err(_) => return None,
+    };
+
+    let iter = match query.query_map([], |row| {
+        Ok(RequestToArtist {
+            user_id: row.get(0)?,
+        })
+    }) {
+        Ok(it) => it,
+        Err(_) => return None,
+    };
+
+    let mut res = Vec::new();
+    for elt in iter {
+        match elt {
+            Err(_) => return None,
+            Ok(elt) => res.push(elt),
+        }
+    }
+
+    Some(res)
+}
+
+pub fn select_request_to_collaborator_all(conn: &Connection) -> Option<Vec<RequestToCollaborator>> {
+    let mut query = match conn.prepare(
+        "SELECT user_id \
+        FROM RequestToArtist",
+    ) {
+        Ok(query) => query,
+        Err(_) => return None,
+    };
+
+    let iter = match query.query_map([], |row| {
+        Ok(RequestToCollaborator {
+            user_id: row.get(0)?,
+        })
+    }) {
+        Ok(it) => it,
+        Err(_) => return None,
+    };
+
+    let mut res = Vec::new();
+    for elt in iter {
+        match elt {
+            Err(_) => return None,
+            Ok(elt) => res.push(elt),
+        }
+    }
+
+    Some(res)
+}
+
+pub fn select_request_to_admin_all(conn: &Connection) -> Option<Vec<RequestToAdmin>> {
+    let mut query = match conn.prepare(
+        "SELECT user_id \
+        FROM RequestToArtist",
+    ) {
+        Ok(query) => query,
+        Err(_) => return None,
+    };
+
+    let iter = match query.query_map([], |row| {
+        Ok(RequestToAdmin {
+            user_id: row.get(0)?,
+        })
+    }) {
+        Ok(it) => it,
+        Err(_) => return None,
+    };
+
+    let mut res = Vec::new();
+    for elt in iter {
+        match elt {
+            Err(_) => return None,
+            Ok(elt) => res.push(elt),
+        }
+    }
+
+    Some(res)
 }
 
 // =================================================================== DEV ZONE

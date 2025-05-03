@@ -152,3 +152,18 @@ pub struct AuthMap {
     // 0:User 1:Artist 2:Collaborator 3:Admin
     pub permission_level: i32,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RequestToArtist {
+    pub user_id: i64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RequestToCollaborator {
+    pub user_id: i64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RequestToAdmin {
+    pub user_id: i64,
+}
