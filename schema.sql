@@ -119,17 +119,25 @@ CREATE TABLE History (
 
 CREATE TABLE ArtistRequest (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    artist_id INTEGER,
-    song_id INTEGER,
+    artist_id INTEGER NOT NULL,
+    song_title TEXT NOT NULL,
+    song_creation_date INTEGER NOT NULL,
+    song_file TEXT NOT NULL,
+    song_cover TEXT,
     FOREIGN KEY (artist_id) REFERENCES Artist(id),
     FOREIGN KEY (song_id) REFERENCES Song(id)
 );
 
 CREATE TABLE CollaboratorRequest (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    collaborator_id INTEGER,
-    artist_id INTEGER,
-    song_id INTEGER,
+    collaborator_id INTEGER NOT NULL,
+    song_title TEXT NOT NULL,
+    song_creation_date INTEGER NOT NULL,
+    song_file TEXT NOT NULL,
+    song_cover TEXT,
+    artist_name TEXT NOT NULL,
+    artist_biography TEXT,
+    artist_profile_picture TEXT,
     FOREIGN KEY (collaborator_id) REFERENCES Collaborator(id),
     FOREIGN KEY (artist_id) REFERENCES Artist(id),
     FOREIGN KEY (song_id) REFERENCES Song(id)
