@@ -2,7 +2,7 @@ use actix_web::{HttpResponse, Responder, post, web};
 use serde::{Deserialize, Serialize};
 
 use crate::api::api_utils::{
-    print_log, AlbumRequest, ArtistObjRequest, CollaboratorObjRequest, CollaboratorRequestRequest, HistoryRequest, PlaylistRequest, SongAlbumRequest, SongPlaylistRequest, SongRequest, UserLikesAlbumRequest, UserLikesPlaylistRequest, UserLikesSongRequest
+    print_log, AdminRequest, AlbumRequest, ArtistObjRequest, CollaboratorObjRequest, CollaboratorRequestRequest, HistoryRequest, PlaylistRequest, SongAlbumRequest, SongPlaylistRequest, SongRequest, UserLikesAlbumRequest, UserLikesPlaylistRequest, UserLikesSongRequest
 };
 use crate::api::run_api::AppState;
 use crate::db;
@@ -13,12 +13,39 @@ use crate::db::db_security::{
 };
 use crate::db::structs::{RequestToAdmin, RequestToArtist, RequestToCollaborator, User};
 
+#[post("/insert/admin")]
+async fn api_insert_admin(
+    data: web::Data<AppState>,
+    req: web::Json<AdminRequest>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    let auth_hash = req.auth_hash.clone();
+    let mut req = req.obj.clone();
+    if !has_permissions(&conn, &auth_hash, 3) {
+        print_log("ERROR INSERT", "User permission (Admin)", &auth_hash);
+        return Ok(HttpResponse::Forbidden().body("You do not have access"));
+    }
+
+    match db::db_insert::insert_admin(&conn, &req) {
+        Some(id) => {
+            req.id = id;
+            print_log("INSERT", "Admin", &req);
+            Ok(HttpResponse::Ok().json(req))
+        }
+        _ => {
+            print_log("ERROR INSERT", "Admin", &req);
+            Ok(HttpResponse::InternalServerError().body("Could not insert admin."))
+        }
+    }
+}
+
 #[post("/insert/user")]
 async fn api_insert_user(
     data: web::Data<AppState>,
     mut user_data: web::Json<User>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
+    
     match db::db_insert::insert_user(&conn, &user_data) {
         Some(id) => {
             user_data.id = id;
@@ -48,7 +75,7 @@ async fn api_insert_artist(
     match db::db_insert::insert_artist(&conn, &artist_data) {
         Some(id) => {
             artist_data.id = id;
-            match db::db_update::update_authmap(&conn, id, 1){
+            match db::db_update::update_authmap(&conn, id, 3){
                 Ok(_) => (),
                 Err(_) => {print_log("ERROR INSERT", "Update permission user", &id);
                     return Ok(HttpResponse
@@ -80,7 +107,7 @@ async fn api_insert_collaborator(
     match db::db_insert::insert_collaborator(&conn, &collaborator_data) {
         Some(id) => {
             collaborator_data.id = id;
-            match db::db_update::update_authmap(&conn, id, 2){
+            match db::db_update::update_authmap(&conn, id, 3){
                 Ok(_) => (),
                 Err(_) => {print_log("ERROR INSERT", "Update permission user", &id);
                     return Ok(HttpResponse
@@ -381,19 +408,19 @@ async fn api_insert_collaborator_request(
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct WrapperRequestToArtist {
     auth_hash: String,
-    req: RequestToArtist,
+    obj: RequestToArtist,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct WrapperRequestToCollaborator {
     auth_hash: String,
-    req: RequestToCollaborator,
+    obj: RequestToCollaborator,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct WrapperRequestToAdmin {
     auth_hash: String,
-    req: RequestToAdmin,
+    obj: RequestToAdmin,
 }
 
 #[post("/insert/request_to_artist")]
@@ -408,7 +435,7 @@ async fn api_insert_request_to_artist(
         print_log("ERROR INSERT", "User permission (RequestToArtist)", &auth_hash);
         return Ok(HttpResponse::Forbidden().body("You do not have access"));
     }
-    let req = req.req.clone();
+    let req = req.obj.clone();
 
     match db::db_insert::insert_request_to_artist(&conn, &req) {
         Some(_) => {
@@ -434,7 +461,7 @@ async fn api_insert_request_to_collaborator(
         print_log("ERROR INSERT", "User permission (RequestToCollaborator)", &auth_hash);
         return Ok(HttpResponse::Forbidden().body("You do not have access"));
     }
-    let req = req.req.clone();
+    let req = req.obj.clone();
 
     match db::db_insert::insert_request_to_collaborator(&conn, &req) {
         Some(_) => {
@@ -460,7 +487,7 @@ async fn api_insert_request_to_admin(
         print_log("ERROR INSERT", "User permission (RequestToAdmin)", &auth_hash);
         return Ok(HttpResponse::Forbidden().body("You do not have access"));
     }
-    let req = req.req.clone();
+    let req = req.obj.clone();
 
     match db::db_insert::insert_request_to_admin(&conn, &req) {
         Some(_) => {

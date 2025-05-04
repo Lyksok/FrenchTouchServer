@@ -1,13 +1,22 @@
+use crate::api::api_utils::AuthHash;
 use crate::api::{api_utils::print_log, run_api::AppState};
 use crate::db;
+use crate::db::db_security::has_permissions;
 use actix_web::{get, web, HttpResponse, Responder};
 
 #[get("/select/admin/user_id/{user_id}")]
 async fn api_select_admin_by_user_id(
     data: web::Data<AppState>,
     user_id: web::Path<i64>,
+    auth_hash: web::Json<AuthHash>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
+
+    if !has_permissions(&conn, &auth_hash.auth_hash, 3) {
+        print_log("ERROR SELECT", "User permission (Admin by user_id)", &auth_hash.auth_hash);
+        return Ok(HttpResponse::Forbidden().body("You do not have access"));
+    }
+
     match db::db_select::select_admin_by_user_id(&conn, *user_id) {
         Some(admin) => {
             print_log("SELECT", "Admin", &admin);
@@ -589,6 +598,60 @@ async fn api_select_history_by_song_id(
         _ => {
             print_log("ERROR SELECT", "History", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find history"))
+        }
+    }
+}
+
+#[get("/select/request_to_artist/user_id/{user_id}")]
+async fn api_select_request_to_artist_by_user_id(
+    data: web::Data<AppState>,
+    user_id: web::Path<i64>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_select::select_request_to_artist_by_user_id(&conn, *user_id) {
+        Some(elt) => {
+            print_log("SELECT", "RequestToArtist", &elt);
+            Ok(HttpResponse::Ok().json(elt))
+        }
+        _ => {
+            print_log("ERROR SELECT", "RequestToArtist", &"all");
+            Ok(HttpResponse::InternalServerError().body("Could not find RequestToArtist"))
+        }
+    }
+}
+
+#[get("/select/request_to_collaborator/user_id/{user_id}")]
+async fn api_select_request_to_collaborator_by_user_id(
+    data: web::Data<AppState>,
+    user_id: web::Path<i64>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_select::select_request_to_collaborator_by_user_id(&conn, *user_id) {
+        Some(elt) => {
+            print_log("SELECT", "RequestToCollaborator", &elt);
+            Ok(HttpResponse::Ok().json(elt))
+        }
+        _ => {
+            print_log("ERROR SELECT", "RequestToCollaborator", &"all");
+            Ok(HttpResponse::InternalServerError().body("Could not find RequestToCollaborator"))
+        }
+    }
+}
+
+#[get("/select/request_to_admin/user_id/{user_id}")]
+async fn api_select_request_to_admin_by_user_id(
+    data: web::Data<AppState>,
+    user_id: web::Path<i64>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_select::select_request_to_admin_by_user_id(&conn, *user_id) {
+        Some(elt) => {
+            print_log("SELECT", "RequestToAdmin", &elt);
+            Ok(HttpResponse::Ok().json(elt))
+        }
+        _ => {
+            print_log("ERROR SELECT", "RequestToAdmin", &"all");
+            Ok(HttpResponse::InternalServerError().body("Could not find RequestToAdmin"))
         }
     }
 }

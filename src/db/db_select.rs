@@ -1001,6 +1001,51 @@ pub fn select_authmap_by_user_id(conn: &Connection, user_id: i64) -> Option<Auth
     .ok()
 }
 
+pub fn select_request_to_artist_by_user_id(conn: &Connection, user_id: i64) -> Option<RequestToArtist> {
+    conn.query_row(
+        "SELECT user_id \
+        FROM RequestToArtist \
+        WHERE user_id=?",
+        params![user_id],
+        |row| {
+            Ok(RequestToArtist {
+                user_id: row.get(0)?,
+            })
+        },
+    )
+    .ok()
+}
+
+pub fn select_request_to_collaborator_by_user_id(conn: &Connection, user_id: i64) -> Option<RequestToCollaborator> {
+    conn.query_row(
+        "SELECT user_id \
+        FROM RequestToCollaborator \
+        WHERE user_id=?",
+        params![user_id],
+        |row| {
+            Ok(RequestToCollaborator {
+                user_id: row.get(0)?,
+            })
+        },
+    )
+    .ok()
+}
+
+pub fn select_request_to_admin_by_user_id(conn: &Connection, user_id: i64) -> Option<RequestToAdmin> {
+    conn.query_row(
+        "SELECT user_id \
+        FROM RequestToAdmin \
+        WHERE user_id=?",
+        params![user_id],
+        |row| {
+            Ok(RequestToAdmin {
+                user_id: row.get(0)?,
+            })
+        },
+    )
+    .ok()
+}
+
 pub fn select_request_to_artist_all(conn: &Connection) -> Option<Vec<RequestToArtist>> {
     let mut query = match conn.prepare(
         "SELECT user_id \
@@ -1033,7 +1078,7 @@ pub fn select_request_to_artist_all(conn: &Connection) -> Option<Vec<RequestToAr
 pub fn select_request_to_collaborator_all(conn: &Connection) -> Option<Vec<RequestToCollaborator>> {
     let mut query = match conn.prepare(
         "SELECT user_id \
-        FROM RequestToArtist",
+        FROM RequestToCollaborator",
     ) {
         Ok(query) => query,
         Err(_) => return None,
@@ -1062,7 +1107,7 @@ pub fn select_request_to_collaborator_all(conn: &Connection) -> Option<Vec<Reque
 pub fn select_request_to_admin_all(conn: &Connection) -> Option<Vec<RequestToAdmin>> {
     let mut query = match conn.prepare(
         "SELECT user_id \
-        FROM RequestToArtist",
+        FROM RequestToAdmin",
     ) {
         Ok(query) => query,
         Err(_) => return None,
