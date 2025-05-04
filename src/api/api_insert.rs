@@ -391,12 +391,13 @@ async fn api_insert_collaborator_request(
         print_log("ERROR INSERT", "User permission (CollaboratorRequest)", &auth_hash);
         return Ok(HttpResponse::Forbidden().body("You do not have access"));
     }
-    let collab_req = collab_req.obj.clone();
+    let mut collab_req = collab_req.obj.clone();
 
     match db::db_insert::insert_collaboration_request(&conn, &collab_req) {
-        Some(_) => {
-            println!("[INSERT] History {:?}", collab_req);
-            Ok(HttpResponse::Ok().body(""))
+        Some(id) => {
+            collab_req.id = id;
+            println!("[INSERT] CollaboratorRequest {:?}", collab_req);
+            Ok(HttpResponse::Ok().json(collab_req))
         }
         None => {
             println!("[ERROR] Could not insert CollaboratorRequest {:?}", collab_req);
@@ -417,12 +418,13 @@ async fn api_insert_artist_request(
         print_log("ERROR INSERT", "User permission (ArtistRequest)", &auth_hash);
         return Ok(HttpResponse::Forbidden().body("You do not have access"));
     }
-    let artist_req = artist_req.obj.clone();
+    let mut artist_req = artist_req.obj.clone();
 
     match db::db_insert::insert_artist_request(&conn, &artist_req) {
-        Some(_) => {
-            println!("[INSERT] History {:?}", artist_req);
-            Ok(HttpResponse::Ok().body(""))
+        Some(id) => {
+            artist_req.id = id;
+            println!("[INSERT] ArtistRequest {:?}", artist_req);
+            Ok(HttpResponse::Ok().json(artist_req))
         }
         None => {
             println!("[ERROR] Could not insert ArtistRequest {:?}", artist_req);
@@ -466,7 +468,7 @@ async fn api_insert_request_to_artist(
     match db::db_insert::insert_request_to_artist(&conn, &req) {
         Some(_) => {
             println!("[INSERT] RequestToArtist {:?}", req);
-            Ok(HttpResponse::Ok().body(""))
+            Ok(HttpResponse::Ok().json(req))
         }
         None => {
             println!("[ERROR] Could not insert RequestToArtist {:?}", req);
@@ -492,7 +494,7 @@ async fn api_insert_request_to_collaborator(
     match db::db_insert::insert_request_to_collaborator(&conn, &req) {
         Some(_) => {
             println!("[INSERT] RequestToCollaborator {:?}", req);
-            Ok(HttpResponse::Ok().body(""))
+            Ok(HttpResponse::Ok().json(req))
         }
         None => {
             println!("[ERROR] Could not insert RequestToCollaborator {:?}", req);
@@ -518,7 +520,7 @@ async fn api_insert_request_to_admin(
     match db::db_insert::insert_request_to_admin(&conn, &req) {
         Some(_) => {
             println!("[INSERT] RequestToAdmin {:?}", req);
-            Ok(HttpResponse::Ok().body(""))
+            Ok(HttpResponse::Ok().json(req))
         }
         None => {
             println!("[ERROR] Could not insert RequestToAdmin {:?}", req);
