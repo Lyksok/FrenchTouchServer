@@ -106,6 +106,8 @@ pub async fn run_api() -> std::io::Result<()> {
             .service(api_insert::api_insert_collaborator)
             .service(api_insert::api_insert_album)
             .service(api_insert::api_insert_playlist)
+            .service(api_insert::api_insert_artist_request)
+            .service(api_insert::api_insert_collaborator_request)
             .service(api_insert::api_insert_request_to_artist)
             .service(api_insert::api_insert_request_to_collaborator)
             .service(api_insert::api_insert_request_to_admin)
