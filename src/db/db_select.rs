@@ -1,7 +1,7 @@
 use super::{
     db_exist::user_exist_by_email,
     structs::{
-        Admin, Album, Artist, AuthMap, Collaborator, Credentials, History, Playlist, RequestToAdmin, RequestToArtist, RequestToCollaborator, Song, SongAlbum, SongPlaylist, User, UserLikesAlbum, UserLikesPlaylist, UserLikesSong
+        Admin, Album, Artist, ArtistRequest, AuthMap, Collaborator, CollaboratorRequest, Credentials, History, Playlist, RequestToAdmin, RequestToArtist, RequestToCollaborator, Song, SongAlbum, SongPlaylist, User, UserLikesAlbum, UserLikesPlaylist, UserLikesSong
     },
 };
 use rusqlite::{params, Connection};
@@ -965,6 +965,49 @@ pub fn select_history_by_song_id(conn: &Connection, id: i64) -> Option<Vec<Histo
     }
 
     Some(res)
+}
+
+pub fn select_artist_request_by_id(conn: &Connection, id: i64) -> Option<ArtistRequest> {
+    conn.query_row(
+        "SELECT id,artist_id,song_title,song_creation_date,song_file,song_cover \
+        FROM ArtistRequest \
+        WHERE ArtistRequest.id=?",
+        params![id],
+        |row| {
+            Ok(ArtistRequest {
+                id: row.get(0)?,
+                artist_id: row.get(1)?,
+                song_title: row.get(2)?,
+                song_creation_date: row.get(3)?,
+                song_file: row.get(4)?,
+                song_cover: row.get(5)?,
+            })
+        },
+    )
+    .ok()
+}
+
+pub fn select_collaborator_request_by_id(conn: &Connection, id: i64) -> Option<CollaboratorRequest> {
+    conn.query_row(
+        "SELECT id,collaborator_id,song_title,song_creation_date,song_file,song_cover,artist_name,artist_biography,artist_profile_picture \
+        FROM CollaboratorRequest \
+        WHERE CollaboratorRequest.id=?",
+        params![id],
+        |row| {
+            Ok(CollaboratorRequest {
+                id: row.get(0)?,
+                collaborator_id: row.get(1)?,
+                song_title: row.get(2)?,
+                song_creation_date: row.get(3)?,
+                song_file: row.get(4)?,
+                song_cover: row.get(5)?,
+                artist_name: row.get(6)?,
+                artist_biography: row.get(7)?,
+                artist_profile_picture: row.get(8)?,
+            })
+        },
+    )
+    .ok()
 }
 
 pub fn select_authmap_by_auth_hash(conn: &Connection, auth_hash: &str) -> Option<AuthMap> {

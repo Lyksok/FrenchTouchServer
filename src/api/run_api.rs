@@ -96,6 +96,8 @@ pub async fn run_api() -> std::io::Result<()> {
             .service(api_select::api_select_request_to_artist_by_user_id)
             .service(api_select::api_select_request_to_collaborator_by_user_id)
             .service(api_select::api_select_request_to_admin_by_user_id)
+            .service(api_select::api_select_collaborator_request_id)
+            .service(api_select::api_select_artist_request_id)
             // SEARCH
             .service(api_search::api_select_search_song)
             .service(api_search::api_select_search_artist)
@@ -121,6 +123,8 @@ pub async fn run_api() -> std::io::Result<()> {
             .service(api_update::api_update_user_last_connection)
             .service(api_update_user_password)
             // DELETE
+            .service(api_delete::api_delete_artist_request_by_id)
+            .service(api_delete::api_delete_collaborator_request_by_id)
             .service(api_delete::api_delete_request_to_collaborator_by_user_id)
             .service(api_delete::api_delete_request_to_artist_by_user_id)
             .service(api_delete::api_delete_request_to_admin_by_user_id)

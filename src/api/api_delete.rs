@@ -4,6 +4,56 @@ use crate::{api::api_utils::{print_log, AuthHash}, db::{self, db_security::has_p
 
 use super::run_api::AppState;
 
+#[post("/delete/collaborator_request/id/{id}")]
+async fn api_delete_collaborator_request_by_id(
+    data: web::Data<AppState>,
+    id: web::Path<i64>,
+    auth_hash: web::Json<AuthHash>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+
+    if !has_permissions(&conn, &auth_hash.auth_hash, 3) {
+        print_log("ERROR DELETE", "User permission (CollaboratorRequest)", &auth_hash.auth_hash);
+        return Ok(HttpResponse::Forbidden().body("You do not have access"));
+    }
+    
+    match db::db_delete::delete_collaborator_request_by_id(&conn, *id) {
+        true => {
+            print_log("DELETE", "CollaboratorRequest", &id);
+            return Ok(HttpResponse::Ok().body(""))
+        },
+        false => {
+            print_log("ERROR DELETE", "CollaboratorRequest", &id);
+            return Ok(HttpResponse::InternalServerError().body("Could not delete CollaboratorRequest"))
+        },
+    }
+}
+
+#[post("/delete/artist_request/id/{id}")]
+async fn api_delete_artist_request_by_id(
+    data: web::Data<AppState>,
+    id: web::Path<i64>,
+    auth_hash: web::Json<AuthHash>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+
+    if !has_permissions(&conn, &auth_hash.auth_hash, 3) {
+        print_log("ERROR DELETE", "User permission (ArtistRequest)", &auth_hash.auth_hash);
+        return Ok(HttpResponse::Forbidden().body("You do not have access"));
+    }
+    
+    match db::db_delete::delete_artist_request_by_id(&conn, *id) {
+        true => {
+            print_log("DELETE", "ArtistRequest", &id);
+            return Ok(HttpResponse::Ok().body(""))
+        },
+        false => {
+            print_log("ERROR DELETE", "ArtistRequest", &id);
+            return Ok(HttpResponse::InternalServerError().body("Could not delete ArtistRequest"))
+        },
+    }
+}
+
 #[post("/delete/request_to_collaborator/user_id/{user_id}")]
 async fn api_delete_request_to_collaborator_by_user_id(
     data: web::Data<AppState>,
