@@ -124,8 +124,7 @@ CREATE TABLE ArtistRequest (
     song_creation_date INTEGER NOT NULL,
     song_file TEXT NOT NULL,
     song_cover TEXT,
-    FOREIGN KEY (artist_id) REFERENCES Artist(id),
-    FOREIGN KEY (song_id) REFERENCES Song(id)
+    FOREIGN KEY (artist_id) REFERENCES Artist(id)
 );
 
 CREATE TABLE CollaboratorRequest (
@@ -138,9 +137,7 @@ CREATE TABLE CollaboratorRequest (
     artist_name TEXT NOT NULL,
     artist_biography TEXT,
     artist_profile_picture TEXT,
-    FOREIGN KEY (collaborator_id) REFERENCES Collaborator(id),
-    FOREIGN KEY (artist_id) REFERENCES Artist(id),
-    FOREIGN KEY (song_id) REFERENCES Song(id)
+    FOREIGN KEY (collaborator_id) REFERENCES Collaborator(id)
 );
 
 CREATE TABLE AuthMap (
