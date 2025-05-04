@@ -935,6 +935,7 @@ pub fn select_history_by_user_id(conn: &Connection, id: i64) -> Option<Vec<Histo
 
     Some(res)
 }
+
 pub fn select_history_by_song_id(conn: &Connection, id: i64) -> Option<Vec<History>> {
     let mut query = match conn.prepare(
         "SELECT user_id,song_id,time \
@@ -987,6 +988,40 @@ pub fn select_artist_request_by_id(conn: &Connection, id: i64) -> Option<ArtistR
     .ok()
 }
 
+pub fn select_artist_request_all(conn: &Connection) -> Option<Vec<ArtistRequest>> {
+    let mut query = match conn.prepare(
+        "SELECT id,artist_id,song_title,song_creation_date,song_file,song_cover \
+        FROM ArtistRequest",
+    ) {
+        Ok(query) => query,
+        Err(_) => return None,
+    };
+
+    let iter = match query.query_map([], |row| {
+        Ok(ArtistRequest {
+            id: row.get(0)?,
+            artist_id: row.get(1)?,
+            song_title: row.get(2)?,
+            song_creation_date: row.get(3)?,
+            song_file: row.get(4)?,
+            song_cover: row.get(5)?,
+        })
+    }) {
+        Ok(it) => it,
+        Err(_) => return None,
+    };
+
+    let mut res = Vec::new();
+    for elt in iter {
+        match elt {
+            Err(_) => return None,
+            Ok(elt) => res.push(elt),
+        }
+    }
+
+    Some(res)
+}
+
 pub fn select_collaborator_request_by_id(conn: &Connection, id: i64) -> Option<CollaboratorRequest> {
     conn.query_row(
         "SELECT id,collaborator_id,song_title,song_creation_date,song_file,song_cover,artist_name,artist_biography,artist_profile_picture \
@@ -1008,6 +1043,43 @@ pub fn select_collaborator_request_by_id(conn: &Connection, id: i64) -> Option<C
         },
     )
     .ok()
+}
+
+pub fn select_collaborator_request_all(conn: &Connection) -> Option<Vec<CollaboratorRequest>> {
+    let mut query = match conn.prepare(
+        "SELECT id,collaborator_id,song_title,song_creation_date,song_file,song_cover,artist_name,artist_biography,artist_profile_picture \
+        FROM CollaboratorRequest",
+    ) {
+        Ok(query) => query,
+        Err(_) => return None,
+    };
+
+    let iter = match query.query_map([], |row| {
+        Ok(CollaboratorRequest {
+            id: row.get(0)?,
+            collaborator_id: row.get(1)?,
+            song_title: row.get(2)?,
+            song_creation_date: row.get(3)?,
+            song_file: row.get(4)?,
+            song_cover: row.get(5)?,
+            artist_name: row.get(6)?,
+            artist_biography: row.get(7)?,
+            artist_profile_picture: row.get(8)?,
+        })
+    }) {
+        Ok(it) => it,
+        Err(_) => return None,
+    };
+
+    let mut res = Vec::new();
+    for elt in iter {
+        match elt {
+            Err(_) => return None,
+            Ok(elt) => res.push(elt),
+        }
+    }
+
+    Some(res)
 }
 
 pub fn select_authmap_by_auth_hash(conn: &Connection, auth_hash: &str) -> Option<AuthMap> {

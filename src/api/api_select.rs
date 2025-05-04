@@ -603,7 +603,7 @@ async fn api_select_history_by_song_id(
 }
 
 #[get("/select/artist_request/id/{id}")]
-async fn api_select_artist_request_id(
+async fn api_select_artist_request_by_id(
     data: web::Data<AppState>,
     id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
@@ -621,14 +621,52 @@ async fn api_select_artist_request_id(
     }
 }
 
+#[get("/select/artist_request/all")]
+async fn api_select_artist_request_all(
+    data: web::Data<AppState>,
+    id: web::Path<i64>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+
+    match db::db_select::select_artist_request_all(&conn) {
+        Some(artist_req) => {
+            print_log("SELECT", "ArtistRequest", &artist_req);
+            Ok(HttpResponse::Ok().json(artist_req))
+        }
+        _ => {
+            print_log("ERROR SELECT", "ArtistRequest", &id);
+            Ok(HttpResponse::InternalServerError().body("Could not find the ArtistRequest"))
+        }
+    }
+}
+
 #[get("/select/collaborator_request/id/{id}")]
-async fn api_select_collaborator_request_id(
+async fn api_select_collaborator_request_by_id(
     data: web::Data<AppState>,
     id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
 
     match db::db_select::select_collaborator_request_by_id(&conn, *id) {
+        Some(artist_req) => {
+            print_log("SELECT", "CollaboratorRequest", &artist_req);
+            Ok(HttpResponse::Ok().json(artist_req))
+        }
+        _ => {
+            print_log("ERROR SELECT", "CollaboratorRequest", &id);
+            Ok(HttpResponse::InternalServerError().body("Could not find the CollaboratorRequest"))
+        }
+    }
+}
+
+#[get("/select/collaborator_request/add")]
+async fn api_select_collaborator_request_all(
+    data: web::Data<AppState>,
+    id: web::Path<i64>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+
+    match db::db_select::select_collaborator_request_all(&conn) {
         Some(artist_req) => {
             print_log("SELECT", "CollaboratorRequest", &artist_req);
             Ok(HttpResponse::Ok().json(artist_req))
