@@ -659,7 +659,7 @@ async fn api_select_collaborator_request_by_id(
     }
 }
 
-#[get("/select/collaborator_request/add")]
+#[get("/select/collaborator_request/all")]
 async fn api_select_collaborator_request_all(
     data: web::Data<AppState>,
     id: web::Path<i64>,
