@@ -1,7 +1,7 @@
 use text_io::read;
 
 use super::structs::{
-    Admin, Album, Artist, AuthMap, Collaborator, CollaboratorRequest, Credentials, History, Playlist, RequestToAdmin, RequestToArtist, RequestToCollaborator, Song, SongAlbum, SongPlaylist, User, UserLikesAlbum, UserLikesPlaylist, UserLikesSong
+    Admin, Album, Artist, ArtistRequest, AuthMap, Collaborator, CollaboratorRequest, Credentials, History, Playlist, RequestToAdmin, RequestToArtist, RequestToCollaborator, Song, SongAlbum, SongPlaylist, User, UserLikesAlbum, UserLikesPlaylist, UserLikesSong
 };
 use crate::db::{
     self,
@@ -308,6 +308,31 @@ pub fn insert_collaboration_request(
             collab_req.artist_name,
             collab_req.artist_biography,
             collab_req.artist_profile_picture,
+        ],
+    ) {
+        Ok(_) => Some(conn.last_insert_rowid()),
+        Err(_) => None,
+    }
+}
+
+pub fn insert_artist_request(
+    conn: &Connection,
+    artist_req: &ArtistRequest,
+) -> Option<i64> {
+    if !db::db_exist::artist_exist_by_id(conn, artist_req.artist_id) {
+        return None;
+    }
+    let query = "INSERT INTO ArtistRequest \
+        (artist_id,song_title,song_creation_date,song_file,song_cover) \
+        VALUES (?1,?2,?3,?4,?5)";
+    match conn.execute(
+        query,
+        params![
+            artist_req.artist_id,
+            artist_req.song_title,
+            artist_req.song_creation_date,
+            artist_req.song_file,
+            artist_req.song_cover,
         ],
     ) {
         Ok(_) => Some(conn.last_insert_rowid()),

@@ -13,3 +13,45 @@ pub fn delete_authmap_by_auth_hash(conn: &Connection, auth_hash: &str) -> bool {
         }
     }
 }
+
+pub fn delete_request_to_collaborator_by_user_id(conn: &Connection, user_id: i64) -> bool {
+    let query = "DELETE FROM RequestToCollaborator WHERE RequestToCollaborator.user_id=?";
+    match conn.execute(query, params![user_id]) {
+        Ok(_) => {
+            println!("[DELETE] Deleted RequestToCollaborator : {}", user_id);
+            true
+        }
+        Err(e) => {
+            println!("[DELETE ERROR] Could not delete RequestToCollaborator : {}", e);
+            false
+        }
+    }
+}
+
+pub fn delete_request_to_artist_by_user_id(conn: &Connection, user_id: i64) -> bool {
+    let query = "DELETE FROM RequestToArtist WHERE RequestToArtist.user_id=?";
+    match conn.execute(query, params![user_id]) {
+        Ok(_) => {
+            println!("[DELETE] Deleted RequestToArtist : {}", user_id);
+            true
+        }
+        Err(e) => {
+            println!("[DELETE ERROR] Could not delete RequestToArtist : {}", e);
+            false
+        }
+    }
+}
+
+pub fn delete_request_to_admin_by_user_id(conn: &Connection, user_id: i64) -> bool {
+    let query = "DELETE FROM RequestToAdmin WHERE RequestToAdmin.user_id=?";
+    match conn.execute(query, params![user_id]) {
+        Ok(_) => {
+            println!("[DELETE] Deleted RequestToAdmin : {}", user_id);
+            true
+        }
+        Err(e) => {
+            println!("[DELETE ERROR] Could not delete RequestToAdmin : {}", e);
+            false
+        }
+    }
+}

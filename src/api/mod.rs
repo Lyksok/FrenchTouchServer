@@ -1,3 +1,4 @@
+pub mod api_delete;
 pub mod api_files;
 pub mod api_insert;
 pub mod api_search;

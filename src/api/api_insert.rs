@@ -2,7 +2,7 @@ use actix_web::{HttpResponse, Responder, post, web};
 use serde::{Deserialize, Serialize};
 
 use crate::api::api_utils::{
-    print_log, AdminRequest, AlbumRequest, ArtistObjRequest, CollaboratorObjRequest, CollaboratorRequestRequest, HistoryRequest, PlaylistRequest, SongAlbumRequest, SongPlaylistRequest, SongRequest, UserLikesAlbumRequest, UserLikesPlaylistRequest, UserLikesSongRequest
+    print_log, AdminRequest, AlbumRequest, ArtistObjRequest, ArtistRequestRequest, CollaboratorObjRequest, CollaboratorRequestRequest, HistoryRequest, PlaylistRequest, SongAlbumRequest, SongPlaylistRequest, SongRequest, UserLikesAlbumRequest, UserLikesPlaylistRequest, UserLikesSongRequest
 };
 use crate::api::run_api::AppState;
 use crate::db;
@@ -399,8 +399,34 @@ async fn api_insert_collaborator_request(
             Ok(HttpResponse::Ok().body(""))
         }
         None => {
-            println!("[ERROR] Could not insert history {:?}", collab_req);
-            Ok(HttpResponse::InternalServerError().body("Could not insert history"))
+            println!("[ERROR] Could not insert CollaboratorRequest {:?}", collab_req);
+            Ok(HttpResponse::InternalServerError().body("Could not insert CollaboratorRequest"))
+        }
+    }
+}
+
+#[post("/insert/artist_request")]
+async fn api_insert_artist_request(
+    data: web::Data<AppState>,
+    artist_req: web::Json<ArtistRequestRequest>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    let artist_req = artist_req.into_inner();
+    let auth_hash = artist_req.auth_hash.clone();
+    if !has_permissions(&conn, &auth_hash, 1) {
+        print_log("ERROR INSERT", "User permission (ArtistRequest)", &auth_hash);
+        return Ok(HttpResponse::Forbidden().body("You do not have access"));
+    }
+    let artist_req = artist_req.obj.clone();
+
+    match db::db_insert::insert_artist_request(&conn, &artist_req) {
+        Some(_) => {
+            println!("[INSERT] History {:?}", artist_req);
+            Ok(HttpResponse::Ok().body(""))
+        }
+        None => {
+            println!("[ERROR] Could not insert ArtistRequest {:?}", artist_req);
+            Ok(HttpResponse::InternalServerError().body("Could not insert ArtistRequest"))
         }
     }
 }

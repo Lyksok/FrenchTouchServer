@@ -2,6 +2,7 @@ use actix_web::{App, HttpServer, web};
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use std::sync::Mutex;
 
+use crate::api::api_delete;
 use crate::api::api_files;
 use crate::api::api_insert;
 use crate::api::api_search;
@@ -52,8 +53,10 @@ pub async fn run_api() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(shared_state.clone())
+            // SECURITY
             .service(api_security::api_security_login)
             .service(api_security::api_security_register)
+            // SELECT
             .service(api_select::api_select_admin_by_user_id)
             .service(api_select::api_select_user_by_email)
             .service(api_select::api_select_user_by_id)
@@ -87,11 +90,16 @@ pub async fn run_api() -> std::io::Result<()> {
             .service(api_select::api_select_song_playlist_by_playlist_id)
             .service(api_select::api_select_history_by_user_id)
             .service(api_select::api_select_history_by_song_id)
-            .service(api_search::api_select_search_song)
-            .service(api_search::api_select_search_artist)
             .service(api_select::api_select_request_to_artist_all)
             .service(api_select::api_select_request_to_collaborator_all)
             .service(api_select::api_select_request_to_admin_all)
+            .service(api_select::api_select_request_to_artist_by_user_id)
+            .service(api_select::api_select_request_to_collaborator_by_user_id)
+            .service(api_select::api_select_request_to_admin_by_user_id)
+            // SEARCH
+            .service(api_search::api_select_search_song)
+            .service(api_search::api_select_search_artist)
+            // INSERT
             .service(api_insert::api_insert_admin)
             .service(api_insert::api_insert_user)
             .service(api_insert::api_insert_artist)
@@ -101,13 +109,19 @@ pub async fn run_api() -> std::io::Result<()> {
             .service(api_insert::api_insert_request_to_artist)
             .service(api_insert::api_insert_request_to_collaborator)
             .service(api_insert::api_insert_request_to_admin)
+            // FILES
             .service(api_files::api_save_image_file)
             .service(api_files::api_get_image_file)
             .service(api_files::api_save_song_file)
             .service(api_files::api_get_song_file)
+            // UPDATE
             .service(api_update::api_update_user_profile_picture)
             .service(api_update::api_update_user_last_connection)
             .service(api_update_user_password)
+            // DELETE
+            .service(api_delete::api_delete_request_to_collaborator_by_user_id)
+            .service(api_delete::api_delete_request_to_artist_by_user_id)
+            .service(api_delete::api_delete_request_to_admin_by_user_id)
     })
     .bind_openssl("0.0.0.0:50000", builder)?
     .run()

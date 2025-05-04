@@ -680,12 +680,12 @@ async fn api_select_request_to_collaborator_all(
     let conn = data.db.lock().unwrap();
     match db::db_select::select_request_to_collaborator_all(&conn) {
         Some(elt) => {
-            print_log("SELECT", "RequestToArtist", &elt);
+            print_log("SELECT", "RequestToCollaborator", &elt);
             Ok(HttpResponse::Ok().json(elt))
         }
         _ => {
-            print_log("ERROR SELECT", "RequestToArtist", &"all");
-            Ok(HttpResponse::InternalServerError().body("Could not find RequestToArtist"))
+            print_log("ERROR SELECT", "RequestToCollaborator", &"all");
+            Ok(HttpResponse::InternalServerError().body("Could not find RequestToCollaborator"))
         }
     }
 }
@@ -697,12 +697,12 @@ async fn api_select_request_to_admin_all(
     let conn = data.db.lock().unwrap();
     match db::db_select::select_request_to_admin_all(&conn) {
         Some(elt) => {
-            print_log("SELECT", "RequestToArtist", &elt);
+            print_log("SELECT", "RequestToAdmin", &elt);
             Ok(HttpResponse::Ok().json(elt))
         }
         _ => {
-            print_log("ERROR SELECT", "RequestToArtist", &"all");
-            Ok(HttpResponse::InternalServerError().body("Could not find RequestToArtist"))
+            print_log("ERROR SELECT", "RequestToAdmin", &"all");
+            Ok(HttpResponse::InternalServerError().body("Could not find RequestToAdmin"))
         }
     }
 }
