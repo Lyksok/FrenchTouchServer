@@ -1,4 +1,4 @@
-use crate::db::db_insert;
+use crate::db::{db_insert, db_search};
 
 use super::{db_select, db_utils};
 use std::io::Error;
@@ -15,6 +15,7 @@ pub fn db_main() -> Result<(), Error> {
         "3. Select user by email",
         "4. Select admins",
         "5. Insert Collaborator",
+        "6. Search Songs and Artists",
     ];
     for s in &queries {
         println!("{}", s);
@@ -43,6 +44,13 @@ pub fn db_main() -> Result<(), Error> {
         }
         5 => {
             let _ = db_insert::dev_insert_collaborator(&conn);
+            Ok(())
+        }
+        6 => {
+            let a = db_search::select_search_song(&conn, "91");
+            let b = db_search::select_search_artist(&conn, "pnl");
+            println!("91: {:?}",a);
+            println!("pnl: {:?}",b);
             Ok(())
         }
         _ => Ok(()),
