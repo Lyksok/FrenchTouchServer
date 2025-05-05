@@ -118,7 +118,7 @@ async fn api_update_user_password(
 }
 
 
-#[post("/update/collaborator_request/all")]
+#[post("/update/collaborator_request/id")]
 async fn api_update_collaborator_all(
     data: web::Data<AppState>,
     json: web::Json<CollaboratorRequestRequest>
@@ -133,7 +133,7 @@ async fn api_update_collaborator_all(
     }
     let json = json.obj.clone();
 
-    match db::db_update::update_collaborator_request_all(&conn, &json) {
+    match db::db_update::update_collaborator_request_by_id(&conn, &json) {
         Ok(()) => {
             print_log("UPDATE", "Collaborator Request", &json);
             Ok(HttpResponse::Ok().json(""))

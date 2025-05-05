@@ -6,30 +6,37 @@ French Touch Server is a server written in Rust. Its purpose is to give French T
 
 ## INSERT
 
-- [X] /insert/user
-- [X] /insert/artist
-- [X] /insert/collaborator
-- [X] /insert/song
-- [X] /insert/album
-- [X] /insert/playlist
-- [X] /insert/user-likes-song
-- [X] /insert/user-likes-album
-- [X] /insert/user-likes-playlist
-- [X] /insert/song-album
-- [X] /insert/song-playlist
-- [X] /insert/history
+- [X] /insert/admin _(AdminRequest)_
+- [X] /insert/user _(User)_
+- [X] /insert/artist _(ArtistObjRequest)_
+- [X] /insert/collaborator _(CollaboratorObjRequest)_
+- [X] /insert/song _(SongRequest)_
+- [X] /insert/album _(AlbumRequest)_
+- [X] /insert/playlist _(PlaylistRequest)_
+- [X] /insert/user-likes-song _(UserLikesSongRequest)_
+- [X] /insert/user-likes-album _(UserLikesAlbumRequest)_
+- [X] /insert/user-likes-playlist _(UserLikesPlaylistRequest)_
+- [X] /insert/song-album _(SongAlbumRequest)_
+- [X] /insert/song-playlist _(SongPlaylistRequest)_
+- [X] /insert/history _(HistoryRequest)_
+- [X] /insert/collaborator_request _(CollaboratorRequestRequest)_
+- [X] /insert/artist_request _(ArtistRequestRequest)_
+- [X] /insert/request_to_artist _(WrapperRequestToArtist)_
+- [X] /insert/request_to_collaborator _(WrapperRequestToCollaborator)_
+- [X] /insert/request_to_admin _(WrapperRequestToAdmin)_
+
 
 ## FILES
 
-- [X] /get/image/{filename}
-- [X] /get/song/{filename}
 - [X] /post/image
+- [X] /get/image/{filename}
 - [X] /post/song
+- [X] /get/song/{filename}
 
 ## SELECT
 
 ### Admin
-- [X] /select/admin/user_id/{user_id}
+- [X] /select/admin/user_id/{user_id} + _AuthHash_
 
 ### User
 - [X] /select/user/email/{email}
@@ -51,89 +58,85 @@ French Touch Server is a server written in Rust. Its purpose is to give French T
 ### Song
 - [X] /select/song/id/{id}
 - [X] /select/song/title/{title}
-- [X] /select/song/artist-id/{artist-id}
+- [X] /select/song/artist_id/{artist_id}
 
 ### Album
 - [X] /select/album/id/{id}
 - [X] /select/album/title/{title}
-- [X] /select/album/artist-id/{artist-id}
+- [X] /select/album/artist_id/{artist_id}
 
 ### Playlist
 - [X] /select/playlist/id/{id}
 - [X] /select/playlist/title/{title}
-- [X] /select/playlist/user-id/{user-id}
+- [X] /select/playlist/user_id/{user_id}
 
 ### UserLikesSong
-- [X] /select/user-likes-song/user-id/{user-id}
-- [X] /select/user-likes-song/song-id/{song-id}
+- [X] /select/user_likes_song/user_id/{user_id}
+- [X] /select/user_likes_song/song_id/{song_id}
 
 ### UserLikesAlbum
-- [X] /select/user-likes-album/user-id/{user-id}
-- [X] /select/user-likes-album/album-id/{album-id}
+- [X] /select/user_likes_album/user_id/{user_id}
+- [X] /select/user_likes_album/album_id/{album_id}
 
 ### UserLikesPlaylist
-- [X] /select/user-likes-playlist/user-id/{user-id}
-- [X] /select/user-likes-playlist/playlist-id/{playlist-id}
+- [X] /select/user_likes_playlist/user_id/{user_id}
+- [X] /select/user_likes_playlist/playlist_id/{playlist_id}
 
 ### SongAlbum
-- [X] /select/song-album/song-id/{song-id}
-- [X] /select/song-album/album-id/{album-id}
+- [X] /select/song_album/song_id/{song_id}
+- [X] /select/song_album/album_id/{album_id}
 
 ### SongPlaylist
-- [X] /select/song-playlist/song-id/{song-id}
-- [X] /select/song-playlist/playlist-id/{playlist-id}
+- [X] /select/song_playlist/song_id/{song_id}
+- [X] /select/song_playlist/playlist_id/{playlist_id}
 
 ### History
-- [X] /select/history/user-id/{user-id}
-- [X] /select/history/song-id/{song-id}
+- [X] /select/history/user_id/{user_id}
+- [X] /select/history/song_id/{song_id}
+
+### ArtistRequest
+- [X] /select/artist_request/id/{id}
+- [X] /select/artist_request/all
+
+### CollaboratorRequest
+- [X] /select/collaborator_request/id/{id}
+- [X] /select/collaborator_request/all
+
+### RequestToArtist
+- [X] /select/request_to_artist/user_id/{user_id}
+- [X] /select/request_to_artist/all
+
+### RequestToCollaborator
+- [X] /select/request_to_collaborator/user_id/{user_id}
+- [X] /select/request_to_collaborator/all
+
+### RequestToArtist
+- [X] /select/request_to_admin/user_id/{user_id}
+- [X] /select/request_to_admin/all
 
 ## UPDATE
 
 ### User
-- [ ] /update/user/username/{email}
-- [ ] /update/user/email/{email}
-- [ ] /update/user/credentials/{email}
-- [ ] /update/user/last-connection/{email}
-- [X] /update/user/profile-picture/{email}
+- [X] /update/user/profile-picture/{email} _(UserRequest)_
+- [X] /update/user/last-connection/{email} _(UserRequest)_
+- [X] /update/user/password/{id} _(AuthInfoNewPassword)_
 
-### Artist
-- [ ] /update/artist/nb-of-streams/{id}
-- [ ] /update/artist/biography/{id}
-- [ ] /update/artist/url/{id}
-- [ ] /update/artist/verified/{id}
-
-### Collaborator
-- [ ] /update/collaborator/verified/{id}
-
-### Song
-- [ ] /update/song/title/{id}
-- [ ] /update/song/song-file/{id}
-- [ ] /update/song/nb-of-streams/{id}
-- [ ] /update/song/cover-image/{id}
-- [ ] /update/song/duration/{id}
-- [ ] /update/song/creation-date/{id}
-
-### Album
-- [ ] /update/album/title/{id}
-- [ ] /update/album/cover-image/{id}
-- [ ] /update/album/creation-date/{id}
-
-### Playlist
-- [ ] /update/playlist/title/{id}
-- [ ] /update/playlist/cover-image/{id}
-- [ ] /update/playlist/creation-date/{id}
+### CollaboratorRequest
+- [X] /update/collaborator_request/id _(CollaboratorRequestRequest)_
 
 ## DELETE
 
-### User
-### Artist
-### Collaborator
-### Song
-### Album
-### Playlist
-### UserLikesSong
-### UserLikesAlbum
-### UserLikesPlaylist
-### SongAlbum
-### SongPlaylist
-### History
+### CollaboratorRequest
+- [X] /delete/collaborator_request/id/{id} + _AuthHash_
+
+### ArtistRequest
+- [X] /delete/artist_request/id/{id} + _AuthHash_
+
+### RequestToCollaborator
+- [X] /delete/request_to_collaborator/user_id/{user_id} + _AuthHash_
+
+### RequestToArtist
+- [X] /delete/request_to_artist/user_id/{user_id} + _AuthHash_
+
+### RequestToAdmin
+- [X] /delete/request_to_admin/user_id/{user_id} + _AuthHash_

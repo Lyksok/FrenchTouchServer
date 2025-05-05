@@ -25,7 +25,7 @@ pub fn update_authmap_hash(conn: &Connection, auth_map: &AuthMap) -> Result<(), 
     }
 }
 
-pub fn update_collaborator_request_all(conn: &Connection, collab_req: &CollaboratorRequest) -> Result<(), String> {
+pub fn update_collaborator_request_by_id(conn: &Connection, collab_req: &CollaboratorRequest) -> Result<(), String> {
     let query = "UPDATE CollaboratorRequest SET collaborator_id=?2,song_title=?3,song_creation_date=?4,song_file=?5,song_cover=?6,artist_name=?7,artist_biography=?8,artist_profile_picture=?8 WHERE id=?1";
     match conn.execute(query, params![
             collab_req.id,

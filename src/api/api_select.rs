@@ -694,6 +694,23 @@ async fn api_select_request_to_artist_by_user_id(
     }
 }
 
+#[get("/select/request_to_artist/all")]
+async fn api_select_request_to_artist_all(
+    data: web::Data<AppState>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_select::select_request_to_artist_all(&conn) {
+        Some(elt) => {
+            print_log("SELECT", "RequestToArtist", &elt);
+            Ok(HttpResponse::Ok().json(elt))
+        }
+        _ => {
+            print_log("ERROR SELECT", "RequestToArtist", &"all");
+            Ok(HttpResponse::InternalServerError().body("Could not find RequestToArtist"))
+        }
+    }
+}
+
 #[get("/select/request_to_collaborator/user_id/{user_id}")]
 async fn api_select_request_to_collaborator_by_user_id(
     data: web::Data<AppState>,
@@ -701,6 +718,23 @@ async fn api_select_request_to_collaborator_by_user_id(
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
     match db::db_select::select_request_to_collaborator_by_user_id(&conn, *user_id) {
+        Some(elt) => {
+            print_log("SELECT", "RequestToCollaborator", &elt);
+            Ok(HttpResponse::Ok().json(elt))
+        }
+        _ => {
+            print_log("ERROR SELECT", "RequestToCollaborator", &"all");
+            Ok(HttpResponse::InternalServerError().body("Could not find RequestToCollaborator"))
+        }
+    }
+}
+
+#[get("/select/request_to_collaborator/all")]
+async fn api_select_request_to_collaborator_all(
+    data: web::Data<AppState>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_select::select_request_to_collaborator_all(&conn) {
         Some(elt) => {
             print_log("SELECT", "RequestToCollaborator", &elt);
             Ok(HttpResponse::Ok().json(elt))
@@ -726,40 +760,6 @@ async fn api_select_request_to_admin_by_user_id(
         _ => {
             print_log("ERROR SELECT", "RequestToAdmin", &"all");
             Ok(HttpResponse::InternalServerError().body("Could not find RequestToAdmin"))
-        }
-    }
-}
-
-#[get("/select/request_to_artist/all")]
-async fn api_select_request_to_artist_all(
-    data: web::Data<AppState>,
-) -> Result<impl Responder, actix_web::Error> {
-    let conn = data.db.lock().unwrap();
-    match db::db_select::select_request_to_artist_all(&conn) {
-        Some(elt) => {
-            print_log("SELECT", "RequestToArtist", &elt);
-            Ok(HttpResponse::Ok().json(elt))
-        }
-        _ => {
-            print_log("ERROR SELECT", "RequestToArtist", &"all");
-            Ok(HttpResponse::InternalServerError().body("Could not find RequestToArtist"))
-        }
-    }
-}
-
-#[get("/select/request_to_collaborator/all")]
-async fn api_select_request_to_collaborator_all(
-    data: web::Data<AppState>,
-) -> Result<impl Responder, actix_web::Error> {
-    let conn = data.db.lock().unwrap();
-    match db::db_select::select_request_to_collaborator_all(&conn) {
-        Some(elt) => {
-            print_log("SELECT", "RequestToCollaborator", &elt);
-            Ok(HttpResponse::Ok().json(elt))
-        }
-        _ => {
-            print_log("ERROR SELECT", "RequestToCollaborator", &"all");
-            Ok(HttpResponse::InternalServerError().body("Could not find RequestToCollaborator"))
         }
     }
 }
