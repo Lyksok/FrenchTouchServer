@@ -14,6 +14,7 @@ pub fn db_main() -> Result<(), Error> {
         "2. Select user usernames",
         "3. Select user by email",
         "4. Select admins",
+        "5. Insert Collaborator",
     ];
     for s in &queries {
         println!("{}", s);
@@ -38,6 +39,10 @@ pub fn db_main() -> Result<(), Error> {
         4 => {
             let admins = db_select::select_admin_all(&conn);
             println!("{:?}", admins);
+            Ok(())
+        }
+        5 => {
+            let _ = db_insert::dev_insert_collaborator(&conn);
             Ok(())
         }
         _ => Ok(()),

@@ -419,3 +419,18 @@ pub fn dev_insert_admin(conn: &Connection) -> () {
     let _ = insert_admin(&conn, &admin);
     let _ = db::db_update::update_authmap(&conn, user.id, 3);
 }
+
+pub fn dev_insert_collaborator(conn: &Connection) -> () {
+    print!("Enter user email: ");
+    let input: String = read!();
+    let user = match select_user_by_email(&conn, &input) {
+        Some(user) => user,
+        None => return (),
+    };
+    let collaborator = Collaborator{
+        id: -1,
+        user_id: user.id,
+        verified: false,
+    };
+    let _ = insert_collaborator(&conn, &collaborator);
+}
