@@ -624,7 +624,6 @@ async fn api_select_artist_request_by_id(
 #[get("/select/artist_request/all")]
 async fn api_select_artist_request_all(
     data: web::Data<AppState>,
-    id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
 
@@ -634,7 +633,7 @@ async fn api_select_artist_request_all(
             Ok(HttpResponse::Ok().json(artist_req))
         }
         _ => {
-            print_log("ERROR SELECT", "ArtistRequest", &id);
+            print_log("ERROR SELECT", "ArtistRequest", &"");
             Ok(HttpResponse::InternalServerError().body("Could not find the ArtistRequest"))
         }
     }
@@ -662,7 +661,6 @@ async fn api_select_collaborator_request_by_id(
 #[get("/select/collaborator_request/all")]
 async fn api_select_collaborator_request_all(
     data: web::Data<AppState>,
-    id: web::Path<i64>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
 
@@ -672,7 +670,7 @@ async fn api_select_collaborator_request_all(
             Ok(HttpResponse::Ok().json(artist_req))
         }
         _ => {
-            print_log("ERROR SELECT", "CollaboratorRequest", &id);
+            print_log("ERROR SELECT", "CollaboratorRequest", &"");
             Ok(HttpResponse::InternalServerError().body("Could not find the CollaboratorRequest"))
         }
     }
