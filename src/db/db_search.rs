@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 pub struct SongSearch {
     pub song_id: i64,
     pub song_title: String,
-    pub song_cover: String,
+    pub song_cover: Option<String>,
     pub artist_name: String,
 }
 
@@ -13,7 +13,7 @@ pub struct SongSearch {
 pub struct ArtistSearch {
     pub artist_id: i64,
     pub artist_name: String,
-    pub artist_cover: String,
+    pub artist_cover: Option<String>,
 }
 
 pub fn select_search_song(conn: &Connection, title: &str) -> Option<Vec<SongSearch>> {
