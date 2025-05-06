@@ -1,21 +1,13 @@
-use crate::api::api_utils::AuthHash;
 use crate::api::{api_utils::print_log, run_api::AppState};
 use crate::db;
-use crate::db::db_security::has_permissions;
 use actix_web::{get, web, HttpResponse, Responder};
 
 #[get("/select/admin/user_id/{user_id}")]
 async fn api_select_admin_by_user_id(
     data: web::Data<AppState>,
     user_id: web::Path<i64>,
-    auth_hash: web::Json<AuthHash>,
 ) -> Result<impl Responder, actix_web::Error> {
     let conn = data.db.lock().unwrap();
-
-    if !has_permissions(&conn, &auth_hash.auth_hash, 3) {
-        print_log("ERROR SELECT", "User permission (Admin by user_id)", &auth_hash.auth_hash);
-        return Ok(HttpResponse::Forbidden().body("You do not have access"));
-    }
 
     match db::db_select::select_admin_by_user_id(&conn, *user_id) {
         Some(admin) => {
