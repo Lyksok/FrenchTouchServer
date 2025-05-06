@@ -11,7 +11,7 @@ use text_io::read;
 
 pub fn select_admin_by_user_id(conn: &Connection, user_id: i64) -> Option<Admin> {
     conn.query_row(
-        "SELECT id,user_id Admin WHERE user_id=?1",
+        "SELECT id,user_id FROM Admin WHERE user_id=?1",
         params![user_id],
         |row| {
             Ok(Admin {
