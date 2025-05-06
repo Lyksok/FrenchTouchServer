@@ -1,5 +1,5 @@
 use actix_files::NamedFile;
-use actix_web::{get, post, web, HttpRequest, HttpResponse, Responder};
+use actix_web::{HttpRequest, HttpResponse, Responder, get, post, web};
 use futures::StreamExt;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -12,6 +12,8 @@ use uuid::Uuid;
 struct Metadata {
     file_name: String,
 }
+
+const MAX_FILE_SIZE: usize = 20 * 1024 * 1024; // 20MB
 
 fn sanitize_path(s: &str) -> String {
     let re = Regex::new(r"(\.\.)|[^a-zA-Z0-9_\-\.]").unwrap();
@@ -37,11 +39,20 @@ async fn api_save_image_file(
         .await?
         .map_err(actix_web::Error::from)?;
 
+    let mut total_size = 0;
+
     // Write the incoming bytes to the file
     while let Some(chunk) = payload.next().await {
         let data = chunk?;
+        total_size += data.len();
+
+        if total_size > MAX_FILE_SIZE {
+            return Ok(HttpResponse::PayloadTooLarge()
+                .body("File size exceeds the maximum allowed size of 20MB"));
+        }
+
         // Write the chunk to the file
-        let _ = file.write_all(&data);
+        file.write_all(&data)?;
     }
 
     Ok(HttpResponse::Ok().body(format!("{}.png", name)))
@@ -84,11 +95,20 @@ async fn api_save_song_file(mut payload: web::Payload) -> Result<impl Responder,
         .await?
         .map_err(actix_web::Error::from)?;
 
+    let mut total_size = 0;
+
     // Write the incoming bytes to the file
     while let Some(chunk) = payload.next().await {
         let data = chunk?;
+        total_size += data.len();
+
+        if total_size > MAX_FILE_SIZE {
+            return Ok(HttpResponse::PayloadTooLarge()
+                .body("File size exceeds the maximum allowed size of 20MB"));
+        }
+
         // Write the chunk to the file
-        let _ = file.write_all(&data);
+        file.write_all(&data)?;
     }
 
     Ok(HttpResponse::Ok().body(format!("{}.mp3", name)))
