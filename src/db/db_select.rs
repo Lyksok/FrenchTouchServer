@@ -1,10 +1,12 @@
 use super::{
     db_exist::user_exist_by_email,
     structs::{
-        Admin, Album, Artist, ArtistRequest, AuthMap, Collaborator, CollaboratorRequest, Credentials, History, Playlist, RequestToAdmin, RequestToArtist, RequestToCollaborator, Song, SongAlbum, SongPlaylist, User, UserLikesAlbum, UserLikesPlaylist, UserLikesSong
+        Admin, Album, Artist, ArtistRequest, AuthMap, Collaborator, CollaboratorRequest,
+        Credentials, History, Playlist, RequestToAdmin, RequestToArtist, RequestToCollaborator,
+        Song, SongAlbum, SongPlaylist, User, UserLikesAlbum, UserLikesPlaylist, UserLikesSong,
     },
 };
-use rusqlite::{params, Connection};
+use rusqlite::{Connection, params};
 use text_io::read;
 
 pub fn select_admin_by_user_id(conn: &Connection, user_id: i64) -> Option<Admin> {
@@ -46,7 +48,6 @@ pub fn select_admin_all(conn: &Connection) -> Option<Vec<Admin>> {
     }
 
     Some(res)
-
 }
 
 pub fn select_user_by_email(conn: &Connection, email: &str) -> Option<User> {
@@ -970,7 +971,7 @@ pub fn select_history_by_song_id(conn: &Connection, id: i64) -> Option<Vec<Histo
 
 pub fn select_artist_request_by_id(conn: &Connection, id: i64) -> Option<ArtistRequest> {
     conn.query_row(
-        "SELECT id,artist_id,song_title,song_creation_date,song_file,song_cover \
+        "SELECT id,artist_id,song_title,song_creation_date,song_file,song_cover,album_id,album_name,album_creation_date,album_cover \
         FROM ArtistRequest \
         WHERE ArtistRequest.id=?",
         params![id],
@@ -982,6 +983,10 @@ pub fn select_artist_request_by_id(conn: &Connection, id: i64) -> Option<ArtistR
                 song_creation_date: row.get(3)?,
                 song_file: row.get(4)?,
                 song_cover: row.get(5)?,
+                album_id: row.get(6)?,
+                album_name: row.get(7)?,
+                album_creation_date: row.get(8)?,
+                album_cover: row.get(9)?,
             })
         },
     )
@@ -990,7 +995,7 @@ pub fn select_artist_request_by_id(conn: &Connection, id: i64) -> Option<ArtistR
 
 pub fn select_artist_request_all(conn: &Connection) -> Option<Vec<ArtistRequest>> {
     let mut query = match conn.prepare(
-        "SELECT id,artist_id,song_title,song_creation_date,song_file,song_cover \
+        "SELECT id,artist_id,song_title,song_creation_date,song_file,song_cover,album_id,album_name,album_creation_date,album_cover \
         FROM ArtistRequest",
     ) {
         Ok(query) => query,
@@ -1005,6 +1010,10 @@ pub fn select_artist_request_all(conn: &Connection) -> Option<Vec<ArtistRequest>
             song_creation_date: row.get(3)?,
             song_file: row.get(4)?,
             song_cover: row.get(5)?,
+            album_id: row.get(6)?,
+            album_name: row.get(7)?,
+            album_creation_date: row.get(8)?,
+            album_cover: row.get(9)?,
         })
     }) {
         Ok(it) => it,
@@ -1022,9 +1031,12 @@ pub fn select_artist_request_all(conn: &Connection) -> Option<Vec<ArtistRequest>
     Some(res)
 }
 
-pub fn select_collaborator_request_by_id(conn: &Connection, id: i64) -> Option<CollaboratorRequest> {
+pub fn select_collaborator_request_by_id(
+    conn: &Connection,
+    id: i64,
+) -> Option<CollaboratorRequest> {
     conn.query_row(
-        "SELECT id,collaborator_id,song_title,song_creation_date,song_file,song_cover,artist_name,artist_biography,artist_profile_picture \
+        "SELECT id,collaborator_id,song_title,song_creation_date,song_file,song_cover,artist_id,artist_name,artist_biography,artist_profile_picture,album_id,album_name,album_creation_date,album_cover \
         FROM CollaboratorRequest \
         WHERE CollaboratorRequest.id=?",
         params![id],
@@ -1036,9 +1048,14 @@ pub fn select_collaborator_request_by_id(conn: &Connection, id: i64) -> Option<C
                 song_creation_date: row.get(3)?,
                 song_file: row.get(4)?,
                 song_cover: row.get(5)?,
-                artist_name: row.get(6)?,
-                artist_biography: row.get(7)?,
-                artist_profile_picture: row.get(8)?,
+                artist_id: row.get(6)?,
+                artist_name: row.get(7)?,
+                artist_biography: row.get(8)?,
+                artist_profile_picture: row.get(9)?,
+                album_id: row.get(10)?,
+                album_name: row.get(11)?,
+                album_creation_date: row.get(12)?,
+                album_cover: row.get(13)?,
             })
         },
     )
@@ -1047,7 +1064,7 @@ pub fn select_collaborator_request_by_id(conn: &Connection, id: i64) -> Option<C
 
 pub fn select_collaborator_request_all(conn: &Connection) -> Option<Vec<CollaboratorRequest>> {
     let mut query = match conn.prepare(
-        "SELECT id,collaborator_id,song_title,song_creation_date,song_file,song_cover,artist_name,artist_biography,artist_profile_picture \
+        "SELECT id,collaborator_id,song_title,song_creation_date,song_file,song_cover,artist_id,artist_name,artist_biography,artist_profile_picture,album_id,album_name,album_creation_date,album_cover \
         FROM CollaboratorRequest",
     ) {
         Ok(query) => query,
@@ -1062,9 +1079,14 @@ pub fn select_collaborator_request_all(conn: &Connection) -> Option<Vec<Collabor
             song_creation_date: row.get(3)?,
             song_file: row.get(4)?,
             song_cover: row.get(5)?,
-            artist_name: row.get(6)?,
-            artist_biography: row.get(7)?,
-            artist_profile_picture: row.get(8)?,
+            artist_id: row.get(6)?,
+            artist_name: row.get(7)?,
+            artist_biography: row.get(8)?,
+            artist_profile_picture: row.get(9)?,
+            album_id: row.get(10)?,
+            album_name: row.get(11)?,
+            album_creation_date: row.get(12)?,
+            album_cover: row.get(13)?,
         })
     }) {
         Ok(it) => it,
@@ -1116,7 +1138,10 @@ pub fn select_authmap_by_user_id(conn: &Connection, user_id: i64) -> Option<Auth
     .ok()
 }
 
-pub fn select_request_to_artist_by_user_id(conn: &Connection, user_id: i64) -> Option<RequestToArtist> {
+pub fn select_request_to_artist_by_user_id(
+    conn: &Connection,
+    user_id: i64,
+) -> Option<RequestToArtist> {
     conn.query_row(
         "SELECT user_id \
         FROM RequestToArtist \
@@ -1131,7 +1156,10 @@ pub fn select_request_to_artist_by_user_id(conn: &Connection, user_id: i64) -> O
     .ok()
 }
 
-pub fn select_request_to_collaborator_by_user_id(conn: &Connection, user_id: i64) -> Option<RequestToCollaborator> {
+pub fn select_request_to_collaborator_by_user_id(
+    conn: &Connection,
+    user_id: i64,
+) -> Option<RequestToCollaborator> {
     conn.query_row(
         "SELECT user_id \
         FROM RequestToCollaborator \
@@ -1146,7 +1174,10 @@ pub fn select_request_to_collaborator_by_user_id(conn: &Connection, user_id: i64
     .ok()
 }
 
-pub fn select_request_to_admin_by_user_id(conn: &Connection, user_id: i64) -> Option<RequestToAdmin> {
+pub fn select_request_to_admin_by_user_id(
+    conn: &Connection,
+    user_id: i64,
+) -> Option<RequestToAdmin> {
     conn.query_row(
         "SELECT user_id \
         FROM RequestToAdmin \

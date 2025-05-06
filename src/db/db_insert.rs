@@ -287,34 +287,6 @@ pub fn insert_authmap(conn: &Connection, auth_map: &AuthMap) -> Option<i64> {
     }
 }
 
-pub fn insert_collaboration_request(
-    conn: &Connection,
-    collab_req: &CollaboratorRequest,
-) -> Option<i64> {
-    if !db::db_exist::collaborator_exist_by_id(conn, collab_req.collaborator_id) {
-        return None;
-    }
-    let query = "INSERT INTO CollaboratorRequest \
-        (collaborator_id,song_title,song_creation_date,song_file,song_cover,artist_name,artist_biography,artist_profile_picture) \
-        VALUES (?1,?2,?3,?4,?5,?6,?7,?8)";
-    match conn.execute(
-        query,
-        params![
-            collab_req.collaborator_id,
-            collab_req.song_title,
-            collab_req.song_creation_date,
-            collab_req.song_file,
-            collab_req.song_cover,
-            collab_req.artist_name,
-            collab_req.artist_biography,
-            collab_req.artist_profile_picture,
-        ],
-    ) {
-        Ok(_) => Some(conn.last_insert_rowid()),
-        Err(_) => None,
-    }
-}
-
 pub fn insert_artist_request(
     conn: &Connection,
     artist_req: &ArtistRequest,
@@ -323,8 +295,8 @@ pub fn insert_artist_request(
         return None;
     }
     let query = "INSERT INTO ArtistRequest \
-        (artist_id,song_title,song_creation_date,song_file,song_cover) \
-        VALUES (?1,?2,?3,?4,?5)";
+        (artist_id,song_title,song_creation_date,song_file,song_cover,album_id,album_name,album_creation_date,album_cover) \
+        VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10)";
     match conn.execute(
         query,
         params![
@@ -333,6 +305,43 @@ pub fn insert_artist_request(
             artist_req.song_creation_date,
             artist_req.song_file,
             artist_req.song_cover,
+            artist_req.album_id,
+            artist_req.album_name,
+            artist_req.album_creation_date,
+            artist_req.album_cover,
+        ],
+    ) {
+        Ok(_) => Some(conn.last_insert_rowid()),
+        Err(_) => None,
+    }
+}
+
+pub fn insert_collaboration_request(
+    conn: &Connection,
+    collab_req: &CollaboratorRequest,
+) -> Option<i64> {
+    if !db::db_exist::collaborator_exist_by_id(conn, collab_req.collaborator_id) {
+        return None;
+    }
+    let query = "INSERT INTO CollaboratorRequest \
+        (collaborator_id,song_title,song_creation_date,song_file,song_cover,artist_id,artist_name,artist_biography,artist_profile_picture,album_id,album_name,album_creation_date,album_cover) \
+        VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14)";
+    match conn.execute(
+        query,
+        params![
+            collab_req.collaborator_id,
+            collab_req.song_title,
+            collab_req.song_creation_date,
+            collab_req.song_file,
+            collab_req.song_cover,
+            collab_req.artist_id,
+            collab_req.artist_name,
+            collab_req.artist_biography,
+            collab_req.artist_profile_picture,
+            collab_req.album_id,
+            collab_req.album_name,
+            collab_req.album_creation_date,
+            collab_req.album_cover,
         ],
     ) {
         Ok(_) => Some(conn.last_insert_rowid()),

@@ -130,6 +130,10 @@ pub struct ArtistRequest {
     pub song_creation_date: i32,
     pub song_file: String,
     pub song_cover: Option<String>,
+    pub album_id: i64,
+    pub album_name: Option<String>,
+    pub album_creation_date: Option<i32>,
+    pub album_cover: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -140,9 +144,14 @@ pub struct CollaboratorRequest {
     pub song_creation_date: i32,
     pub song_file: String,
     pub song_cover: Option<String>,
-    pub artist_name: String,
+    pub artist_id: i64,
+    pub artist_name: Option<String>,
     pub artist_biography: Option<String>,
     pub artist_profile_picture: Option<String>,
+    pub album_id: i64,
+    pub album_name: Option<String>,
+    pub album_creation_date: Option<i32>,
+    pub album_cover: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

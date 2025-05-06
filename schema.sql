@@ -124,7 +124,12 @@ CREATE TABLE ArtistRequest (
     song_creation_date INTEGER NOT NULL,
     song_file TEXT NOT NULL,
     song_cover TEXT,
-    FOREIGN KEY (artist_id) REFERENCES Artist(id)
+    album_id INTEGER,
+    album_name TEXT,
+    album_creation_date INTEGER,
+    album_cover TEXT,
+    FOREIGN KEY (artist_id) REFERENCES Artist(id),
+    FOREIGN KEY (album_id) REFERENCES Album(id)
 );
 
 CREATE TABLE CollaboratorRequest (
@@ -134,9 +139,14 @@ CREATE TABLE CollaboratorRequest (
     song_creation_date INTEGER NOT NULL,
     song_file TEXT NOT NULL,
     song_cover TEXT,
-    artist_name TEXT NOT NULL,
+    artist_id INTEGER,
+    artist_name TEXT,
     artist_biography TEXT,
     artist_profile_picture TEXT,
+    album_id INTEGER,
+    album_name TEXT,
+    album_creation_date INTEGER,
+    album_cover TEXT,
     FOREIGN KEY (collaborator_id) REFERENCES Collaborator(id)
 );
 

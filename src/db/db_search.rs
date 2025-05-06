@@ -85,3 +85,90 @@ pub fn select_search_artist(conn: &Connection, name: &str) -> Option<Vec<ArtistS
 
     Some(res)
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AlbumSearch {
+    pub album_id: i64,
+    pub album_name: String,
+    pub album_cover: Option<String>,
+    pub artist_name: i64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PlaylistSearch {
+    pub playlist_id: i64,
+    pub playlist_name: String,
+    pub playlist_cover: Option<String>,
+    pub user_name: i64,
+}
+
+pub fn select_search_album(conn: &Connection, name: &str) -> Option<Vec<AlbumSearch>> {
+    let mut query = match conn.prepare(
+        "SELECT Album.id,Album.title,Album.cover_image,User.username \
+        FROM Album \
+        JOIN Artist ON Album.artist_id=Artist.id \
+        JOIN User ON Artist.user_id=User.id \
+        WHERE LOWER(Album.title) LIKE LOWER(?)"
+    ) {
+        Ok(query) => query,
+        Err(_) => return None,
+    };
+
+    let formated_title = format!("%{}%", name);
+    let iter = match query.query_map(params![formated_title], |row| {
+        Ok(AlbumSearch{
+            album_id: row.get(0)?,
+            album_name: row.get(1)?,
+            album_cover: row.get(2)?,
+            artist_name: row.get(3)?,
+        })
+    }) {
+        Ok(it) => it,
+        Err(_) => return None,
+    };
+
+    let mut res = Vec::new();
+    for elt in iter {
+        match elt {
+            Err(_) => return None,
+            Ok(elt) => res.push(elt),
+        }
+    }
+
+    Some(res)
+}
+
+pub fn select_search_playlist(conn: &Connection, name: &str) -> Option<Vec<PlaylistSearch>> {
+    let mut query = match conn.prepare(
+        "SELECT Playlist.id,Playlist.title,Playlist.cover_image,User.username \
+        FROM Playlist \
+        JOIN User ON Playlist.user_id=User.id \
+        WHERE LOWER(Playlist.title) LIKE LOWER(?)"
+    ) {
+        Ok(query) => query,
+        Err(_) => return None,
+    };
+
+    let formated_title = format!("%{}%", name);
+    let iter = match query.query_map(params![formated_title], |row| {
+        Ok(PlaylistSearch{
+            playlist_id: row.get(0)?,
+            playlist_name: row.get(1)?,
+            playlist_cover: row.get(2)?,
+            user_name: row.get(3)?,
+        })
+    }) {
+        Ok(it) => it,
+        Err(_) => return None,
+    };
+
+    let mut res = Vec::new();
+    for elt in iter {
+        match elt {
+            Err(_) => return None,
+            Ok(elt) => res.push(elt),
+        }
+    }
+
+    Some(res)
+}
