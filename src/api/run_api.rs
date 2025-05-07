@@ -102,6 +102,7 @@ pub async fn run_api() -> std::io::Result<()> {
             .service(api_select::api_select_artist_request_all)
             // SEARCH
             .service(api_search::api_select_search_song)
+            .service(api_search::api_select_search_song_by_artist_id)
             .service(api_search::api_select_search_artist)
             .service(api_search::api_select_search_album)
             .service(api_search::api_select_search_playlist)

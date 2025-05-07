@@ -29,6 +29,24 @@ async fn api_select_search_song(
     }
 }
 
+#[post("/select/search/song/artist_id/{artist_id}")]
+async fn api_select_search_song_by_artist_id(
+    data: web::Data<AppState>,
+    artist_id: web::Path<i64>
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_search::select_search_song_by_artist_id(&conn, *artist_id){
+        Some(elt) => {
+            print_log("SELECT", "Search song", &elt);
+            Ok(HttpResponse::Ok().json(elt))
+        }
+        None => {
+            print_log("ERROR SELECT", "Search song", &artist_id);
+            Ok(HttpResponse::InternalServerError().body("Could not find song"))
+        }
+    }
+}
+
 #[post("/select/search/artist")]
 async fn api_select_search_artist(
     data: web::Data<AppState>,
