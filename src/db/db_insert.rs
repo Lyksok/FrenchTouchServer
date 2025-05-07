@@ -21,15 +21,16 @@ pub fn insert_admin(conn: &Connection, admin: &Admin) -> Option<i64> {
 
 pub fn insert_user(conn: &Connection, user: &User) -> Option<i64> {
     let query = "INSERT INTO User \
-        (username,email,last_connection,creation_date) \
-        VALUES (?1,?2,?3,?4)";
+        (username,email,last_connection,creation_date,profile_picture) \
+        VALUES (?1,?2,?3,?4,?5)";
     match conn.execute(
         query,
         params![
             user.username,
             user.email,
             user.last_connection,
-            user.creation_date
+            user.creation_date,
+            user.profile_picture,
         ],
     ) {
         Ok(_) => Some(conn.last_insert_rowid()),
@@ -296,7 +297,7 @@ pub fn insert_artist_request(
     }
     let query = "INSERT INTO ArtistRequest \
         (artist_id,song_title,song_creation_date,song_file,song_cover,album_id,album_name,album_creation_date,album_cover) \
-        VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10)";
+        VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9)";
     match conn.execute(
         query,
         params![
