@@ -293,7 +293,7 @@ async fn api_insert_user_likes_playlist(
     }
 }
 
-#[post("/insert/song-album")]
+#[post("/insert/song_album")]
 async fn api_insert_song_album(
     data: web::Data<AppState>,
     song_album: web::Json<SongAlbumRequest>,
@@ -323,7 +323,7 @@ async fn api_insert_song_album(
     }
 }
 
-#[post("/insert/song-playlist")]
+#[post("/insert/song_playlist")]
 async fn api_insert_song_playlist(
     data: web::Data<AppState>,
     song_playlist: web::Json<SongPlaylistRequest>,
