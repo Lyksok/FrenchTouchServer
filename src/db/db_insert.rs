@@ -325,7 +325,7 @@ pub fn insert_collaboration_request(
     }
     let query = "INSERT INTO CollaboratorRequest \
         (collaborator_id,song_title,song_creation_date,song_file,song_cover,artist_id,artist_name,artist_biography,artist_profile_picture,album_id,album_name,album_creation_date,album_cover) \
-        VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14)";
+        VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13)";
     match conn.execute(
         query,
         params![
