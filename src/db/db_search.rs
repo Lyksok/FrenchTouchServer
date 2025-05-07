@@ -129,14 +129,6 @@ pub struct AlbumSearch {
     pub artist_name: i64,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PlaylistSearch {
-    pub playlist_id: i64,
-    pub playlist_name: String,
-    pub playlist_cover: Option<String>,
-    pub user_name: i64,
-}
-
 pub fn select_search_album(conn: &Connection, name: &str) -> Option<Vec<AlbumSearch>> {
     let mut query = match conn.prepare(
         "SELECT Album.id,Album.title,Album.cover_image,User.username \
@@ -171,6 +163,49 @@ pub fn select_search_album(conn: &Connection, name: &str) -> Option<Vec<AlbumSea
     }
 
     Some(res)
+}
+
+pub fn select_search_album_by_artist_id(conn: &Connection, artist_id: i64) -> Option<Vec<AlbumSearch>> {
+    let mut query = match conn.prepare(
+        "SELECT Album.id,Album.title,Album.cover_image,User.username \
+        FROM Album \
+        JOIN Artist ON Album.artist_id=Artist.id \
+        JOIN User ON Artist.user_id=User.id \
+        WHERE Album.artist_id=?"
+    ) {
+        Ok(query) => query,
+        Err(_) => return None,
+    };
+
+    let iter = match query.query_map(params![artist_id], |row| {
+        Ok(AlbumSearch{
+            album_id: row.get(0)?,
+            album_name: row.get(1)?,
+            album_cover: row.get(2)?,
+            artist_name: row.get(3)?,
+        })
+    }) {
+        Ok(it) => it,
+        Err(_) => return None,
+    };
+
+    let mut res = Vec::new();
+    for elt in iter {
+        match elt {
+            Err(_) => return None,
+            Ok(elt) => res.push(elt),
+        }
+    }
+
+    Some(res)
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PlaylistSearch {
+    pub playlist_id: i64,
+    pub playlist_name: String,
+    pub playlist_cover: Option<String>,
+    pub user_name: i64,
 }
 
 pub fn select_search_playlist(conn: &Connection, name: &str) -> Option<Vec<PlaylistSearch>> {
