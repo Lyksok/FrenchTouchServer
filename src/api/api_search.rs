@@ -1,4 +1,4 @@
-use actix_web::{post, web, HttpResponse, Responder};
+use actix_web::{get, post, web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 
 use crate::db;
@@ -29,7 +29,7 @@ async fn api_select_search_song(
     }
 }
 
-#[post("/select/search/song/artist_id/{artist_id}")]
+#[get("/select/search/song/artist_id/{artist_id}")]
 async fn api_select_search_song_by_artist_id(
     data: web::Data<AppState>,
     artist_id: web::Path<i64>
@@ -85,7 +85,7 @@ async fn api_select_search_album(
     }
 }
 
-#[post("/select/search/album/artist_id/{artist_id}")]
+#[get("/select/search/album/artist_id/{artist_id}")]
 async fn api_select_search_album_by_artist_id(
     data: web::Data<AppState>,
     artist_id: web::Path<i64>,
