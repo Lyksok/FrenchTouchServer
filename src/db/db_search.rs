@@ -138,7 +138,9 @@ pub fn select_search_album(conn: &Connection, name: &str) -> Option<Vec<AlbumSea
         WHERE LOWER(Album.title) LIKE LOWER(?)"
     ) {
         Ok(query) => query,
-        Err(_) => return None,
+        Err(e) => {
+            eprintln!("{}",e);
+            return None},
     };
 
     let formated_title = format!("%{}%", name);
