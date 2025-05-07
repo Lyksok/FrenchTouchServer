@@ -405,6 +405,40 @@ pub fn select_song_by_artist_id(conn: &Connection, id: i64) -> Option<Vec<Song>>
     Some(res)
 }
 
+pub(crate) fn select_album_all(conn: &Connection) -> Option<Vec<Album>> {
+    let mut query = match conn.prepare(
+        "SELECT id,title,cover_image,nb_of_streams,creation_date,artist_id \
+        FROM Album",
+    ) {
+        Ok(query) => query,
+        Err(_) => return None,
+    };
+
+    let album_iter = match query.query_map([], |row| {
+        Ok(Album {
+            id: row.get(0)?,
+            title: row.get(1)?,
+            cover_image: row.get(2)?,
+            nb_of_streams: row.get(3)?,
+            creation_date: row.get(4)?,
+            artist_id: row.get(5)?,
+        })
+    }) {
+        Ok(it) => it,
+        Err(_) => return None,
+    };
+
+    let mut res = Vec::new();
+    for album in album_iter {
+        match album {
+            Err(_) => return None,
+            Ok(album) => res.push(album),
+        }
+    }
+
+    Some(res)
+}
+
 pub fn select_album_by_id(conn: &Connection, id: i64) -> Option<Album> {
     conn.query_row(
         "SELECT id,title,cover_image,nb_of_streams,creation_date,artist_id \
@@ -1317,3 +1351,4 @@ pub fn dev_select_user_by_email(conn: Connection) -> Option<User> {
     let input: String = read!();
     select_user_by_email(&conn, &input)
 }
+

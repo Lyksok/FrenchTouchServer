@@ -17,6 +17,7 @@ pub fn db_main() -> Result<(), Error> {
         "5. Insert Collaborator",
         "6. Search Songs and Artists",
         "7. Select all artist",
+        "8. Select all albums",
     ];
     for s in &queries {
         println!("{}", s);
@@ -57,6 +58,11 @@ pub fn db_main() -> Result<(), Error> {
         7 => {
             let a = db_select::select_artist_all(&conn);
             println!("Artists: {:?}",a);
+            Ok(())
+        }
+        8 => {
+            let a = db_select::select_album_all(&conn);
+            println!("Albums: {:?}",a);
             Ok(())
         }
         _ => Ok(()),
