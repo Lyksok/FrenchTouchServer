@@ -206,6 +206,41 @@ pub fn select_search_album_by_artist_id(conn: &Connection, artist_id: i64) -> Op
     Some(res)
 }
 
+pub fn select_search_album_by_album_id(conn: &Connection, album_id: i64) -> Option<Vec<AlbumSearch>> {
+    let mut query = match conn.prepare(
+        "SELECT Album.id,Album.title,Album.cover_image,User.username \
+        FROM Album \
+        JOIN Artist ON Album.artist_id=Artist.id \
+        JOIN User ON Artist.user_id=User.id \
+        WHERE Album.id=?"
+    ) {
+        Ok(query) => query,
+        Err(_) => return None,
+    };
+
+    let iter = match query.query_map(params![album_id], |row| {
+        Ok(AlbumSearch{
+            album_id: row.get(0)?,
+            album_name: row.get(1)?,
+            album_cover: row.get(2)?,
+            artist_name: row.get(3)?,
+        })
+    }) {
+        Ok(it) => it,
+        Err(_) => return None,
+    };
+
+    let mut res = Vec::new();
+    for elt in iter {
+        match elt {
+            Err(_) => return None,
+            Ok(elt) => res.push(elt),
+        }
+    }
+
+    Some(res)
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PlaylistSearch {
     pub playlist_id: i64,
@@ -227,6 +262,40 @@ pub fn select_search_playlist(conn: &Connection, name: &str) -> Option<Vec<Playl
 
     let formated_title = format!("%{}%", name);
     let iter = match query.query_map(params![formated_title], |row| {
+        Ok(PlaylistSearch{
+            playlist_id: row.get(0)?,
+            playlist_name: row.get(1)?,
+            playlist_cover: row.get(2)?,
+            artist_name: row.get(3)?,
+        })
+    }) {
+        Ok(it) => it,
+        Err(_) => return None,
+    };
+
+    let mut res = Vec::new();
+    for elt in iter {
+        match elt {
+            Err(_) => return None,
+            Ok(elt) => res.push(elt),
+        }
+    }
+
+    Some(res)
+}
+
+pub fn select_search_playlist_by_playlist_id(conn: &Connection, playlist_id: i64) -> Option<Vec<PlaylistSearch>> {
+    let mut query = match conn.prepare(
+        "SELECT Playlist.id,Playlist.title,Playlist.cover_image,User.username \
+        FROM Playlist \
+        JOIN User ON Playlist.user_id=User.id \
+        WHERE Playlist.id=?"
+    ) {
+        Ok(query) => query,
+        Err(_) => return None,
+    };
+
+    let iter = match query.query_map(params![playlist_id], |row| {
         Ok(PlaylistSearch{
             playlist_id: row.get(0)?,
             playlist_name: row.get(1)?,
