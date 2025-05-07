@@ -126,7 +126,7 @@ pub struct AlbumSearch {
     pub album_id: i64,
     pub album_name: String,
     pub album_cover: Option<String>,
-    pub artist_name: i64,
+    pub artist_name: String,
 }
 
 pub fn select_search_album(conn: &Connection, name: &str) -> Option<Vec<AlbumSearch>> {
