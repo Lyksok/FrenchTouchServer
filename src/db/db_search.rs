@@ -211,7 +211,7 @@ pub struct PlaylistSearch {
     pub playlist_id: i64,
     pub playlist_name: String,
     pub playlist_cover: Option<String>,
-    pub user_name: i64,
+    pub user_name: String,
 }
 
 pub fn select_search_playlist(conn: &Connection, name: &str) -> Option<Vec<PlaylistSearch>> {
