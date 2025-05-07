@@ -153,13 +153,17 @@ pub fn select_search_album(conn: &Connection, name: &str) -> Option<Vec<AlbumSea
         })
     }) {
         Ok(it) => it,
-        Err(_) => return None,
+        Err(e) => {
+            eprintln!("{}",e);
+            return None},
     };
 
     let mut res = Vec::new();
     for elt in iter {
         match elt {
-            Err(_) => return None,
+            Err(e) => {
+                eprintln!("{}",e);
+                return None},
             Ok(elt) => res.push(elt),
         }
     }
