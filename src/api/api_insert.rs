@@ -204,7 +204,7 @@ async fn api_insert_playlist(
     }
 }
 
-#[post("/insert/user-likes-song")]
+#[post("/insert/user_likes_song")]
 async fn api_insert_user_likes_song(
     data: web::Data<AppState>,
     uls_data: web::Json<UserLikesSongRequest>,
@@ -235,7 +235,7 @@ async fn api_insert_user_likes_song(
     }
 }
 
-#[post("/insert/user-likes-album")]
+#[post("/insert/user_likes_album")]
 async fn api_insert_user_likes_album(
     data: web::Data<AppState>,
     ula_data: web::Json<UserLikesAlbumRequest>,
@@ -262,7 +262,7 @@ async fn api_insert_user_likes_album(
     }
 }
 
-#[post("/insert/user-likes-playlist")]
+#[post("/insert/user_likes_playlist")]
 async fn api_insert_user_likes_playlist(
     data: web::Data<AppState>,
     ulp_data: web::Json<UserLikesPlaylistRequest>,
