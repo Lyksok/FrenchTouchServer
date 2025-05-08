@@ -1,6 +1,6 @@
 use rusqlite::{params, Connection};
 
-use super::structs::{UserLikesAlbum, UserLikesPlaylist, UserLikesSong};
+use super::structs::{UserLikesAlbum, UserLikesArtist, UserLikesPlaylist, UserLikesSong};
 
 pub fn delete_authmap_by_auth_hash(conn: &Connection, auth_hash: &str) -> bool {
     let query = "DELETE FROM AuthMap WHERE AuthMap.auth_hash LIKE ?1";
@@ -123,6 +123,20 @@ pub fn delete_user_likes_playlist(conn: &Connection, uls: &UserLikesPlaylist) ->
         }
         Err(e) => {
             println!("[DELETE ERROR] Could not delete UserLikesPlaylist : {}", e);
+            false
+        }
+    }
+}
+
+pub fn delete_user_likes_artist(conn: &Connection, uls: &UserLikesArtist) -> bool {
+    let query = "DELETE FROM UserLikesArtist WHERE UserLikesArtist.user_id=?1 AND UserLikesArtist.artist_id=?2";
+    match conn.execute(query, params![uls.user_id, uls.artist_id]) {
+        Ok(_) => {
+            println!("[DELETE] Deleted UserLikesArtist : {:?}", uls);
+            true
+        }
+        Err(e) => {
+            println!("[DELETE ERROR] Could not delete UserLikesArtist : {}", e);
             false
         }
     }

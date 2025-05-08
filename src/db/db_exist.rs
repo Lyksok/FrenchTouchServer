@@ -1,6 +1,6 @@
 use rusqlite::Connection;
 
-use super::structs::{UserLikesAlbum, UserLikesPlaylist, UserLikesSong};
+use super::structs::{UserLikesAlbum, UserLikesArtist, UserLikesPlaylist, UserLikesSong};
 
 pub fn admin_exist_by_user_id(conn: &Connection, user_id: i64) -> bool {
     conn.query_row("SELECT id FROM Admin WHERE user_id=?1", [user_id], |row| {
@@ -103,6 +103,13 @@ pub fn user_likes_album_exist(conn: &Connection, like: &UserLikesAlbum)->bool{
 
 pub fn user_likes_playlist_exist(conn: &Connection, like: &UserLikesPlaylist)->bool{
     conn.query_row("SELECT user_id FROM UserLikesPlaylist WHERE user_id=?1 AND playlist_id=?2", [like.user_id, like.playlist_id], |row|{
+        let res: i64 = row.get(0)?;
+        Ok(res)
+    }).is_ok()
+}
+
+pub fn user_likes_artist_exist(conn: &Connection, like: &UserLikesArtist)->bool{
+    conn.query_row("SELECT user_id FROM UserLikesArtist WHERE user_id=?1 AND artist_id=?2", [like.user_id, like.artist_id], |row|{
         let res: i64 = row.get(0)?;
         Ok(res)
     }).is_ok()

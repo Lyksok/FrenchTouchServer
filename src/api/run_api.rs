@@ -83,6 +83,8 @@ pub async fn run_api() -> std::io::Result<()> {
             .service(api_select::api_select_user_likes_album_by_album_id)
             .service(api_select::api_select_user_likes_playlist_by_user_id)
             .service(api_select::api_select_user_likes_playlist_by_playlist_id)
+            .service(api_select::api_select_user_likes_artist_by_user_id)
+            .service(api_select::api_select_user_likes_artist_by_artist_id)
             .service(api_select::api_select_song_album_by_song_id)
             .service(api_select::api_select_song_album_by_album_id)
             .service(api_select::api_select_song_playlist_by_song_id)
@@ -145,10 +147,12 @@ pub async fn run_api() -> std::io::Result<()> {
             .service(api_delete::api_delete_user_likes_song)
             .service(api_delete::api_delete_user_likes_album)
             .service(api_delete::api_delete_user_likes_playlist)
+            .service(api_delete::api_delete_user_likes_artist)
             // EXIST
             .service(api_select::api_exist_user_likes_song)
             .service(api_select::api_exist_user_likes_album)
             .service(api_select::api_exist_user_likes_playlist)
+            .service(api_select::api_exist_user_likes_artist)
     })
     .bind_openssl("0.0.0.0:50000", builder)?
     .run()

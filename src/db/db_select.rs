@@ -752,8 +752,42 @@ pub fn select_user_likes_artist_by_user_id(
 ) -> Option<Vec<UserLikesArtist>> {
     let mut query = match conn.prepare(
         "SELECT user_id,artist_id \
-        FROM UserLikesPlaylist \
-        WHERE UserLikesPlaylist.user_id=?1",
+        FROM UserLikesArtist \
+        WHERE UserLikesArtist.user_id=?1",
+    ) {
+        Ok(query) => query,
+        Err(_) => return None,
+    };
+
+    let iter = match query.query_map(params![id], |row| {
+        Ok(UserLikesArtist {
+            user_id: row.get(0)?,
+            artist_id: row.get(1)?,
+        })
+    }) {
+        Ok(it) => it,
+        Err(_) => return None,
+    };
+
+    let mut res = Vec::new();
+    for elt in iter {
+        match elt {
+            Err(_) => return None,
+            Ok(elt) => res.push(elt),
+        }
+    }
+
+    Some(res)
+}
+
+pub fn select_user_likes_artist_by_artist_id(
+    conn: &Connection,
+    id: i64,
+) -> Option<Vec<UserLikesArtist>> {
+    let mut query = match conn.prepare(
+        "SELECT user_id,artist_id \
+        FROM UserLikesArtist \
+        WHERE UserLikesArtist.artist_id=?1",
     ) {
         Ok(query) => query,
         Err(_) => return None,

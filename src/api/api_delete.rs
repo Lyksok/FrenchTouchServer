@@ -1,6 +1,6 @@
 use actix_web::{post, web, HttpResponse, Responder};
 
-use crate::{api::api_utils::{print_log, AuthHash, UserLikesAlbumRequest, UserLikesPlaylistRequest, UserLikesSongRequest}, db::{self, db_security::{has_permissions, has_permissions_user_likes_album, has_permissions_user_likes_playlist, has_permissions_user_likes_song}}};
+use crate::{api::api_utils::{print_log, AuthHash, UserLikesAlbumRequest, UserLikesArtistRequest, UserLikesPlaylistRequest, UserLikesSongRequest}, db::{self, db_security::{has_permissions, has_permissions_user_likes_album, has_permissions_user_likes_artist, has_permissions_user_likes_playlist, has_permissions_user_likes_song}}};
 
 use super::run_api::AppState;
 
@@ -197,6 +197,30 @@ async fn api_delete_user_likes_playlist(
         false => {
             print_log("ERROR DELETE", "UserLikesPLaylist", &payload.obj);
             return Ok(HttpResponse::InternalServerError().body("Could not delete UserLikesPLaylist"))
+        },
+    }
+}
+
+#[post("/delete/user_likes_artist")]
+async fn api_delete_user_likes_artist(
+    data: web::Data<AppState>,
+    payload: web::Json<UserLikesArtistRequest>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+
+    if !has_permissions(&conn, &payload.auth_hash, 0) || !has_permissions_user_likes_artist(&conn, &payload){
+        print_log("ERROR DELETE", "User permission (UserLikesArtist)", &payload.obj);
+        return Ok(HttpResponse::Forbidden().body("You do not have access"));
+    }
+    
+    match db::db_delete::delete_user_likes_artist(&conn, &payload.obj) {
+        true => {
+            print_log("DELETE", "UserLikesArtist", &payload.obj);
+            return Ok(HttpResponse::Ok().body(""))
+        },
+        false => {
+            print_log("ERROR DELETE", "UserLikesArtist", &payload.obj);
+            return Ok(HttpResponse::InternalServerError().body("Could not delete UserLikesArtist"))
         },
     }
 }

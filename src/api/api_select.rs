@@ -1,6 +1,6 @@
 use crate::api::{api_utils::print_log, run_api::AppState};
 use crate::db;
-use crate::db::structs::{UserLikesAlbum, UserLikesPlaylist, UserLikesSong};
+use crate::db::structs::{UserLikesAlbum, UserLikesArtist, UserLikesPlaylist, UserLikesSong};
 use actix_web::{get, post, web, HttpResponse, Responder};
 
 #[get("/select/admin/user_id/{user_id}")]
@@ -451,6 +451,24 @@ async fn api_exist_user_likes_playlist(
     }
 }
 
+#[post("/exist/user_likes_artist")]
+async fn api_exist_user_likes_artist(
+    data: web::Data<AppState>,
+    like: web::Json<UserLikesArtist>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_exist::user_likes_artist_exist(&conn, &like) {
+        true => {
+            print_log("EXIST", "UserLikesArtist", &true);
+            Ok(HttpResponse::Ok().body(""))
+        }
+        _ => {
+            print_log("ERROR EXIST", "UserLikesArtist", &false);
+            Ok(HttpResponse::InternalServerError().body("Could not find UserLikesArtist"))
+        }
+    }
+}
+
 #[get("/select/user_likes_song/song_id/{song_id}")]
 async fn api_select_user_likes_song_by_song_id(
     data: web::Data<AppState>,
@@ -537,6 +555,42 @@ async fn api_select_user_likes_playlist_by_playlist_id(
         _ => {
             print_log("ERROR SELECT", "UserLikesAlbum", &id);
             Ok(HttpResponse::InternalServerError().body("Could not find user likes playlist"))
+        }
+    }
+}
+
+#[get("/select/user_likes_artist/user_id/{user_id}")]
+async fn api_select_user_likes_artist_by_user_id(
+    data: web::Data<AppState>,
+    id: web::Path<i64>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_select::select_user_likes_artist_by_user_id(&conn, *id) {
+        Some(user_likes_artist) => {
+            print_log("SELECT", "UserLikesArtist", &user_likes_artist);
+            Ok(HttpResponse::Ok().json(user_likes_artist))
+        }
+        _ => {
+            print_log("ERROR SELECT", "UserLikesArtist", &id);
+            Ok(HttpResponse::InternalServerError().body("Could not find UserLikesArtist"))
+        }
+    }
+}
+
+#[get("/select/user_likes_artist/artist_id/{artist_id}")]
+async fn api_select_user_likes_artist_by_artist_id(
+    data: web::Data<AppState>,
+    id: web::Path<i64>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_select::select_user_likes_artist_by_artist_id(&conn, *id) {
+        Some(user_likes_artist) => {
+            print_log("SELECT", "UserLikesArtist", &user_likes_artist);
+            Ok(HttpResponse::Ok().json(user_likes_artist))
+        }
+        _ => {
+            print_log("ERROR SELECT", "UserLikesArtist", &id);
+            Ok(HttpResponse::InternalServerError().body("Could not find UserLikesArtist"))
         }
     }
 }
