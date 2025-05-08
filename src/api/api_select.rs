@@ -1,6 +1,7 @@
 use crate::api::{api_utils::print_log, run_api::AppState};
 use crate::db;
-use actix_web::{get, web, HttpResponse, Responder};
+use crate::db::structs::{UserLikesAlbum, UserLikesPlaylist, UserLikesSong};
+use actix_web::{get, post, web, HttpResponse, Responder};
 
 #[get("/select/admin/user_id/{user_id}")]
 async fn api_select_admin_by_user_id(
@@ -392,6 +393,60 @@ async fn api_select_user_likes_song_by_user_id(
         _ => {
             print_log("ERROR SELECT", "UserLikesSong", &user_id);
             Ok(HttpResponse::InternalServerError().body("Could not find user likes song"))
+        }
+    }
+}
+
+#[post("/exist/user_likes_song")]
+async fn api_exist_user_likes_song(
+    data: web::Data<AppState>,
+    like: web::Json<UserLikesSong>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_exist::user_likes_song_exist(&conn, &like) {
+        true => {
+            print_log("EXIST", "UserLikesSong", &true);
+            Ok(HttpResponse::Ok().body(""))
+        }
+        _ => {
+            print_log("ERROR EXIST", "UserLikesSong", &false);
+            Ok(HttpResponse::InternalServerError().body("Could not find UserLikesSong"))
+        }
+    }
+}
+
+#[post("/exist/user_likes_album")]
+async fn api_exist_user_likes_album(
+    data: web::Data<AppState>,
+    like: web::Json<UserLikesAlbum>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_exist::user_likes_album_exist(&conn, &like) {
+        true => {
+            print_log("EXIST", "UserLikesAlbum", &true);
+            Ok(HttpResponse::Ok().body(""))
+        }
+        _ => {
+            print_log("ERROR EXIST", "UserLikesAlbum", &false);
+            Ok(HttpResponse::InternalServerError().body("Could not find UserLikesAlbum"))
+        }
+    }
+}
+
+#[post("/exist/user_likes_playlist")]
+async fn api_exist_user_likes_playlist(
+    data: web::Data<AppState>,
+    like: web::Json<UserLikesPlaylist>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_exist::user_likes_playlist_exist(&conn, &like) {
+        true => {
+            print_log("EXIST", "UserLikesPlaylist", &true);
+            Ok(HttpResponse::Ok().body(""))
+        }
+        _ => {
+            print_log("ERROR EXIST", "UserLikesPlaylist", &false);
+            Ok(HttpResponse::InternalServerError().body("Could not find UserLikesPlaylist"))
         }
     }
 }

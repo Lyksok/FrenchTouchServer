@@ -649,6 +649,7 @@ pub fn select_user_likes_song_by_user_id(conn: &Connection, id: i64) -> Option<V
 
     Some(res)
 }
+
 pub fn select_user_likes_song_by_song_id(conn: &Connection, id: i64) -> Option<Vec<UserLikesSong>> {
     let mut query = match conn.prepare(
         "SELECT user_id,song_id \

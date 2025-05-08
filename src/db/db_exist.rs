@@ -1,5 +1,7 @@
 use rusqlite::Connection;
 
+use super::structs::{UserLikesAlbum, UserLikesPlaylist, UserLikesSong};
+
 pub fn admin_exist_by_user_id(conn: &Connection, user_id: i64) -> bool {
     conn.query_row("SELECT id FROM Admin WHERE user_id=?1", [user_id], |row| {
         let res: i64 = row.get(0)?;
@@ -83,6 +85,27 @@ pub fn playlist_exist_by_id(conn: &Connection, id: i64) -> bool {
         Ok(res)
     })
     .is_ok()
+}
+
+pub fn user_likes_song_exist(conn: &Connection, like: &UserLikesSong)->bool{
+    conn.query_row("SELECT user_id FROM UserLikesSong WHERE user_id=?1 AND song_id=?2", [like.user_id, like.song_id], |row|{
+        let res: i64 = row.get(0)?;
+        Ok(res)
+    }).is_ok()
+}
+
+pub fn user_likes_album_exist(conn: &Connection, like: &UserLikesAlbum)->bool{
+    conn.query_row("SELECT user_id FROM UserLikesAlbum WHERE user_id=?1 AND album_id=?2", [like.user_id, like.album_id], |row|{
+        let res: i64 = row.get(0)?;
+        Ok(res)
+    }).is_ok()
+}
+
+pub fn user_likes_playlist_exist(conn: &Connection, like: &UserLikesPlaylist)->bool{
+    conn.query_row("SELECT user_id FROM UserLikesPlaylist WHERE user_id=?1 AND playlist_id=?2", [like.user_id, like.playlist_id], |row|{
+        let res: i64 = row.get(0)?;
+        Ok(res)
+    }).is_ok()
 }
 
 pub fn authmap_exist_by_id(conn: &Connection, id: i64) -> bool {

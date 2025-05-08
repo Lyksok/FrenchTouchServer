@@ -145,6 +145,10 @@ pub async fn run_api() -> std::io::Result<()> {
             .service(api_delete::api_delete_user_likes_song)
             .service(api_delete::api_delete_user_likes_album)
             .service(api_delete::api_delete_user_likes_playlist)
+            // EXIST
+            .service(api_select::api_exist_user_likes_song)
+            .service(api_select::api_exist_user_likes_album)
+            .service(api_select::api_exist_user_likes_playlist)
     })
     .bind_openssl("0.0.0.0:50000", builder)?
     .run()
