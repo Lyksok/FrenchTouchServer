@@ -142,6 +142,9 @@ pub async fn run_api() -> std::io::Result<()> {
             .service(api_delete::api_delete_request_to_collaborator_by_user_id)
             .service(api_delete::api_delete_request_to_artist_by_user_id)
             .service(api_delete::api_delete_request_to_admin_by_user_id)
+            .service(api_delete::api_delete_user_likes_song)
+            .service(api_delete::api_delete_user_likes_album)
+            .service(api_delete::api_delete_user_likes_playlist)
     })
     .bind_openssl("0.0.0.0:50000", builder)?
     .run()
