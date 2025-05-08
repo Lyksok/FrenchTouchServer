@@ -47,6 +47,42 @@ async fn api_select_search_song_by_artist_id(
     }
 }
 
+#[get("/select/search/song/album_id/{album_id}")]
+async fn api_select_search_song_by_album_id(
+    data: web::Data<AppState>,
+    album_id: web::Path<i64>
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_search::select_search_song_by_album_id(&conn, *album_id){
+        Some(elt) => {
+            print_log("SELECT", "Search song by album_id", &elt);
+            Ok(HttpResponse::Ok().json(elt))
+        }
+        None => {
+            print_log("ERROR SELECT", "Search song by album_id", &album_id);
+            Ok(HttpResponse::InternalServerError().body("Could not find song by album_id"))
+        }
+    }
+}
+
+#[get("/select/search/song/playlist_id/{playlist_id}")]
+async fn api_select_search_song_by_playlist_id(
+    data: web::Data<AppState>,
+    playlist_id: web::Path<i64>
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    match db::db_search::select_search_song_by_artist_id(&conn, *playlist_id){
+        Some(elt) => {
+            print_log("SELECT", "Search song by playlist_id", &elt);
+            Ok(HttpResponse::Ok().json(elt))
+        }
+        None => {
+            print_log("ERROR SELECT", "Search song by playlist_id", &playlist_id);
+            Ok(HttpResponse::InternalServerError().body("Could not find song by playlist_id"))
+        }
+    }
+}
+
 #[post("/select/search/artist")]
 async fn api_select_search_artist(
     data: web::Data<AppState>,

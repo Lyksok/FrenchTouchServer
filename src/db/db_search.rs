@@ -80,6 +80,78 @@ pub fn select_search_song_by_artist_id(conn: &Connection, artist_id: i64) -> Opt
     Some(res)
 }
 
+pub fn select_search_song_by_album_id(conn: &Connection, album_id: i64) -> Option<Vec<SongSearch>> {
+    let mut query = match conn.prepare(
+        "SELECT Song.id,Song.title,Song.cover_image,User.username \
+        FROM SongAlbum \
+        JOIN Song ON SongAlbum.song_id=Song.id \
+        JOIN Artist ON Artist.id=Song.artist_id \
+        JOIN User ON Artist.user_id=User.id \
+        WHERE SongAlbum.album_id=?"
+    ) {
+        Ok(query) => query,
+        Err(_) => return None,
+    };
+
+    let iter = match query.query_map(params![album_id], |row| {
+        Ok(SongSearch{
+            song_id: row.get(0)?,
+            song_title: row.get(1)?,
+            song_cover: row.get(2)?,
+            artist_name: row.get(3)?,
+        })
+    }) {
+        Ok(it) => it,
+        Err(_) => return None,
+    };
+
+    let mut res = Vec::new();
+    for elt in iter {
+        match elt {
+            Err(_) => return None,
+            Ok(elt) => res.push(elt),
+        }
+    }
+
+    Some(res)
+}
+
+pub fn select_search_song_by_playlist_id(conn: &Connection, playlist_id: i64) -> Option<Vec<SongSearch>> {
+    let mut query = match conn.prepare(
+        "SELECT Song.id,Song.title,Song.cover_image,User.username \
+        FROM SongPlaylist \
+        JOIN Song ON SongPlaylist.song_id=Song.id \
+        JOIN Artist ON Artist.id=Song.artist_id \
+        JOIN User ON Artist.user_id=User.id \
+        WHERE SongPlaylist.playlist_id=?"
+    ) {
+        Ok(query) => query,
+        Err(_) => return None,
+    };
+
+    let iter = match query.query_map(params![playlist_id], |row| {
+        Ok(SongSearch{
+            song_id: row.get(0)?,
+            song_title: row.get(1)?,
+            song_cover: row.get(2)?,
+            artist_name: row.get(3)?,
+        })
+    }) {
+        Ok(it) => it,
+        Err(_) => return None,
+    };
+
+    let mut res = Vec::new();
+    for elt in iter {
+        match elt {
+            Err(_) => return None,
+            Ok(elt) => res.push(elt),
+        }
+    }
+
+    Some(res)
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ArtistSearch {
     pub artist_id: i64,
