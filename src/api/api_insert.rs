@@ -2,14 +2,12 @@ use actix_web::{HttpResponse, Responder, post, web};
 use serde::{Deserialize, Serialize};
 
 use crate::api::api_utils::{
-    print_log, AdminRequest, AlbumRequest, ArtistObjRequest, ArtistRequestRequest, CollaboratorObjRequest, CollaboratorRequestRequest, HistoryRequest, PlaylistRequest, SongAlbumRequest, SongPlaylistRequest, SongRequest, UserLikesAlbumRequest, UserLikesPlaylistRequest, UserLikesSongRequest
+    print_log, AdminRequest, AlbumRequest, ArtistObjRequest, ArtistRequestRequest, CollaboratorObjRequest, CollaboratorRequestRequest, HistoryRequest, PlaylistRequest, SongAlbumRequest, SongPlaylistRequest, SongRequest, UserLikesAlbumRequest, UserLikesArtistRequest, UserLikesPlaylistRequest, UserLikesSongRequest
 };
 use crate::api::run_api::AppState;
 use crate::db;
 use crate::db::db_security::{
-    has_exact_permissions, has_permissions, has_permissions_user_history,
-    has_permissions_user_likes_album, has_permissions_user_likes_playlist,
-    has_permissions_user_likes_song,
+    has_exact_permissions, has_permissions, has_permissions_user_history, has_permissions_user_likes_album, has_permissions_user_likes_artist, has_permissions_user_likes_playlist, has_permissions_user_likes_song
 };
 use crate::db::structs::{RequestToAdmin, RequestToArtist, RequestToCollaborator, User};
 
@@ -289,6 +287,37 @@ async fn api_insert_user_likes_playlist(
                 ulp_data
             );
             Ok(HttpResponse::InternalServerError().body("Could not insert user likes playlist"))
+        }
+    }
+}
+
+#[post("/insert/user_likes_artist")]
+async fn api_insert_user_likes_artist(
+    data: web::Data<AppState>,
+    ulp_data: web::Json<UserLikesArtistRequest>,
+) -> Result<impl Responder, actix_web::Error> {
+    let conn = data.db.lock().unwrap();
+    let ulp_data = ulp_data.into_inner();
+    let auth_hash = ulp_data.auth_hash.clone();
+    if !has_permissions(&conn, &auth_hash, 3)
+        || !has_permissions_user_likes_artist(&conn, &ulp_data)
+    {
+        print_log("ERROR INSERT", "User permission (UserLikesArtistRequest)", &auth_hash);
+        return Ok(HttpResponse::Forbidden().body("You do not have access"));
+    }
+    let ulp_data = ulp_data.obj.clone();
+
+    match db::db_insert::insert_user_likes_artist(&conn, &ulp_data) {
+        Some(_) => {
+            println!("[INSERT] User likes artist {:?}", ulp_data);
+            Ok(HttpResponse::Ok().body(""))
+        }
+        None => {
+            println!(
+                "[ERROR] Could not insert user likes artist {:?}",
+                ulp_data
+            );
+            Ok(HttpResponse::InternalServerError().body("Could not insert user likes artist"))
         }
     }
 }

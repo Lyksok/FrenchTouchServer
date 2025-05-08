@@ -92,11 +92,16 @@ pub struct UserLikesAlbum {
     pub album_id: i64,
 }
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserLikesPlaylist {
     pub user_id: i64,
     pub playlist_id: i64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UserLikesArtist {
+    pub user_id: i64,
+    pub artist_id: i64,
 }
 
 #[allow(dead_code)]

@@ -92,6 +92,14 @@ CREATE TABLE UserLikesPlaylist (
     FOREIGN KEY (playlist_id) REFERENCES Playlist(id)
 );
 
+CREATE TABLE UserLikesArtist (
+    user_id INTEGER,
+    artist_id INTEGER,
+    PRIMARY KEY (user_id, artist_id),
+    FOREIGN KEY (user_id) REFERENCES User(id),
+    FOREIGN KEY (artist_id) REFERENCES Artist(id)
+);
+
 CREATE TABLE SongAlbum (
     song_id INTEGER,
     album_id INTEGER,

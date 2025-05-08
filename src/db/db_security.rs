@@ -5,7 +5,7 @@ use rusqlite::Connection;
 use sha2::Sha256;
 use crate::db;
 
-use crate::api::api_utils::{HistoryRequest, UserLikesAlbumRequest, UserLikesPlaylistRequest, UserLikesSongRequest, UserRequest};
+use crate::api::api_utils::{HistoryRequest, UserLikesAlbumRequest, UserLikesArtistRequest, UserLikesPlaylistRequest, UserLikesSongRequest, UserRequest};
 
 use super::db_select::select_authmap_by_auth_hash;
 
@@ -55,6 +55,13 @@ pub fn has_permissions_user_likes_album(conn: &Connection, user_req: &UserLikesA
 }
 
 pub fn has_permissions_user_likes_playlist(conn: &Connection, user_req: &UserLikesPlaylistRequest) -> bool {
+    match db::db_select::select_authmap_by_user_id(conn, user_req.obj.user_id) {
+        Some(authmap) => authmap.auth_hash == user_req.auth_hash,
+        None => false,
+    }
+}
+
+pub fn has_permissions_user_likes_artist(conn: &Connection, user_req: &UserLikesArtistRequest) -> bool {
     match db::db_select::select_authmap_by_user_id(conn, user_req.obj.user_id) {
         Some(authmap) => authmap.auth_hash == user_req.auth_hash,
         None => false,

@@ -1,7 +1,7 @@
 use text_io::read;
 
 use super::structs::{
-    Admin, Album, Artist, ArtistRequest, AuthMap, Collaborator, CollaboratorRequest, Credentials, History, Playlist, RequestToAdmin, RequestToArtist, RequestToCollaborator, Song, SongAlbum, SongPlaylist, User, UserLikesAlbum, UserLikesPlaylist, UserLikesSong
+    Admin, Album, Artist, ArtistRequest, AuthMap, Collaborator, CollaboratorRequest, Credentials, History, Playlist, RequestToAdmin, RequestToArtist, RequestToCollaborator, Song, SongAlbum, SongPlaylist, User, UserLikesAlbum, UserLikesArtist, UserLikesPlaylist, UserLikesSong
 };
 use crate::db::{
     self,
@@ -209,6 +209,27 @@ pub fn insert_user_likes_playlist(
     match conn.execute(
         query,
         params![user_likes_playlist.user_id, user_likes_playlist.playlist_id,],
+    ) {
+        Ok(_) => Some(conn.last_insert_rowid()),
+        Err(_) => None,
+    }
+}
+
+pub fn insert_user_likes_artist(
+    conn: &Connection,
+    user_likes_artist: &UserLikesArtist,
+) -> Option<i64> {
+    if !db::db_exist::user_exist_by_id(conn, user_likes_artist.user_id)
+        || !db::db_exist::artist_exist_by_id(conn, user_likes_artist.artist_id)
+    {
+        return None;
+    }
+    let query = "INSERT INTO UserLikesArtist \
+        (user_id,artist_id) \
+        VALUES (?1,?2)";
+    match conn.execute(
+        query,
+        params![user_likes_artist.user_id, user_likes_artist.artist_id,],
     ) {
         Ok(_) => Some(conn.last_insert_rowid()),
         Err(_) => None,

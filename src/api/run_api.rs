@@ -9,7 +9,6 @@ use crate::api::api_search;
 use crate::api::api_security;
 use crate::api::api_select;
 use crate::api::api_update;
-use crate::api::api_update::api_update_user_password;
 use crate::api::api_utils::print_log;
 use crate::db;
 
@@ -122,6 +121,7 @@ pub async fn run_api() -> std::io::Result<()> {
             .service(api_insert::api_insert_user_likes_song)
             .service(api_insert::api_insert_user_likes_album)
             .service(api_insert::api_insert_user_likes_playlist)
+            .service(api_insert::api_insert_user_likes_artist)
             .service(api_insert::api_insert_artist_request)
             .service(api_insert::api_insert_collaborator_request)
             .service(api_insert::api_insert_request_to_artist)
@@ -135,7 +135,7 @@ pub async fn run_api() -> std::io::Result<()> {
             // UPDATE
             .service(api_update::api_update_user_profile_picture)
             .service(api_update::api_update_user_last_connection)
-            .service(api_update_user_password)
+            .service(api_update::api_update_user_password)
             // DELETE
             .service(api_delete::api_delete_artist_request_by_id)
             .service(api_delete::api_delete_collaborator_request_by_id)
