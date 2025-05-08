@@ -4,8 +4,7 @@ use super::structs::{
     Admin, Album, Artist, ArtistRequest, AuthMap, Collaborator, CollaboratorRequest, Credentials, History, Playlist, RequestToAdmin, RequestToArtist, RequestToCollaborator, Song, SongAlbum, SongPlaylist, User, UserLikesAlbum, UserLikesArtist, UserLikesPlaylist, UserLikesSong
 };
 use crate::db::{
-    self,
-    db_select::select_user_by_email,
+    self, db_insert, db_select::{self, select_user_by_email}
 };
 use rusqlite::{Connection, params};
 
@@ -464,4 +463,17 @@ pub fn dev_insert_collaborator(conn: &Connection) -> () {
         verified: false,
     };
     let _ = insert_collaborator(&conn, &collaborator);
+}
+
+pub fn dev_insert_song_album(conn: &Connection) -> bool {
+    println!("Artists {:?}",db_select::select_artist_all(&conn));
+    print!("Enter artist id: ");
+    let input: i64 = read!();
+    println!("Songs {:?}",db_select::select_song_by_artist_id(&conn, input));
+    print!("Enter song id: ");
+    let input2: i64 = read!();
+    println!("Albums {:?}",db_select::select_album_by_artist_id(&conn, input));
+    print!("Enter album id: ");
+    let input3: i64 = read!();
+    db_insert::insert_song_album(&conn, &SongAlbum { song_id: input2, album_id: input3}).is_some()
 }

@@ -18,6 +18,7 @@ pub fn db_main() -> Result<(), Error> {
         "6. Search Songs and Artists",
         "7. Select all artist",
         "8. Select all albums",
+        "9. Insert song album",
     ];
     for s in &queries {
         println!("{}", s);
@@ -63,6 +64,11 @@ pub fn db_main() -> Result<(), Error> {
         8 => {
             let a = db_select::select_album_all(&conn);
             println!("Albums: {:?}",a);
+            Ok(())
+        }
+        9 => {
+            let a = db_insert::dev_insert_song_album(&conn);
+            println!("SongAlbum: {:?}",a);
             Ok(())
         }
         _ => Ok(()),
