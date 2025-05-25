@@ -2,6 +2,42 @@
 
 French Touch Server is a server written in Rust. Its purpose is to give French Touch clients access to a centralized database and file storage. It does not compute nor handle anything except single accesses to the database (insert, files, select, update, delete).
 
+# Installation/Setup
+
+## 1. Clone the project and cd into it
+```
+git clone https://github.com/Lyksok/FrenchTouchServer.git
+cd FrenchTouchServer
+```
+## 2. Build the server in release mode
+```
+cargo build --release
+```
+## 3. Run the server
+Before running the server, you will probably need to generate a self-signed certificate
+```
+mkdir ssl
+openssl req -x509 -newkey rsa:4096 -keyout ssl/server.key -out ssl/server.crt -days 365 -nodes -subj "/CN=localhost"
+```
+Then change src/api/run_api.rs to use ssl/ instead of /etc/ssl
+You can then run the server with the following command.
+```
+cargo run --release
+```
+Alternatively, using `screen` package, you can run the server by running
+```
+./start.sh
+```
+And then
+```
+screen -r french-touch
+```
+To exit, you can simply close the server (Ctrl+c then choose the right option) or if you want it to run in background and switch to your shell, use **Ctrl+a d**.
+
+## 4. Open port
+To be able to access your server from anywhere, you need to open your ports.
+You need to open your server port (defined by default to `50000` in src/api/run_api.rs) to public internet through your internet provider's box. Check online tutorials.
+
 # API access
 
 ## INSERT
