@@ -18,3 +18,4 @@ target/
 
 data/
 sqlite.db
+ssl/

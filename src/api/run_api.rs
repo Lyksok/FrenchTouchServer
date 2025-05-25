@@ -1,4 +1,4 @@
-use actix_web::{App, HttpServer, web};
+use actix_web::{web, App, HttpServer};
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use std::sync::Mutex;
 
@@ -30,10 +30,10 @@ pub async fn run_api() -> std::io::Result<()> {
     println!("Building ssl certificate authenticator");
     let mut builder = SslAcceptor::mozilla_intermediate_v5(SslMethod::tls()).unwrap();
     builder
-        .set_private_key_file("/etc/ssl/private/server.key", SslFiletype::PEM)
+        .set_private_key_file("ssl/server.key", SslFiletype::PEM)
         .unwrap();
     builder
-        .set_certificate_chain_file("/etc/ssl/private/server.crt")
+        .set_certificate_chain_file("ssl/server.crt")
         .unwrap();
 
     let conn = match db::db_utils::open_db("sqlite.db") {
