@@ -15,11 +15,11 @@ cargo build --release
 ```
 ## 3. Run the server
 Before running the server, you will probably need to generate a self-signed certificate
+First change the `openssl.cnf` file to match your needs and then run the following.
 ```
 mkdir ssl
-openssl req -x509 -newkey rsa:4096 -keyout ssl/server.key -out ssl/server.crt -days 365 -nodes -subj "/CN=localhost"
+./generate-certificates.sh
 ```
-Then change src/api/run_api.rs to use ssl/ instead of /etc/ssl
 You can then run the server with the following command.
 ```
 cargo run --release
